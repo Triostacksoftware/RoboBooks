@@ -1,138 +1,117 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-
 const timeline = [
   {
     year: '2020',
-    title: 'Company Founded',
-    description: 'Robo Books was founded with a vision to simplify accounting for Indian businesses.',
-    achievement: 'Started with 5 team members'
+    title: 'RoboBooks was founded',
+    description: 'We started with one goal: make accounting easier for modern Indian businesses.',
+    achievement: 'Early finance workflow prototype launched',
   },
   {
     year: '2021',
-    title: 'First 1000 Customers',
-    description: 'Reached our first major milestone with 1000 satisfied customers.',
-    achievement: 'Launched GST compliance features'
+    title: 'First customer growth milestone',
+    description: 'The product began gaining traction with businesses looking for simpler GST-ready workflows.',
+    achievement: 'Reached first 1,000 users',
   },
   {
     year: '2022',
-    title: 'Series A Funding',
-    description: 'Secured funding to scale our operations and enhance our platform.',
-    achievement: 'Expanded team to 25 members'
+    title: 'Platform expansion',
+    description: 'We expanded the product into a more complete accounting workspace for daily business operations.',
+    achievement: 'More reporting and bookkeeping depth added',
   },
   {
     year: '2023',
-    title: '10,000+ Customers',
-    description: 'Achieved significant growth with over 10,000 businesses trusting our platform.',
-    achievement: 'Launched mobile app'
+    title: 'Operational scale',
+    description: 'More businesses adopted RoboBooks for day-to-day billing, bookkeeping, and visibility needs.',
+    achievement: 'Crossed 10,000+ customers',
   },
   {
     year: '2024',
-    title: 'AI Integration',
-    description: 'Introduced AI-powered features to automate accounting processes.',
-    achievement: 'Processed ₹500Cr+ in transactions'
+    title: 'Automation focus',
+    description: 'We introduced smarter workflows to help teams spend less time on repetitive accounting work.',
+    achievement: 'Handled Rs. 500Cr+ in transactions',
   },
   {
     year: '2025',
-    title: 'Future Vision',
-    description: 'Continuing to innovate and expand our services to serve more businesses.',
-    achievement: 'Targeting 50,000+ customers'
-  }
+    title: 'Looking ahead',
+    description: 'Our roadmap stays focused on giving businesses a faster and more connected finance experience.',
+    achievement: 'Investing in product quality and scale',
+  },
 ];
 
 export default function AboutTimeline() {
-  const ref = useRef(null);
-
   return (
-    <section
-      ref={ref}
-      className="
-        relative isolate overflow-hidden bg-gray-50
-        py-20 lg:py-32
-        scroll-mt-24
-      "
-    >
-      {/* backdrop blobs */}
-      <div className="absolute -z-10 top-[-6rem] right-[-8rem] h-[28rem] w-[28rem] rounded-full bg-gradient-to-br from-[#86f2ff] to-[#008cff] blur-3xl opacity-20" />
-      <div className="absolute -z-10 bottom-[-8rem] left-[-10rem] h-[32rem] w-[32rem] rounded-full bg-gradient-to-br from-[#30fcb0] to-[#00a86b] blur-3xl opacity-20" />
+    <section className="relative overflow-hidden bg-[#f8fbff] py-16 scroll-mt-24 lg:py-20">
+      <div className="absolute left-[-8rem] top-10 h-72 w-72 rounded-full bg-[#0aa6c9]/10 blur-3xl" />
+      <div className="absolute right-[-8rem] bottom-0 h-72 w-72 rounded-full bg-[#0f2344]/8 blur-3xl" />
 
-      <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-20">
-        {/* Header */}
-        <div className="text-center mb-16 animate-fade-in">
-          <p className="uppercase tracking-[.25em] text-blue-600 font-semibold">
+      <div className="relative mx-auto max-w-7xl px-4 md:px-8 lg:px-20">
+        <div className="mb-12 text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
             Our Journey
           </p>
-          <h2
-            className="
-              text-3xl sm:text-4xl md:text-5xl font-bold leading-tight
-              bg-gradient-to-r from-blue-600 via-cyan-500 to-green-500
-              bg-clip-text text-transparent mt-4
-            "
-          >
-            From Startup to Success
+          <h2 className="mx-auto mt-4 max-w-4xl text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
+            How RoboBooks has grown into a finance-first SaaS platform
           </h2>
-          <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
-            Every milestone represents our commitment to innovation and customer success.
+          <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-slate-600">
+            A cleaner look at the milestones that shaped our product, our team,
+            and the businesses we support today.
           </p>
         </div>
 
-        {/* Timeline */}
         <div className="relative">
-          {/* Timeline Line */}
-          <div className="absolute left-4 md:left-1/2 md:transform md:-translate-x-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 to-green-500" />
+          <div className="absolute left-5 top-0 h-full w-px bg-gradient-to-b from-[#0aa6c9] via-[#8fd9ea] to-transparent md:left-1/2 md:-translate-x-1/2" />
 
-          {/* Timeline Items */}
-          <div className="space-y-12">
-            {timeline.map((item, index) => (
-              <div
-                key={index}
-                className={`relative flex items-center animate-fade-in ${
-                  index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-                }`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                {/* Timeline Dot */}
-                <div className="
-                  absolute left-4 md:left-1/2 md:transform md:-translate-x-1/2
-                  w-4 h-4 bg-gradient-to-r from-blue-500 to-green-500
-                  rounded-full border-4 border-white shadow-lg
-                  z-10
-                " />
+          <div className="space-y-1">
+            {timeline.map((item, index) => {
+              const isLeft = index % 2 === 0;
 
-                {/* Content Card */}
-                <div className={`
-                  ml-12 md:ml-0 md:w-5/12
-                  ${index % 2 === 0 ? 'md:mr-auto md:pr-8' : 'md:ml-auto md:pl-8'}
-                `}>
-                  <div className="
-                    bg-white rounded-xl p-6 shadow-lg
-                    border border-gray-100 hover:border-blue-200
-                    transition-all duration-300 hover:scale-105
-                  ">
-                    <div className="text-2xl font-bold text-blue-600 mb-2">
-                      {item.year}
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-600 mb-3">
-                      {item.description}
-                    </p>
-                    <div className="
-                      inline-flex items-center gap-2 px-3 py-1
-                      bg-gradient-to-r from-green-100 to-blue-100
-                      text-green-700 rounded-full text-sm font-medium
-                    ">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                      {item.achievement}
+              return (
+                <div
+                  key={item.year}
+                  className="relative grid items-start gap-2 md:grid-cols-2 md:gap-4"
+                >
+                  <div
+                    className={`pl-14 md:pl-0 ${
+                      isLeft ? 'md:pr-12' : 'md:col-start-2 md:pl-12'
+                    }`}
+                  >
+                    <div className="rounded-[30px] border border-[#d8e7f1] bg-white p-7 shadow-[0_18px_45px_rgba(15,35,68,0.06)] transition duration-300 hover:-translate-y-1 hover:border-[#0aa6c9]/35">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className="inline-flex rounded-full bg-[#ebfaff] px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-[#0aa6c9]">
+                          {item.year}
+                        </span>
+                        <span className="inline-flex rounded-full border border-[#d8e7f1] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                          Milestone
+                        </span>
+                      </div>
+
+                      <h3 className="mt-5 text-2xl font-semibold leading-9 text-[#0f2344]">
+                        {item.title}
+                      </h3>
+                      <p className="mt-4 text-base leading-7 text-slate-600">
+                        {item.description}
+                      </p>
+
+                      <div className="mt-6 border-t border-[#e7f0f6] pt-5">
+                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#0aa6c9]">
+                          Key outcome
+                        </p>
+                        <p className="mt-2 text-base leading-7 text-[#0f2344]">
+                          {item.achievement}
+                        </p>
+                      </div>
                     </div>
                   </div>
+
+                  <div className="absolute left-0 top-8 flex items-center md:left-1/2 md:-translate-x-1/2">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full border-4 border-[#f8fbff] bg-[#0aa6c9] shadow-[0_10px_25px_rgba(10,166,201,0.25)]">
+                      <span className="h-3 w-3 rounded-full bg-white" />
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

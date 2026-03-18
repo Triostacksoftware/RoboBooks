@@ -99,7 +99,7 @@ const Navbar: React.FC = () => {
             </div>
 
             <Link
-              href="/contact"
+              href="/register"
               className="hidden items-center gap-2 rounded-full bg-[#0088c5] px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[#006b9c] md:inline-flex"
             >
               Register <ArrowRight size={16} />
@@ -136,7 +136,7 @@ const Navbar: React.FC = () => {
             </Link>
           ))}
           <Link
-            href="/contact"
+            href="/register"
             onClick={() => setMobileOpen(false)}
             className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0088c5] px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[#006b9c]"
           >

@@ -1,95 +1,82 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import Image from 'next/image';
+
+const missionPoints = [
+  'Make accounting accessible for small and growing businesses',
+  'Reduce repetitive finance admin with guided automation',
+  'Keep compliance, reporting, and books connected in one system',
+  'Design finance software that teams actually enjoy using',
+];
 
 export default function AboutMission() {
-  const ref = useRef(null);
-
   return (
     <section
       id="mission"
-      ref={ref}
-      className="
-        relative isolate overflow-hidden bg-white
-        py-20 lg:py-32
-        scroll-mt-24
-      "
+      className="relative overflow-hidden bg-white py-16 scroll-mt-24 lg:py-20"
     >
-      {/* backdrop blobs */}
-      <div className="absolute -z-10 top-[-6rem] left-[-8rem] h-[28rem] w-[28rem] rounded-full bg-gradient-to-br from-[#86f2ff] to-[#008cff] blur-3xl opacity-20" />
-      <div className="absolute -z-10 bottom-[-8rem] right-[-10rem] h-[32rem] w-[32rem] rounded-full bg-gradient-to-br from-[#30fcb0] to-[#00a86b] blur-3xl opacity-20" />
+      <div className="absolute inset-y-0 right-0 hidden w-[34%] bg-[#f8fbff] lg:block" />
+      <div className="absolute left-10 top-20 hidden h-40 w-40 rounded-full border border-[#0aa6c9]/10 lg:block" />
 
-      <div
-        className="
-          mx-auto grid max-w-7xl items-stretch gap-12
-          px-6 sm:px-10 lg:px-20
-          lg:grid-cols-2
-        "
-      >
-        {/* -------- Text block -------- */}
-        <div className="space-y-8 text-center lg:text-left animate-fade-in">
-          <p className="uppercase tracking-[.25em] text-blue-600 font-semibold">
-            Our Mission
-          </p>
+      <div className="relative mx-auto grid max-w-7xl gap-14 px-4 md:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:px-20">
+        <div className="space-y-7">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
+              Our Mission
+            </p>
+            <h2 className="mt-4 text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
+              Build accounting software that keeps business teams in control
+            </h2>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+              RoboBooks exists to simplify the daily finance work that slows
+              companies down. We bring invoicing, bookkeeping, reporting, and
+              compliance into one experience so business owners and teams can act
+              from clean numbers instead of scattered tools.
+            </p>
+          </div>
 
-          <h2
-            className="
-              text-3xl sm:text-4xl md:text-5xl font-bold leading-tight
-              bg-gradient-to-r from-blue-600 via-cyan-500 to-green-500
-              bg-clip-text text-transparent
-            "
-          >
-            Simplifying<br />
-            Business Accounting<br />
-            for Everyone
-          </h2>
-
-          <p className="mx-auto lg:mx-0 max-w-xl text-gray-700 text-lg">
-            We believe that every business, regardless of size, deserves access to powerful, 
-            user-friendly accounting tools. Our mission is to democratize financial management 
-            by making complex accounting processes simple and accessible.
-          </p>
-
-          <ul className="space-y-4">
-            {[
-              'Make accounting accessible to all businesses',
-              'Provide GST-compliant solutions for India',
-              'Automate repetitive financial tasks',
-              'Ensure data security and privacy',
-            ].map((item) => (
-              <li key={item} className="group flex items-start gap-3">
-                <svg
-                  className="mt-1 h-4 w-4 text-green-500 group-hover:scale-110 transition"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M6.003 10.803 3.2 8l-1.2 1.2 4.002 4L14 5.202 12.8 4l-6.797 6.803Z" />
-                </svg>
-                <span className="group-hover:text-blue-600 transition-colors">
-                  {item}
-                </span>
-              </li>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {missionPoints.map((point) => (
+              <div
+                key={point}
+                className="rounded-[24px] border border-[#d8e7f1] bg-[#fbfdff] px-5 py-5 shadow-[0_14px_35px_rgba(15,35,68,0.05)]"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-[#ebfaff] text-[#0aa6c9]">
+                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M6.003 10.803 3.2 8l-1.2 1.2 4.002 4L14 5.202 12.8 4l-6.797 6.803Z" />
+                    </svg>
+                  </span>
+                  <p className="text-base leading-7 text-[#0f2344]">{point}</p>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
 
-        {/* -------- Illustration card (Video) -------- */}
-        <div className="flex justify-center lg:justify-end">
-          <div
-            className="
-              relative w-full max-w-xs sm:max-w-sm md:max-w-md xl:max-w-md
-              rounded-xl ring-4 ring-transparent bg-white/20 overflow-hidden
-              aspect-[3/4] lg:aspect-auto lg:h-full
-              hover:scale-105 transition-transform duration-300
-            "
-          >
-            <video
-              src="/images/aboutsplit.mp4"
-              className="absolute inset-0 w-full h-full object-cover rounded-xl"
-              autoPlay
-              loop
-              muted
-              playsInline
+        <div className="relative min-h-[440px]">
+          <div className="absolute left-0 top-0 h-[70%] w-[78%] overflow-hidden rounded-[30px] shadow-[0_24px_60px_rgba(15,35,68,0.14)]">
+            <Image
+              src="/images/homehero.png"
+              alt="RoboBooks dashboard mission visual"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 420px"
+            />
+          </div>
+          <div className="absolute right-0 top-12 rounded-[20px] bg-[#0aa6c9] px-6 py-5 text-white shadow-[0_18px_35px_rgba(10,166,201,0.28)]">
+            <p className="text-4xl font-bold">1</p>
+            <p className="mt-2 max-w-[140px] text-sm font-semibold uppercase tracking-[0.18em] text-cyan-100">
+              unified finance workspace
+            </p>
+          </div>
+          <div className="absolute bottom-0 right-10 h-[220px] w-[62%] overflow-hidden rounded-[26px] border-[10px] border-white bg-white shadow-[0_22px_45px_rgba(15,35,68,0.14)]">
+            <Image
+              src="/images/usability.png"
+              alt="RoboBooks product mission support"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 320px"
             />
           </div>
         </div>
