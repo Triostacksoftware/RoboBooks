@@ -32,23 +32,23 @@ type Testimonial = {
 const testimonials: Testimonial[] = [
   {
     quote:
-      "Robo Books helped us streamline invoicing, GST filing, and reconciliation in one clean workflow.",
+      "We moved invoicing, GST prep, and reconciliation into one workflow, so month-end is faster and far less manual.",
     author: "CA Sanjeev Archak",
-    role: "Integrabooks | Proprietor",
+    role: "Practice Partner | Integrabooks",
     avatar: "/images/testimonial1.jpg",
   },
   {
     quote:
-      "Our finance team closes books faster now, and the dashboard gives us much more confidence every week.",
+      "Our accounts team closes books quicker, tracks receivables better, and gets cleaner visibility into business cash flow.",
     author: "Shruti Mehta",
-    role: "Diginest | CFO",
+    role: "CFO | Diginest",
     avatar: "/images/testimonial2.jpg",
   },
   {
     quote:
-      "The setup felt modern, simple, and reliable. Even onboarding our team took far less time than expected.",
+      "From billing to reports, the setup feels purpose-built for finance operations instead of another generic business tool.",
     author: "Ankit Yadav",
-    role: "Pixeldesk | Founder",
+    role: "Founder | Pixeldesk",
     avatar: "/images/testimonial3.jpg",
   },
 ];
@@ -261,20 +261,20 @@ export default function Register() {
               <div className="relative">
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-1.5 text-sm text-cyan-100 backdrop-blur">
                   <Sparkles size={16} />
-                  Homepage matched UI
+                  Built for accounting teams
                 </div>
                 <h2 className="mt-4 max-w-md text-[2rem] font-bold leading-tight sm:text-[2.35rem]">
-                  Consistent blue-cyan branding and a stronger first impression
+                  Accounting SaaS for invoicing, GST workflows, and real-time finance control
                 </h2>
                 <p className="mt-3 max-w-xl text-[15px] leading-7 text-slate-200">
-                  The register page now carries the same premium tone as your homepage with darker navy surfaces, cyan highlights, and cleaner cards.
+                  RoboBooks helps businesses and accountants manage receivables, reconciliation, compliance, and reporting from one organized workspace.
                 </p>
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-3">
                   {[
-                    ["14 days", "Free trial access"],
-                    ["24/7", "Cloud availability"],
-                    ["100%", "Secure onboarding flow"],
+                    ["GST ready", "Compliance-first workflows"],
+                    ["Invoices", "Billing and collections control"],
+                    ["Reports", "Cash flow and close visibility"],
                   ].map(([value, label]) => (
                     <div key={value} className="rounded-[22px] border border-white/10 bg-white/10 p-3 backdrop-blur">
                       <p className="text-[1.2rem] font-bold leading-none">{value}</p>
