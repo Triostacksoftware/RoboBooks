@@ -1,58 +1,54 @@
 'use client';
 
-import React from 'react';
+import { BriefcaseBusiness, LockKeyhole, Users2 } from 'lucide-react';
+
+const teamFeatures = [
+  {
+    icon: LockKeyhole,
+    title: 'Access by role',
+    description: 'Control who can view reports, create invoices, approve entries, or edit accounting data.',
+  },
+  {
+    icon: BriefcaseBusiness,
+    title: 'Department coordination',
+    description: 'Finance, ops, and founders can work from the same platform without breaking process ownership.',
+  },
+  {
+    icon: Users2,
+    title: 'Shared visibility',
+    description: 'Everyone sees the latest status on billing, dues, and reports without relying on handoffs.',
+  },
+];
 
 export default function TeamManagement() {
   return (
-    <section className="relative isolate overflow-hidden bg-white py-20 lg:py-32">
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-      </div>
+    <section className="relative overflow-hidden bg-[#f8fbff] py-16 lg:py-20">
+      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white to-transparent" />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-slate-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
-              Team Management
-            </span>
+      <div className="relative mx-auto max-w-7xl px-4 md:px-8 lg:px-20">
+        <div className="mb-14 text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
+            Team Management
+          </p>
+          <h2 className="mx-auto mt-4 max-w-3xl text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
+            Give every team member the right level of control
           </h2>
-          <p className="text-xl sm:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Manage your team efficiently with our comprehensive team management tools.
+          <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-slate-600">
+            RoboBooks supports collaborative accounting without making the interface noisy. Teams stay aligned while permissions and financial discipline stay intact.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[
-            {
-              title: "Role Management",
-              description: "Assign roles and permissions to team members",
-              icon: "👥"
-            },
-            {
-              title: "Task Assignment",
-              description: "Assign and track tasks across your team",
-              icon: "📋"
-            },
-            {
-              title: "Performance Tracking",
-              description: "Monitor team performance and productivity",
-              icon: "📊"
-            }
-          ].map((feature, index) => (
+        <div className="grid gap-6 md:grid-cols-3">
+          {teamFeatures.map(({ icon: Icon, title, description }) => (
             <div
-              key={feature.title}
-              className="bg-white rounded-xl p-8 shadow-lg border border-gray-100 hover:border-blue-200 transition-all duration-300 hover:scale-105 animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              key={title}
+              className="rounded-[30px] border border-[#d7e6f1] bg-white p-8 shadow-[0_18px_45px_rgba(15,35,68,0.07)]"
             >
-              <div className="text-4xl mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                {feature.description}
-              </p>
+              <div className="flex h-16 w-16 items-center justify-center rounded-[20px] bg-[#0f2344] text-white">
+                <Icon size={28} />
+              </div>
+              <h3 className="mt-6 text-2xl font-semibold text-[#0f2344]">{title}</h3>
+              <p className="mt-4 text-base leading-7 text-slate-600">{description}</p>
             </div>
           ))}
         </div>

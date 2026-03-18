@@ -1,73 +1,79 @@
 'use client';
 
-import React from 'react';
+import {
+  Bot,
+  Clock3,
+  LayoutDashboard,
+  Smartphone,
+  Sparkles,
+  Workflow,
+} from 'lucide-react';
+
+const usabilityItems = [
+  {
+    icon: LayoutDashboard,
+    title: 'Clean navigation',
+    description: 'Important accounting actions stay visible so your team can move without hunting through menus.',
+  },
+  {
+    icon: Clock3,
+    title: 'Faster setup',
+    description: 'Onboard your company, taxes, books, and billing structure quickly with guided workflows.',
+  },
+  {
+    icon: Smartphone,
+    title: 'Work from anywhere',
+    description: 'Use RoboBooks across devices to review approvals, collections, and reports on the move.',
+  },
+  {
+    icon: Bot,
+    title: 'Less repetitive work',
+    description: 'Automate common accounting steps like reminders, categorization, and recurring invoice creation.',
+  },
+  {
+    icon: Workflow,
+    title: 'Connected modules',
+    description: 'Sales, inventory, expenses, and bookkeeping stay linked so nothing has to be entered twice.',
+  },
+  {
+    icon: Sparkles,
+    title: 'Simple for teams',
+    description: 'Owners, accountants, and operations teams can use the same interface without extra complexity.',
+  },
+];
 
 export default function Usability() {
   return (
-    <section className="relative isolate overflow-hidden bg-gray-50 py-20 lg:py-32">
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-      </div>
+    <section className="relative overflow-hidden bg-[#f8fbff] pb-16 pt-10 lg:pb-20 lg:pt-12">
+      <div className="absolute left-[-8rem] top-20 h-72 w-72 rounded-full bg-[#0aa6c9]/10 blur-3xl" />
+      <div className="absolute right-[-6rem] bottom-0 h-72 w-72 rounded-full bg-[#0f2344]/8 blur-3xl" />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-slate-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
-              Designed for Usability
-            </span>
-          </h2>
-          <p className="text-xl sm:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Intuitive interface that makes accounting simple and enjoyable
+      <div className="relative mx-auto max-w-7xl px-4 md:px-8 lg:px-20">
+        <div className="mb-14 grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-end">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
+              Product Experience
+            </p>
+            <h2 className="mt-4 text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
+              Made to feel simple even when accounting gets complex
+            </h2>
+          </div>
+          <p className="text-lg leading-8 text-slate-600">
+            RoboBooks follows the same design tone as the hero and about sections: focused, professional, and easy to act on. The interface is built to reduce confusion and speed up daily finance work.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[
-            {
-              title: "Easy Navigation",
-              description: "Clean, intuitive interface that anyone can use",
-              icon: "🎯"
-            },
-            {
-              title: "Quick Setup",
-              description: "Get started in minutes, not hours",
-              icon: "⚡"
-            },
-            {
-              title: "Mobile Friendly",
-              description: "Access your data from anywhere, anytime",
-              icon: "📱"
-            },
-            {
-              title: "Smart Automation",
-              description: "Let AI handle repetitive tasks for you",
-              icon: "🤖"
-            },
-            {
-              title: "Real-time Sync",
-              description: "Your data stays updated across all devices",
-              icon: "🔄"
-            },
-            {
-              title: "24/7 Support",
-              description: "Help is always available when you need it",
-              icon: "💬"
-            }
-          ].map((feature, index) => (
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {usabilityItems.map(({ icon: Icon, title, description }) => (
             <div
-              key={feature.title}
-              className="bg-white rounded-xl p-8 shadow-lg border border-gray-100 hover:border-blue-200 transition-all duration-300 hover:scale-105 animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              key={title}
+              className="rounded-[30px] border border-[#d8e7f1] bg-white p-8 shadow-[0_18px_42px_rgba(15,35,68,0.06)] transition duration-300 hover:-translate-y-2 hover:border-[#0aa6c9]/35"
             >
-              <div className="text-4xl mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                {feature.description}
-              </p>
+              <div className="flex h-16 w-16 items-center justify-center rounded-[20px] bg-[#edfaff] text-[#0aa6c9]">
+                <Icon size={28} />
+              </div>
+              <h3 className="mt-6 text-2xl font-semibold text-[#0f2344]">{title}</h3>
+              <p className="mt-4 text-base leading-7 text-slate-600">{description}</p>
             </div>
           ))}
         </div>

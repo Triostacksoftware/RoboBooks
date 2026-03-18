@@ -2,140 +2,119 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  FacebookIcon,
-  TwitterIcon,
-  PointerIcon,
-  InstagramIcon,
-} from 'lucide-react'; // or use @heroicons/react
+import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
+
+const productLinks = [
+  { href: '/about', label: 'About RoboBooks' },
+  { href: '/contact', label: 'Book a demo' },
+  { href: '/register', label: 'Start free trial' },
+];
+
+const companyLinks = [
+  { href: '/about', label: 'Company' },
+  { href: '/contact', label: 'Contact' },
+  { href: '/faq', label: 'FAQ' },
+];
+
+const legalLinks = [
+  { href: '/legal/terms', label: 'Terms' },
+  { href: '/legal/privacy', label: 'Privacy' },
+  { href: '/legal/cookies', label: 'Cookies' },
+];
 
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer
-      className="
-        relative overflow-hidden text-white
-        bg-gradient-to-b from-[#1a263a] via-[#1b2f4a]/80 to-[#132033]
-      "
-    >
-      {/* top glow border */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent" />
+    <footer className="relative overflow-hidden bg-[#08182e] text-white">
+      <div className="absolute inset-0">
+        <div className="absolute left-10 top-10 h-56 w-56 rounded-full bg-[#0aa6c9]/12 blur-3xl" />
+        <div className="absolute right-0 bottom-0 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+      </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        {/* --- GRID ---------------------------------------------------- */}
-        <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr_1fr]">
-          {/* 1️⃣ Brand + blurb */}
+      <div className="relative mx-auto max-w-7xl px-4 py-16 md:px-8 lg:px-20">
+        <div className="grid gap-12 lg:grid-cols-[1.2fr_0.9fr_0.9fr_0.9fr]">
           <div>
             <Link href="/" className="inline-flex items-center">
               <Image
-                src="/images/logo.png" // ← update path if needed
-                alt="Robo Books"
-                width={180}
+                src="/images/logo.png"
+                alt="RoboBooks"
+                width={176}
                 height={56}
-                priority={false}
                 className="h-14 w-auto rounded-lg"
               />
             </Link>
-
-            <p className="mt-6 max-w-md text-sm text-white/80 leading-relaxed">
-              Robo&nbsp;Books is a comprehensive platform for billing, tax
-              management and invoicing—offering seamless solutions for
-              businesses and individuals. Designed for clarity, built for speed.
+            <p className="mt-6 max-w-md text-base leading-8 text-slate-300">
+              RoboBooks is an accounting SaaS platform for invoicing, bookkeeping, GST workflows, reporting, and operational finance control.
             </p>
-
-            {/* social icons */}
-            <div className="mt-8 flex items-center gap-4">
-              <span className="text-sm font-medium text-white">Follow:</span>
-              {[
-                { href: '#', label: 'Facebook', icon: <FacebookIcon /> },
-                { href: '#', label: 'Twitter/X', icon: <TwitterIcon /> },
-                { href: '#', label: 'Pinterest', icon: <PointerIcon /> },
-                { href: '#', label: 'Instagram', icon: <InstagramIcon /> },
-              ].map((s) => (
+            <div className="mt-7 flex gap-3">
+              {[Facebook, Twitter, Linkedin, Instagram].map((Icon, index) => (
                 <Link
-                  key={s.label}
-                  href={s.href}
-                  aria-label={s.label}
-                  className="grid h-9 w-9 place-items-center rounded-full
-                             border border-white/10 bg-white/5 text-white/80
-                             transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+                  key={index}
+                  href="#"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-200 transition hover:bg-white/10 hover:text-white"
                 >
-                  {s.icon}
+                  <Icon size={18} />
                 </Link>
               ))}
             </div>
           </div>
 
-          {/* 2️⃣ Link column – Why Choose */}
           <div>
-            <h3 className="text-sm font-semibold tracking-wider text-white/90">
-              WHY CHOOSE
+            <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-cyan-200">
+              Product
             </h3>
-            <ul className="mt-6 space-y-3">
-              {[
-                { href: '/customers', label: 'Customers' },
-                { href: '/why', label: 'Why choose us' },
-                { href: '/faq', label: 'FAQ' },
-              ].map((l) => (
-                <li key={l.label}>
-                  <Link
-                    href={l.href}
-                    className="text-sm text-white/80 transition hover:text-white"
-                  >
-                    {l.label}
-                  </Link>
-                </li>
+            <div className="mt-6 space-y-4">
+              {productLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="block text-base text-slate-300 transition hover:text-white"
+                >
+                  {link.label}
+                </Link>
               ))}
-            </ul>
+            </div>
           </div>
 
-          {/* 3️⃣ Link column – Company */}
           <div>
-            <h3 className="text-sm font-semibold tracking-wider text-white/90">
-              COMPANY
+            <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-cyan-200">
+              Company
             </h3>
-            <ul className="mt-6 space-y-3">
-              {[
-                { href: '/about', label: 'About' },
-                { href: '/what-we-do', label: 'What we do' },
-                { href: '/contact', label: 'Contact us' },
-              ].map((l) => (
-                <li key={l.label}>
-                  <Link
-                    href={l.href}
-                    className="text-sm text-white/80 transition hover:text-white"
-                  >
-                    {l.label}
-                  </Link>
-                </li>
+            <div className="mt-6 space-y-4">
+              {companyLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="block text-base text-slate-300 transition hover:text-white"
+                >
+                  {link.label}
+                </Link>
               ))}
-            </ul>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-cyan-200">
+              Legal
+            </h3>
+            <div className="mt-6 space-y-4">
+              {legalLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="block text-base text-slate-300 transition hover:text-white"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
-        {/* --- /GRID --------------------------------------------------- */}
 
-        {/* bottom bar */}
-        <div className="mt-12 flex flex-col gap-6 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-white/70">
-            © {year} Tax Square. All rights reserved.
-          </p>
-
-          <div className="flex flex-wrap gap-6 text-sm">
-            {[
-              { href: '/legal/terms', label: 'Terms and conditions' },
-              { href: '/legal/cookies', label: 'Cookies' },
-              { href: '/legal/privacy', label: 'Privacy policy' },
-            ].map((l) => (
-              <Link
-                key={l.label}
-                href={l.href}
-                className="text-white/80 transition hover:text-white"
-              >
-                {l.label}
-              </Link>
-            ))}
-          </div>
+        <div className="mt-14 flex flex-col gap-5 border-t border-white/10 pt-6 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+          <p>© {year} RoboBooks. All rights reserved.</p>
+          <p>Built for modern accounting workflows and growing businesses.</p>
         </div>
       </div>
     </footer>

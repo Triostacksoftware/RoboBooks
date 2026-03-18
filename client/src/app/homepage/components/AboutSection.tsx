@@ -1,96 +1,111 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Plus } from 'lucide-react';
 
-export default function AboutCreative() {
-  const ref = useRef(null);
+const highlights = [
+  'Automated invoicing, recurring billing, and payment reminders',
+  'GST-ready reports, expense tracking, and bank reconciliation',
+  'Inventory, payroll, and financial dashboards in one workspace',
+  'Role-based access and cloud security for growing teams',
+];
 
+export default function AboutSection() {
   return (
     <section
-      ref={ref}
       id="about"
-      className="
-        relative isolate overflow-hidden bg-white
-        py-20 lg:py-32
-        scroll-mt-24
-      "
+      className="relative overflow-hidden bg-white py-16 scroll-mt-24 lg:py-20"
     >
-      {/* backdrop blobs */}
-      <div className="absolute -z-10 top-[-6rem] left-[-8rem] h-[28rem] w-[28rem] rounded-full bg-gradient-to-br from-[#86f2ff] to-[#008cff] blur-3xl opacity-20" />
-      <div className="absolute -z-10 bottom-[-8rem] right-[-10rem] h-[32rem] w-[32rem] rounded-full bg-gradient-to-br from-[#30fcb0] to-[#00a86b] blur-3xl opacity-20" />
+      <div className="absolute inset-y-0 right-0 hidden w-[34%] bg-[#f8fbff] lg:block" />
+      <div className="absolute left-10 top-28 hidden h-36 w-36 rounded-full border border-[#0aa6c9]/10 lg:block" />
+      <div className="absolute bottom-16 right-24 hidden h-44 w-44 rounded-full border border-[#0f2344]/5 lg:block" />
 
-      <div
-        className="
-          mx-auto grid max-w-7xl items-stretch gap-12
-          px-6 sm:px-10 lg:px-20
-          lg:grid-cols-2
-        "
-      >
-        {/* -------- Illustration card (Video) -------- */}
-        <div className="flex justify-center lg:justify-start">
-          <div
-            className="
-              relative w-full max-w-xs sm:max-w-sm md:max-w-md xl:max-w-md
-              rounded-xl ring-4 ring-transparent bg-white/20 overflow-hidden
-              aspect-[3/4] lg:aspect-auto lg:h-full
-              hover:scale-105 transition-transform duration-300
-            "
-          >
-            <video
-              src="/images/aboutsection.mp4"
-              className="absolute inset-0 w-full h-full object-cover rounded-xl"
-              autoPlay
-              loop
-              muted
-              playsInline
-            />
+      <div className="relative mx-auto grid max-w-7xl items-center gap-16 px-4 md:px-8 lg:grid-cols-[1.02fr_1fr] lg:px-20">
+        <div className="relative">
+          <div className="relative mx-auto min-h-[560px] max-w-[620px]">
+            <div className="absolute -left-5 bottom-10 hidden h-32 w-32 rounded-full border-2 border-dotted border-[#0aa6c9]/40 lg:block" />
+
+            <div className="relative h-[390px] w-[78%] overflow-hidden rounded-[30px] shadow-[0_24px_60px_rgba(15,35,68,0.14)]">
+              <Image
+                src="/images/homehero.png"
+                alt="RoboBooks accounting dashboard overview"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 480px"
+              />
+            </div>
+
+            <div className="absolute right-0 top-10 rounded-[22px] bg-[#0aa6c9] px-7 py-5 text-white shadow-[0_18px_35px_rgba(10,166,201,0.28)]">
+              <div className="flex items-center gap-4">
+                <span className="text-5xl font-bold leading-none">24/7</span>
+                <span className="max-w-[110px] text-lg font-semibold leading-6">
+                  financial visibility
+                </span>
+              </div>
+            </div>
+
+            <div className="absolute bottom-0 right-6 h-[240px] w-[66%] overflow-hidden rounded-[28px] border-[10px] border-white bg-white shadow-[0_22px_45px_rgba(15,35,68,0.14)]">
+              <Image
+                src="/images/usability.png"
+                alt="RoboBooks workflow for bookkeeping teams"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 360px"
+              />
+            </div>
+
+            <div className="absolute right-[4%] top-[36%] hidden h-32 w-12 flex-col justify-between lg:flex">
+              <span className="h-8 w-full rounded-full border-2 border-[#0f2344]/15 border-t-transparent border-b-transparent" />
+              <span className="h-8 w-full rounded-full border-2 border-[#0f2344]/15 border-t-transparent border-b-transparent" />
+              <span className="h-8 w-full rounded-full border-2 border-[#0f2344]/15 border-t-transparent border-b-transparent" />
+            </div>
           </div>
         </div>
 
-        {/* -------- Text block -------- */}
-        <div className="space-y-8 text-center lg:text-left animate-fade-in">
-          <p className="uppercase tracking-[.25em] text-blue-600 font-semibold">
-            About Robo Books
-          </p>
+        <div className="relative space-y-8">
+          <div className="space-y-4">
+            <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[#0aa6c9]">
+              About RoboBooks
+            </p>
+            <h2 className="max-w-xl text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
+              Accounting Software That Keeps Every Number in Sync
+            </h2>
+            <p className="max-w-2xl text-lg leading-8 text-slate-600">
+              RoboBooks is an accounting SaaS platform built for businesses that
+              want faster bookkeeping, cleaner compliance, and complete control
+              over cash flow. From invoices to tax-ready reports, every workflow
+              stays connected in one simple dashboard.
+            </p>
+          </div>
 
-          <h2
-            className="
-              text-3xl sm:text-4xl md:text-5xl font-bold leading-tight
-              bg-gradient-to-r from-blue-600 via-cyan-500 to-green-500
-              bg-clip-text text-transparent
-            "
-          >
-            Reliable &amp; Effort-less<br />
-            Billing Solutions
-          </h2>
-
-          <p className="mx-auto lg:mx-0 max-w-xl text-gray-700 text-lg">
-            We turn complex invoicing into a breeze. Delightful UI, AI-powered
-            automation and bank-grade security—so you can focus on growth while
-            Robo Books handles the numbers.
-          </p>
-
-          <ul className="space-y-4">
-            {[
-              'One-click invoice creation',
-              'Real-time payment reminders',
-              'Seamless GST & tax reports',
-              'Military-grade data security',
-            ].map((item) => (
-              <li key={item} className="group flex items-start gap-3">
-                <svg
-                  className="mt-1 h-4 w-4 text-green-500 group-hover:scale-110 transition"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M6.003 10.803 3.2 8l-1.2 1.2 4.002 4L14 5.202 12.8 4l-6.797 6.803Z" />
-                </svg>
-                <span className="group-hover:text-blue-600 transition-colors">
-                  {item}
-                </span>
-              </li>
+          <div className="grid gap-x-10 gap-y-5 sm:grid-cols-2">
+            {highlights.map((item) => (
+              <div key={item} className="flex items-start gap-3">
+                <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full border border-[#0aa6c9] bg-white" />
+                <p className="text-lg leading-8 text-[#0f2344]">{item}</p>
+              </div>
             ))}
-          </ul>
+          </div>
+
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+            <Link
+              href="/about"
+              className="inline-flex w-fit items-center gap-3 rounded-full bg-[#0b7ea1] px-8 py-4 text-lg font-semibold text-white transition hover:bg-[#096b8a]"
+            >
+              About RoboBooks
+              <Plus size={20} />
+            </Link>
+
+            <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">
+                Trusted for
+              </p>
+              <p className="mt-1 text-xl font-bold text-[#0f2344]">
+                billing, books, tax, and team operations
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

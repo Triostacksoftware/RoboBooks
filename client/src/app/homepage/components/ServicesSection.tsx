@@ -1,168 +1,131 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
-import Link from "next/link";
+import Link from 'next/link';
 import {
-  BanknotesIcon,
-  ClipboardDocumentListIcon,
-  ChartPieIcon,
-  ShieldCheckIcon,
-  TruckIcon,
-  UsersIcon,
-  BuildingStorefrontIcon,
-} from "@heroicons/react/24/outline";
+  ArrowRight,
+  Banknote,
+  Boxes,
+  ChartNoAxesCombined,
+  FileSpreadsheet,
+  ReceiptText,
+  ShieldCheck,
+  Users,
+} from 'lucide-react';
 
-type Service = {
-  icon: (props: any) => JSX.Element;
-  title: string;
-  desc: string;
-};
-
-const SERVICES: Service[] = [
+const services = [
   {
-    icon: ClipboardDocumentListIcon,
-    title: "GST Invoicing",
-    desc: "Create GST-compliant invoices with auto tax split (CGST/SGST/IGST).",
+    icon: ReceiptText,
+    title: 'Smart Invoicing',
+    desc: 'Create branded GST invoices, recurring bills, and automated reminders without manual follow-up.',
   },
   {
-    icon: BanknotesIcon,
-    title: "Banking & Reconciliation",
-    desc: "Import statements and reconcile transactions in minutes.",
+    icon: Banknote,
+    title: 'Cash Flow Tracking',
+    desc: 'Monitor receivables, payouts, and payment cycles from one live financial command center.',
   },
   {
-    icon: BuildingStorefrontIcon,
-    title: "Inventory Management",
-    desc: "Track stock, batches and item pricing effortlessly.",
+    icon: Boxes,
+    title: 'Inventory Control',
+    desc: 'Track stock movement, reorder levels, valuation, and invoice-linked inventory updates in real time.',
   },
   {
-    icon: UsersIcon,
-    title: "Customer & Vendor CRM",
-    desc: "Centralize contacts, GSTINs and outstanding balances.",
+    icon: Users,
+    title: 'Customer & Vendor Books',
+    desc: 'Keep ledgers, payment history, and tax details organized for every business relationship.',
   },
   {
-    icon: TruckIcon,
-    title: "Delivery Challans",
-    desc: "Generate smart, custom challans in one click.",
+    icon: FileSpreadsheet,
+    title: 'GST & Compliance',
+    desc: 'Generate tax-ready reports, reconcile entries, and stay prepared for filing with less effort.',
   },
   {
-    icon: ChartPieIcon,
-    title: "Reports & Analytics",
-    desc: "P&L, tax reports and real‑time insights for faster decisions.",
-  },
-  {
-    icon: ShieldCheckIcon,
-    title: "Compliance & Security",
-    desc: "Bank‑grade security with audit logs and role-based access.",
+    icon: ChartNoAxesCombined,
+    title: 'Decision Dashboards',
+    desc: 'Turn accounting activity into clear trends, margin snapshots, and business performance insights.',
   },
 ];
 
 export default function ServicesSection() {
-  const handleAvailNow = (serviceTitle: string) => {
-    // Check if user is logged in (you can implement your own auth check)
-    const isLoggedIn = false; // Replace with your actual auth check
-    
-    if (isLoggedIn) {
-      // Redirect to service-specific page (you'll add this later)
-      console.log(`Redirecting to ${serviceTitle} service`);
-      // window.location.href = `/dashboard/${serviceTitle.toLowerCase().replace(/\s+/g, '-')}`;
-    } else {
-      // Redirect to register page
-      window.location.href = '/register';
-    }
-  };
-
   return (
-    <section className="relative isolate overflow-hidden py-20 lg:py-32 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/30">
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-400/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
-      </div>
+    <section className="relative overflow-hidden bg-[#f7fbff] py-16 lg:py-20">
+      <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-white to-transparent" />
+      <div className="absolute right-[-10rem] top-10 h-72 w-72 rounded-full bg-[#0aa6c9]/10 blur-3xl" />
+      <div className="absolute bottom-0 left-[-8rem] h-80 w-80 rounded-full bg-[#0f2344]/8 blur-3xl" />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-slate-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
-              Complete Service Suite
-            </span>
-          </h2>
-          <p className="text-xl sm:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            End-to-end accounting modules built for Indian businesses—fast, compliant and delightful.
-          </p>
+      <div className="relative mx-auto max-w-7xl px-4 md:px-8 lg:px-20">
+        <div className="mb-14 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
+              Core Services
+            </p>
+            <h2 className="mt-4 text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
+              One accounting workspace for every daily finance workflow
+            </h2>
+          </div>
+          <div className="max-w-xl rounded-[28px] border border-[#d8e8f4] bg-white/80 px-6 py-5 shadow-[0_18px_40px_rgba(15,35,68,0.08)] backdrop-blur">
+            <div className="flex items-start gap-4">
+              <span className="mt-1 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0f2344] text-white">
+                <ShieldCheck size={22} />
+              </span>
+              <div>
+                <p className="text-base font-semibold text-[#0f2344]">
+                  Built for accounting-heavy teams
+                </p>
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  RoboBooks combines billing, bookkeeping, tax preparation, and finance visibility in a single cloud system.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {SERVICES.map(({ icon: Icon, title, desc }, index) => (
-            <li
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {services.map(({ icon: Icon, title, desc }) => (
+            <div
               key={title}
-              className="group relative rounded-3xl border border-gray-200/50 p-8 shadow-sm transition-all duration-300 hover:border-blue-300/50 hover:shadow-xl bg-white/80 backdrop-blur-sm hover:bg-white/90 hover:-translate-y-2 animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className="group rounded-[30px] border border-[#d6e6f2] bg-white p-8 shadow-[0_20px_50px_rgba(15,35,68,0.07)] transition duration-300 hover:-translate-y-2 hover:border-[#0aa6c9]/40"
             >
-              <div className="flex items-start gap-6">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white group-hover:scale-110 transition-transform duration-300">
-                  <Icon className="h-8 w-8" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-3">
-                    {title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed mb-6">
-                    {desc}
-                  </p>
-                  
-                  {/* Avail Now Button - Enhanced styling */}
-                  <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                    <button
-                      onClick={() => handleAvailNow(title)}
-                      className="inline-flex items-center gap-2 text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 active:scale-95"
-                    >
-                      Avail Now
-                      <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
+              <div className="flex h-16 w-16 items-center justify-center rounded-[22px] bg-[#ebfaff] text-[#0aa6c9] transition group-hover:bg-[#0f2344] group-hover:text-white">
+                <Icon size={30} />
               </div>
-
-              {/* Decorative corner element */}
-              <div className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </li>
-          ))}
-        </ul>
-
-        {/* Enhanced CTA Section */}
-        <div className="mt-20 text-center animate-fade-in">
-          <div className="rounded-3xl bg-gradient-to-r from-blue-600/10 to-purple-600/10 backdrop-blur-sm p-8 sm:p-12 border border-white/20">
-            <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
-              Ready to transform your business?
-            </h3>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Join thousands of businesses that trust RoboBooks for their accounting needs.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link
-                href="/register"
-                className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center gap-2"
-              >
-                <span>Start free trial</span>
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-              <Link
-                href="/contact"
-                className="px-8 py-4 border-2 border-gray-300 text-gray-700 font-semibold rounded-full hover:border-blue-500 hover:text-blue-600 transition-all duration-300"
-              >
-                Schedule Demo
-              </Link>
+              <h3 className="mt-6 text-2xl font-semibold text-[#0f2344]">{title}</h3>
+              <p className="mt-4 text-base leading-7 text-slate-600">{desc}</p>
+              <div className="mt-8 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-[#0aa6c9]">
+                <span>Available in RoboBooks</span>
+                <ArrowRight size={16} />
+              </div>
             </div>
+          ))}
+        </div>
+
+        <div className="mt-16 rounded-[34px] bg-[#0f2344] px-8 py-10 text-white shadow-[0_24px_70px_rgba(15,35,68,0.2)] lg:flex lg:items-center lg:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-200">
+              Scale Faster
+            </p>
+            <h3 className="mt-3 text-3xl font-bold sm:text-4xl">
+              Replace scattered tools with one finance-ready SaaS stack
+            </h3>
+            <p className="mt-4 text-base leading-7 text-slate-200">
+              Move from spreadsheets and disconnected software to a guided accounting workflow that saves time every week.
+            </p>
+          </div>
+          <div className="mt-8 flex flex-col gap-4 sm:flex-row lg:mt-0">
+            <Link
+              href="/register"
+              className="inline-flex items-center justify-center rounded-full bg-[#0aa6c9] px-7 py-3 text-base font-semibold text-white transition hover:bg-[#0890ae]"
+            >
+              Start free trial
+            </Link>
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center rounded-full border border-white/20 px-7 py-3 text-base font-semibold text-white transition hover:bg-white/10"
+            >
+              Book a demo
+            </Link>
           </div>
         </div>
       </div>
     </section>
   );
 }
-
-

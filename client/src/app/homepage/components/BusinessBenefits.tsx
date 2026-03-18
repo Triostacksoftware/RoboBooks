@@ -1,94 +1,82 @@
-/* app/(marketing)/components/BusinessBenefits.tsx */
 'use client';
 
-import { FC, useEffect, useRef } from 'react';
 import {
-  BanknotesIcon,
-  CalculatorIcon,
-  GlobeAltIcon,
-} from '@heroicons/react/24/outline';
+  BadgeIndianRupee,
+  Calculator,
+  CircleCheckBig,
+  Globe2,
+} from 'lucide-react';
 
-interface Feature {
-  title: string;
-  description: string;
-  icon: FC<React.SVGProps<SVGSVGElement>>;
-}
-
-const features: Feature[] = [
+const benefits = [
   {
-    title: 'Accurate GST Templates',
-    description:
-      'Use our GST templates for error-free invoices and compliance.',
-    icon: BanknotesIcon,
+    icon: BadgeIndianRupee,
+    title: 'Fewer revenue leaks',
+    description: 'Automated reminders and real-time due tracking help teams recover payments faster.',
   },
   {
-    title: 'GST Rate Calculation',
-    description: 'Automatic CGST & SGST/IGST calculations based on user input.',
-    icon: CalculatorIcon,
+    icon: Calculator,
+    title: 'Cleaner tax accuracy',
+    description: 'Built-in calculations reduce manual GST mistakes and improve confidence before filing.',
   },
   {
-    title: 'Access Your Business Anywhere',
-    description: 'Cloud-based software lets you access documents securely.',
-    icon: GlobeAltIcon,
+    icon: Globe2,
+    title: 'Anywhere access',
+    description: 'Open books, reports, and approvals securely from office, branch, or remote setup.',
   },
 ];
 
 export default function BusinessBenefits() {
-  const ref = useRef(null);
-
   return (
-    <section
-      ref={ref}
-      className="relative mx-auto max-w-6xl px-4 py-16 sm:px-8 lg:px-10"
-    >
-      {/* heading */}
-      <h2 className="mb-10 bg-gradient-to-r from-blue-600 via-blue-500 to-green-500
-                     bg-clip-text text-2xl font-medium leading-tight tracking-tight
-                     text-transparent sm:text-3xl xl:text-4xl animate-fade-in">
-        How&nbsp;Robo&nbsp;Books&nbsp;Online&nbsp;can&nbsp;improve&nbsp;your&nbsp;business
-      </h2>
+    <section className="relative overflow-hidden bg-[#0f2344] py-16 text-white lg:py-20">
+      <div className="absolute inset-0 opacity-25">
+        <div className="absolute left-[8%] top-12 h-64 w-64 rounded-full bg-[#0aa6c9] blur-3xl" />
+        <div className="absolute right-[12%] bottom-8 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+      </div>
 
-      {/* content grid */}
-      <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-        {/* feature list */}
-        <ul className="space-y-10">
-          {features.map(({ title, description, icon: Icon }, index) => (
-            <li
-              key={title}
-              className="flex items-start space-x-5 animate-fade-in hover:scale-105 transition-transform duration-300"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <span className="flex h-12 w-12 flex-none items-center justify-center
-                             rounded-full bg-gradient-to-br from-blue-50 to-green-50
-                             ring-1 ring-inset ring-blue-200/30 hover:rotate-12 transition-transform duration-300">
-                <Icon className="h-7 w-7 stroke-[1.8] text-blue-600" />
+      <div className="relative mx-auto grid max-w-7xl gap-12 px-4 md:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:px-20">
+        <div className="py-2">
+          <p className="text-sm font-semibold uppercase tracking-[0.34em] text-cyan-200">
+            Business Impact
+          </p>
+          <h2 className="mt-4 text-4xl font-bold leading-tight sm:text-5xl">
+            Why accounting teams move to RoboBooks
+          </h2>
+          <p className="mt-5 text-lg leading-8 text-slate-200">
+            It is not just bookkeeping software. RoboBooks improves collections, reporting clarity, compliance confidence, and daily collaboration across finance operations.
+          </p>
+
+          <div className="mt-10 border-l-2 border-[#0aa6c9]/70 pl-6">
+            <div className="flex items-start gap-4">
+              <span className="mt-1 flex h-11 w-11 items-center justify-center rounded-full bg-[#0aa6c9]/20 text-cyan-200">
+                <CircleCheckBig size={22} />
               </span>
-
-              <div>
-                <h3 className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text
-                               text-lg font-normal text-transparent sm:text-xl">
-                  {title}
-                </h3>
-                <p className="mt-1 max-w-md text-sm text-gray-700">
-                  {description}
+              <div className="max-w-xl">
+                <p className="text-lg font-semibold">Built for growing businesses</p>
+                <p className="mt-2 text-base leading-7 text-slate-300">
+                  From founders to finance managers, the platform keeps everyone aligned on invoicing, reporting, and cash position.
                 </p>
               </div>
-            </li>
-          ))}
-        </ul>
-
-        {/* video preview instead of image */}
-        <div className="relative mx-auto w-full max-w-lg animate-fade-in">
-          <div className="rounded-xl shadow-lg overflow-hidden hover:scale-105 transition-transform duration-300">
-            <video
-              src="/images/businessbenefits.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-300 h-70 rounded-xl object-cover"
-            />
+            </div>
           </div>
+        </div>
+
+        <div className="grid gap-8">
+          {benefits.map(({ icon: Icon, title, description }, index) => (
+            <div
+              key={title}
+              className={`pb-8 ${index !== benefits.length - 1 ? 'border-b border-white/10' : ''}`}
+            >
+              <div className="flex items-start gap-5">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-white/15 bg-transparent text-cyan-200">
+                  <Icon size={28} />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-semibold">{title}</h3>
+                  <p className="mt-3 max-w-xl text-base leading-7 text-slate-200">{description}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

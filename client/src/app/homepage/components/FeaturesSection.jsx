@@ -1,153 +1,107 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
+import Link from 'next/link';
 import {
-  ClipboardDocumentCheckIcon,
-  BuildingStorefrontIcon,
-  DocumentDuplicateIcon,
-  WalletIcon,
-  UsersIcon,
-  ChartBarSquareIcon,
-  DocumentArrowUpIcon,
-  ShieldCheckIcon,
-  TruckIcon,
-  SparklesIcon,
-} from "@heroicons/react/24/outline";
+  ArrowRight,
+  BadgeCheck,
+  BookOpenText,
+  ChartColumnIncreasing,
+  ClipboardList,
+  CreditCard,
+  FileCheck2,
+  Landmark,
+  PackageCheck,
+  UsersRound,
+} from 'lucide-react';
 
-/* ---------------- FEATURES DATA ---------------- */
-const FEATURES = [
+const features = [
   {
-    icon: BuildingStorefrontIcon,
-    title: "Vendor & Suppliers",
-    desc: "Manage suppliers & contacts seamlessly.",
-    gradient: "from-blue-500 to-cyan-500",
+    icon: UsersRound,
+    title: 'Customer Accounts',
+    desc: 'Maintain customer ledgers, credits, dues, and GST details with complete visibility.',
   },
   {
-    icon: ClipboardDocumentCheckIcon,
-    title: "Items",
-    desc: "Catalogue products with prices & tax.",
-    gradient: "from-purple-500 to-pink-500",
+    icon: Landmark,
+    title: 'Bank Reconciliation',
+    desc: 'Match bank activity against books faster and reduce month-end closing effort.',
   },
   {
-    icon: DocumentDuplicateIcon,
-    title: "Purchase Orders",
-    desc: "PO → bill in one click.",
-    gradient: "from-green-500 to-emerald-500",
+    icon: ClipboardList,
+    title: 'Purchase Workflows',
+    desc: 'Handle purchase orders, bills, and vendor liabilities from one connected process.',
   },
   {
-    icon: WalletIcon,
-    title: "Purchase Bill Entry",
-    desc: "Log vendor invoices instantly.",
-    gradient: "from-orange-500 to-red-500",
+    icon: CreditCard,
+    title: 'Recurring Billing',
+    desc: 'Automate subscription invoices, due date alerts, and consistent payment collection.',
   },
   {
-    icon: UsersIcon,
-    title: "Clients / Customers",
-    desc: "Store GSTIN & contact data.",
-    gradient: "from-indigo-500 to-purple-500",
+    icon: FileCheck2,
+    title: 'Tax-Ready Reports',
+    desc: 'Export clean summaries for GST, audits, and internal reviews without manual cleanup.',
   },
   {
-    icon: ChartBarSquareIcon,
-    title: "Quotation Builder",
-    desc: "Quotes that convert themselves.",
-    gradient: "from-teal-500 to-blue-500",
+    icon: PackageCheck,
+    title: 'Inventory Linking',
+    desc: 'Connect stock movement directly to sales and purchase entries to avoid blind spots.',
   },
   {
-    icon: DocumentArrowUpIcon,
-    title: "E-Invoice & E-Way",
-    desc: "Create compliant e-invoices.",
-    gradient: "from-yellow-500 to-orange-500",
+    icon: ChartColumnIncreasing,
+    title: 'Growth Analytics',
+    desc: 'Understand margins, revenue trends, and business health with executive-friendly dashboards.',
   },
   {
-    icon: ShieldCheckIcon,
-    title: "GST/VAT Invoice",
-    desc: "Issue global tax invoices.",
-    gradient: "from-red-500 to-pink-500",
-  },
-  {
-    icon: TruckIcon,
-    title: "Delivery Challan",
-    desc: "Smart, custom challans.",
-    gradient: "from-emerald-500 to-green-500",
+    icon: BookOpenText,
+    title: 'Bookkeeping History',
+    desc: 'Track every adjustment, approval, and transaction with structured accounting records.',
   },
 ];
 
 export default function FeaturesSection() {
   return (
-    <section className="relative isolate overflow-hidden py-20 lg:py-32 bg-gradient-to-b from-white via-blue-50/30 to-white">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute top-0 right-1/4 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-1/3 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+    <section className="relative overflow-hidden bg-white pb-8 pt-16 lg:pb-10 lg:pt-20">
+      <div className="absolute inset-0">
+        <div className="absolute left-[10%] top-24 h-56 w-56 rounded-full bg-[#0aa6c9]/8 blur-3xl" />
+        <div className="absolute right-[8%] bottom-10 h-64 w-64 rounded-full bg-[#0f2344]/7 blur-3xl" />
       </div>
 
-      <div className="mx-auto max-w-7xl px-6">
-        {/* Enhanced heading */}
-        <div className="text-center mb-20 animate-fade-in">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium mb-6 animate-fade-in">
-            <SparklesIcon className="w-4 h-4" />
-            <span>Comprehensive Features</span>
+      <div className="relative mx-auto max-w-7xl px-4 md:px-8 lg:px-20">
+        <div className="mb-14 text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#bfe8f2] bg-[#effbfe] px-4 py-2 text-sm font-semibold uppercase tracking-[0.22em] text-[#0aa6c9]">
+            <BadgeCheck size={16} />
+            Product Features
           </div>
-          
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-            <span className="bg-gradient-to-r from-slate-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
-              Everything You Need
-            </span>
+          <h2 className="mx-auto mt-6 max-w-3xl text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
+            Purpose-built features for modern accounting operations
           </h2>
-          
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Powerful capabilities to create invoices, manage purchases, track customers and stay GST compliant—fast.
+          <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-slate-600">
+            Every feature is designed to reduce finance admin, improve accuracy, and help teams move from transaction entry to business insight.
           </p>
         </div>
 
-        {/* Enhanced grid */}
-        <ul className="grid max-w-7xl gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map(({ icon: Icon, title, desc, gradient }, index) => (
-            <li
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          {features.map(({ icon: Icon, title, desc }) => (
+            <div
               key={title}
-              className="group relative animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className="rounded-[28px] border border-slate-200 bg-[#fbfdff] p-7 shadow-[0_16px_40px_rgba(15,35,68,0.06)] transition duration-300 hover:-translate-y-2 hover:border-[#0aa6c9]/35 hover:bg-white"
             >
-              {/* Card */}
-              <div className="relative h-full p-8 bg-white/80 backdrop-blur-sm rounded-3xl border border-gray-200/50 hover:border-blue-300/50 hover:shadow-2xl transition-all duration-500 overflow-hidden hover:-translate-y-2">
-                {/* Gradient overlay on hover */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
-                
-                {/* Icon container */}
-                <div className="relative z-10">
-                  <div className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} text-white shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl`}>
-                    <Icon className="h-8 w-8" />
-                  </div>
-
-                  <h3 className="mt-6 text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
-                    {title}
-                  </h3>
-                  
-                  <p className="mt-4 text-gray-600 leading-relaxed">
-                    {desc}
-                  </p>
-
-                  {/* Hover effect indicator */}
-                  <div className="mt-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-blue-600">Learn more</span>
-                  </div>
-                </div>
-
-                {/* Decorative corner element */}
-                <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-bl-3xl`} />
+              <div className="flex h-14 w-14 items-center justify-center rounded-[18px] bg-[#0f2344] text-white">
+                <Icon size={24} />
               </div>
-            </li>
+              <h3 className="mt-5 text-xl font-semibold text-[#0f2344]">{title}</h3>
+              <p className="mt-3 text-sm leading-7 text-slate-600">{desc}</p>
+            </div>
           ))}
-        </ul>
+        </div>
 
-        {/* Bottom CTA */}
-        <div className="text-center mt-20 animate-fade-in">
-          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-            <span>Explore All Features</span>
-            <SparklesIcon className="w-4 h-4" />
-          </div>
+        <div className="mt-10 flex justify-center">
+          <Link
+            href="/register"
+            className="inline-flex items-center gap-3 rounded-full border border-[#0f2344] px-7 py-3 text-base font-semibold text-[#0f2344] transition hover:bg-[#0f2344] hover:text-white"
+          >
+            Explore RoboBooks
+            <ArrowRight size={18} />
+          </Link>
         </div>
       </div>
     </section>
