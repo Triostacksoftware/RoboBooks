@@ -72,7 +72,12 @@ export default function InnerPageHero({
                 <Link href="/" className="transition hover:text-white">
                   Home
                 </Link>{' '}
-                // {breadcrumbLabel ?? title}
+                <span className="text-[0.8em] font-medium text-white/75">
+                  {'>'}
+                </span>{' '}
+                <span className="text-[0.85em]">
+                  {breadcrumbLabel ?? title}
+                </span>
               </p>
             </div>
           </div>
