@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { Menu, PhoneCall, Search, X, ArrowRight } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -17,13 +19,15 @@ const Navbar: React.FC = () => {
   }, [mobileOpen]);
 
   const links = [
-    { href: '/', label: 'Home' },
     { href: '/about', label: 'About Us' },
     { href: '/services', label: 'Service' },
     { href: '/features', label: 'Features' },
     { href: '/blog', label: 'Blog' },
     { href: '/contact', label: 'Contact' },
   ];
+
+  const isActiveLink = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <>
@@ -67,12 +71,16 @@ const Navbar: React.FC = () => {
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden lg:flex items-center gap-9 text-[15px] font-semibold text-[#122241]">
+          <div className="hidden lg:absolute lg:left-[52%] lg:flex lg:-translate-x-1/2 lg:items-center lg:gap-9 text-[15px] font-semibold text-[#122241]">
             {links.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
-                className="transition hover:text-[#0072b8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#15c2c5]/60"
+                className={`transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#15c2c5]/60 ${
+                  isActiveLink(href)
+                    ? 'text-[#0088c5]'
+                    : 'text-[#122241] hover:text-[#0072b8]'
+                }`}
               >
                 {label}
               </Link>
@@ -80,7 +88,7 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Right side */}
-          <div className="flex items-center gap-5">
+          <div className="ml-auto flex items-center gap-5">
             <button
               className="hidden h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-800 shadow-sm transition hover:border-slate-300 hover:shadow md:inline-flex"
               aria-label="Search"
@@ -130,7 +138,11 @@ const Navbar: React.FC = () => {
               key={href}
               href={href}
               onClick={() => setMobileOpen(false)}
-              className="w-full text-center text-lg font-medium text-slate-800 transition hover:text-[#0072b8]"
+              className={`w-full text-center text-lg font-medium transition ${
+                isActiveLink(href)
+                  ? 'text-[#0088c5]'
+                  : 'text-slate-800 hover:text-[#0072b8]'
+              }`}
             >
               {label}
             </Link>
