@@ -404,7 +404,7 @@ export default function Sidebar({
           <div className="h-8 w-8 rounded-md bg-sky-600 text-white grid place-items-center font-bold">
             B
           </div>
-          {!collapsed && <div className="text-xl font-semibold">Books</div>}
+          {!collapsed && <div className="text-xl font-semibold">RoboBooks</div>}
 
           {/* Sidebar collapse button - positioned at top right of brand section */}
           <div className="absolute top-1/2 right-0 transform -translate-y-1/2 translate-x-1/2">
