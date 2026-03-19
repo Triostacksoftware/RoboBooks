@@ -21,7 +21,7 @@ export default function AboutSection() {
       <div className="absolute left-10 top-28 hidden h-36 w-36 rounded-full border border-[#0aa6c9]/10 lg:block" />
       <div className="absolute bottom-16 right-24 hidden h-44 w-44 rounded-full border border-[#0f2344]/5 lg:block" />
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-16 px-4 md:px-8 lg:grid-cols-[1.02fr_1fr] lg:px-20">
+      <div className="relative mx-auto grid max-w-[1380px] items-center gap-16 px-4 md:px-8 lg:grid-cols-[1.02fr_1fr] lg:px-12">
         <div className="relative">
           <div className="relative mx-auto min-h-[560px] max-w-[620px]">
             <div className="absolute -left-5 bottom-10 hidden h-32 w-32 rounded-full border-2 border-dotted border-[#0aa6c9]/40 lg:block" />

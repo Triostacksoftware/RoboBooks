@@ -46,7 +46,7 @@ const Hero: React.FC = () => {
         </svg>
       </div>
 
-      <div className="relative mx-auto flex max-w-7xl flex-col gap-12 px-4 pb-16 pt-24 md:px-8 lg:flex-row lg:items-center lg:pb-20 lg:pt-28">
+      <div className="relative mx-auto flex max-w-[1380px] flex-col gap-12 px-4 pb-16 pt-24 md:px-8 lg:flex-row lg:items-center lg:px-10 lg:pb-20 lg:pt-28">
         <div className="flex-1 space-y-8">
           <div className="uppercase tracking-[0.35em] text-xs text-cyan-200">
             GST-ready accounting SaaS
