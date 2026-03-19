@@ -32,7 +32,7 @@ export default function Footer() {
         <div className="absolute right-0 bottom-0 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 py-16 md:px-8 lg:px-20">
+      <div className="relative mx-auto max-w-[1380px] px-4 py-16 md:px-8 lg:px-12">
         <div className="grid gap-12 lg:grid-cols-[1.2fr_0.9fr_0.9fr_0.9fr]">
           <div>
             <Link href="/" className="inline-flex items-center">
