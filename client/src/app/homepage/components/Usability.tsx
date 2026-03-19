@@ -48,7 +48,7 @@ export default function Usability() {
       <div className="absolute left-[-8rem] top-20 h-72 w-72 rounded-full bg-[#0aa6c9]/10 blur-3xl" />
       <div className="absolute right-[-6rem] bottom-0 h-72 w-72 rounded-full bg-[#0f2344]/8 blur-3xl" />
 
-      <div className="relative mx-auto max-w-7xl px-4 md:px-8 lg:px-20">
+      <div className="relative mx-auto max-w-[1600px] px-4 md:px-8 lg:px-10">
         <div className="mb-14 grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-end">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">

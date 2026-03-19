@@ -106,7 +106,7 @@ export default function ContactForm({
         }}
       />
 
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-start gap-10 px-6 pb-12 pt-8 sm:pb-14 sm:pt-10 md:pb-18 md:pt-10 lg:grid-cols-[1.05fr_0.95fr]">
+      <div className="mx-auto grid max-w-[1600px] grid-cols-1 items-start gap-10 px-6 pb-12 pt-8 sm:pb-14 sm:pt-10 md:pb-18 md:pt-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-10">
         {/* LEFT: Image block + gallery uploader */}
         <div
           className="relative"

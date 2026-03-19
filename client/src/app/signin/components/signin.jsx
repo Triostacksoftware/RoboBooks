@@ -122,7 +122,7 @@ export default function SignIn() {
         }}
       />
 
-      <section className="relative mx-auto max-w-7xl px-4 pb-10 pt-8 md:px-8 lg:px-20 lg:pb-14 lg:pt-10">
+      <section className="relative mx-auto max-w-[1700px] px-4 pb-10 pt-8 md:px-8 lg:px-10 lg:pb-14 lg:pt-10">
         <section className="overflow-hidden rounded-[36px] border border-[#d9eef5] bg-white shadow-[0_40px_120px_rgba(15,35,68,0.14)]">
           <div className="h-1.5 bg-gradient-to-r from-[#0aa6c9] via-[#1781bf] to-[#20c5af]" />
           <div className="grid lg:grid-cols-[0.95fr_1.05fr]">

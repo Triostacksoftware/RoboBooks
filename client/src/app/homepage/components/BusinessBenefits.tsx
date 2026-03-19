@@ -33,7 +33,7 @@ export default function BusinessBenefits() {
         <div className="absolute right-[12%] bottom-8 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto grid max-w-7xl gap-12 px-4 md:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:px-20">
+      <div className="relative mx-auto grid max-w-[1600px] gap-12 px-4 md:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:px-10">
         <div className="py-2">
           <p className="text-sm font-semibold uppercase tracking-[0.34em] text-cyan-200">
             Business Impact

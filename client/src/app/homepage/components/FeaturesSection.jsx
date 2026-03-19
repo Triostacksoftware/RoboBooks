@@ -65,16 +65,16 @@ export default function FeaturesSection() {
         <div className="absolute right-[8%] bottom-10 h-64 w-64 rounded-full bg-[#0f2344]/7 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 md:px-8 lg:px-20">
+      <div className="relative mx-auto max-w-[1600px] px-4 md:px-8 lg:px-10">
         <div className="mb-14 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-[#bfe8f2] bg-[#effbfe] px-4 py-2 text-sm font-semibold uppercase tracking-[0.22em] text-[#0aa6c9]">
             <BadgeCheck size={16} />
             Product Features
           </div>
-          <h2 className="mx-auto mt-6 max-w-3xl text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
+          <h2 className="mx-auto mt-6 max-w-5xl text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
             Purpose-built features for modern accounting operations
           </h2>
-          <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-slate-600">
+          <p className="mx-auto mt-5 max-w-5xl text-lg leading-8 text-slate-600">
             Every feature is designed to reduce finance admin, improve accuracy, and help teams move from transaction entry to business insight.
           </p>
         </div>

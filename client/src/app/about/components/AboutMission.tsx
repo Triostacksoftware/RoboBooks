@@ -18,7 +18,7 @@ export default function AboutMission() {
       <div className="absolute inset-y-0 right-0 hidden w-[34%] bg-[#f8fbff] lg:block" />
       <div className="absolute left-10 top-20 hidden h-40 w-40 rounded-full border border-[#0aa6c9]/10 lg:block" />
 
-      <div className="relative mx-auto grid max-w-7xl gap-14 px-4 md:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:px-20">
+      <div className="relative mx-auto grid max-w-[1600px] gap-14 px-4 md:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:px-10">
         <div className="space-y-7">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">

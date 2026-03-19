@@ -39,7 +39,7 @@ export default function AboutTeam() {
     >
       <div className="absolute inset-y-0 right-0 hidden w-[30%] bg-[#f8fbff] lg:block" />
 
-      <div className="relative mx-auto max-w-7xl px-4 md:px-8 lg:px-20">
+      <div className="relative mx-auto max-w-[1600px] px-4 md:px-8 lg:px-10">
         <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">

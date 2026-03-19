@@ -34,7 +34,7 @@ export default function FaqSection() {
       <div className="absolute left-[8%] top-20 h-56 w-56 rounded-full bg-[#0aa6c9]/8 blur-3xl" />
       <div className="absolute right-[8%] bottom-0 h-64 w-64 rounded-full bg-[#0f2344]/7 blur-3xl" />
 
-      <div className="relative mx-auto max-w-5xl px-4 md:px-8 lg:px-20">
+      <div className="relative mx-auto max-w-[1280px] px-4 md:px-8 lg:px-12">
         <div className="mb-12 text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
             FAQ

@@ -52,7 +52,7 @@ export default function ServicesSection() {
       <div className="absolute right-[-10rem] top-10 h-72 w-72 rounded-full bg-[#0aa6c9]/10 blur-3xl" />
       <div className="absolute bottom-0 left-[-8rem] h-80 w-80 rounded-full bg-[#0f2344]/8 blur-3xl" />
 
-      <div className="relative mx-auto max-w-[1500px] px-4 md:px-8 lg:px-12">
+      <div className="relative mx-auto max-w-[1600px] px-4 md:px-8 lg:px-10">
         <div className="mb-14 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">

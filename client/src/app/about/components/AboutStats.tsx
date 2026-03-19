@@ -28,7 +28,7 @@ export default function AboutStats() {
     <section className="relative overflow-hidden bg-white py-16 scroll-mt-24 lg:py-20">
       <div className="absolute inset-y-0 left-0 hidden w-[30%] bg-[#f8fbff] lg:block" />
 
-      <div className="relative mx-auto max-w-7xl px-4 md:px-8 lg:px-20">
+      <div className="relative mx-auto max-w-[1600px] px-4 md:px-8 lg:px-10">
         <div className="mb-12 grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">

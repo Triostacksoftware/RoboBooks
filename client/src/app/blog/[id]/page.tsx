@@ -35,8 +35,8 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         <div className="absolute left-[-8rem] top-10 h-72 w-72 rounded-full bg-[#0aa6c9]/10 blur-3xl" />
         <div className="absolute right-[-8rem] bottom-0 h-72 w-72 rounded-full bg-[#0f2344]/8 blur-3xl" />
 
-        <div className="relative mx-auto max-w-7xl px-4 md:px-8 lg:px-20">
-          <div className="grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_340px] xl:items-start">
+        <div className="relative mx-auto max-w-[1650px] px-4 md:px-8 lg:px-10">
+          <div className="grid gap-8 xl:grid-cols-[minmax(0,1.55fr)_380px] xl:items-start">
             <div>
               <div className="mb-8">
                 <Link

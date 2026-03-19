@@ -25,7 +25,7 @@ export default function TeamManagement() {
     <section className="relative overflow-hidden bg-[#f8fbff] py-16 lg:py-20">
       <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white to-transparent" />
 
-      <div className="relative mx-auto max-w-7xl px-4 md:px-8 lg:px-20">
+      <div className="relative mx-auto max-w-[1600px] px-4 md:px-8 lg:px-10">
         <div className="mb-14 text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
             Team Management
