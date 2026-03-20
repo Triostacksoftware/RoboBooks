@@ -8,7 +8,6 @@ import AboutMission from './components/AboutMission'
 import AboutValues from './components/AboutValues'
 import AboutStats from './components/AboutStats'
 import AboutTimeline from './components/AboutTimeline'
-import AboutTeam from './components/AboutTeam'
 
 const AboutPage = () => {
   return (
@@ -19,7 +18,6 @@ const AboutPage = () => {
         title="The accounting SaaS team helping businesses work with more confidence"
         description="We build RoboBooks for companies that need smart invoicing, cleaner bookkeeping, dependable compliance workflows, and a product experience that feels modern from the first click."
         primaryAction={{ href: '#mission', label: 'Explore our mission' }}
-        secondaryAction={{ href: '#team-section', label: 'Meet the team' }}
         variant="banner"
         breadcrumbLabel="About"
         stats={[
@@ -33,7 +31,6 @@ const AboutPage = () => {
       <AboutValues />
       <AboutStats />
       <AboutTimeline />
-      <AboutTeam />
       <Footer />
     </>
   )
