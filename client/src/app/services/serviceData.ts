@@ -14,7 +14,7 @@ export const services: ServiceItem[] = [
     slug: 'smart-invoicing',
     title: 'Smart Invoicing',
     desc: 'Create branded GST invoices, recurring bills, and automated reminders without manual follow-up.',
-    image: '/images/dashboard.png',
+    image: '/images/invoicing.png',
     eyebrow: 'Invoice Automation',
     detailTitle: 'Launch polished invoices and payment reminders from one workspace',
     detail:
@@ -29,7 +29,7 @@ export const services: ServiceItem[] = [
     slug: 'cash-flow-tracking',
     title: 'Cash Flow Tracking',
     desc: 'Monitor receivables, payouts, and payment cycles from one live financial command center.',
-    image: '/images/homehero.png',
+    image: '/images/Cash Flow Tracking.png',
     eyebrow: 'Cash Visibility',
     detailTitle: 'See incoming and outgoing money in one live finance view',
     detail:
@@ -44,7 +44,7 @@ export const services: ServiceItem[] = [
     slug: 'inventory-control',
     title: 'Inventory Control',
     desc: 'Track stock movement, reorder levels, valuation, and invoice-linked inventory updates in real time.',
-    image: '/images/businessbenifits.png',
+    image: '/images/Inventory Control.png',
     eyebrow: 'Stock Accuracy',
     detailTitle: 'Keep inventory synced with billing, sales, and reorder planning',
     detail:
@@ -59,7 +59,7 @@ export const services: ServiceItem[] = [
     slug: 'customer-vendor-books',
     title: 'Customer & Vendor Books',
     desc: 'Keep ledgers, payment history, and tax details organized for every business relationship.',
-    image: '/images/homehero.png',
+    image: '/images/GSR & Vendor.png',
     eyebrow: 'Relationship Records',
     detailTitle: 'Maintain complete books for every customer and vendor',
     detail:
@@ -89,7 +89,7 @@ export const services: ServiceItem[] = [
     slug: 'decision-dashboards',
     title: 'Decision Dashboards',
     desc: 'Turn accounting activity into clear trends, margin snapshots, and business performance insights.',
-    image: '/images/dashboard.png',
+    image: '/images/Decision Dashboards.png',
     eyebrow: 'Insight Engine',
     detailTitle: 'Turn accounting data into clear decision-ready dashboards',
     detail:
