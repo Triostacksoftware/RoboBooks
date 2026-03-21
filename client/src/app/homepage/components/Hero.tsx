@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -14,15 +15,32 @@ import {
   X,
 } from "lucide-react";
 
+const heroSlides = [
+  "/images/homehero.png",
+  "/images/dashboard.png",
+  "/images/usability.png",
+  "/images/your-illustration.png",
+  "/images/businessbenifits.png",
+];
+
 const Hero: React.FC = () => {
   const [phoneValue, setPhoneValue] = useState("");
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [hasTriggeredModal, setHasTriggeredModal] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   const normalizedPhone = useMemo(
     () => phoneValue.replace(/\D/g, "").slice(0, 10),
     [phoneValue]
   );
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % heroSlides.length);
+    }, 3000);
+
+    return () => window.clearInterval(interval);
+  }, []);
 
   const handlePhoneChange = (value: string) => {
     const cleaned = value.replace(/[^\d+\s-]/g, "");
@@ -37,6 +55,28 @@ const Hero: React.FC = () => {
 
   return (
     <section className="relative overflow-hidden bg-[#0f2344] text-white">
+      <div className="absolute inset-0">
+        {heroSlides.map((slide, index) => (
+          <div
+            key={slide}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              activeSlide === index ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <Image
+              src={slide}
+              alt="Accounting software background"
+              fill
+              priority={index === 0}
+              className="object-cover object-center"
+              sizes="100vw"
+            />
+          </div>
+        ))}
+      </div>
+      <div className="pointer-events-none absolute inset-0 bg-[#07162d]/78" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(10,166,201,0.16),transparent_32%),radial-gradient(circle_at_78%_10%,rgba(15,35,68,0.2),transparent_28%),linear-gradient(90deg,rgba(7,22,45,0.9)_0%,rgba(7,22,45,0.72)_42%,rgba(7,22,45,0.82)_100%)]" />
+
       {/* layered background sweeps */}
       <div
         className="pointer-events-none absolute inset-0 opacity-30"
@@ -68,37 +108,64 @@ const Hero: React.FC = () => {
         </svg>
       </div>
 
-      <div className="relative mx-auto flex max-w-[1380px] flex-col gap-8 px-4 pb-12 pt-16 md:px-8 md:pb-16 md:pt-24 lg:flex-row lg:items-center lg:gap-12 lg:px-10 lg:pb-20 lg:pt-28">
-        <div className="flex-1 space-y-8 lg:space-y-10">
-          <h1 className="max-w-4xl text-3xl font-bold leading-[1.16] sm:text-4xl md:text-5xl">
-            Best GST Accounting Software for Business in India
-          </h1>
+      <div className="relative mx-auto flex max-w-[1480px] flex-col gap-8 px-4 pb-12 pt-16 md:px-8 md:pb-16 md:pt-24 lg:flex-row lg:items-center lg:gap-6 lg:px-12 lg:pb-20 lg:pt-28 xl:px-16">
+        <div className="relative flex-[1.12] space-y-6 lg:space-y-7">
+          <div className="pointer-events-none absolute -left-10 top-0 h-36 w-36 rounded-full bg-[#00c2c7]/10 blur-3xl" />
 
-          <div className="space-y-4 text-lg text-white sm:text-xl">
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="h-7 w-7 flex-none text-[#34c759]" />
-              <p>
-                Reconcile books faster with <span className="font-semibold">real-time GST entries</span>
+          <div className="relative max-w-5xl">
+            <div className="mb-5 inline-flex items-center rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.24em] text-cyan-100 shadow-[0_10px_30px_rgba(10,166,201,0.16)]">
+              Made for growing Indian businesses
+            </div>
+            <div className="pointer-events-none absolute -left-6 top-12 h-28 w-28 rounded-full bg-[#39d98a]/10 blur-3xl" />
+            <div className="pointer-events-none absolute left-16 top-24 h-20 w-56 rounded-full bg-[#0aa6c9]/12 blur-3xl" />
+            <div className="relative">
+              <div className="pointer-events-none absolute -inset-x-3 top-8 h-24 rounded-[32px] bg-[linear-gradient(90deg,rgba(10,166,201,0),rgba(10,166,201,0.12),rgba(57,217,138,0.08),rgba(10,166,201,0))] blur-2xl" />
+              <h1 className="relative max-w-[16ch] text-[1.98rem] font-extrabold leading-[1.08] tracking-[-0.028em] text-white drop-shadow-[0_14px_34px_rgba(5,18,38,0.55)] sm:max-w-[15ch] sm:text-[2.85rem] md:max-w-[16ch] md:text-[3.12rem] lg:max-w-[17ch] lg:text-[3.35rem]">
+                <span className="block whitespace-nowrap">Best GST Accounting Software</span>
+                <span className="relative mt-2 block w-fit whitespace-nowrap bg-[linear-gradient(180deg,#ffffff_0%,#e6f7ff_100%)] bg-clip-text text-transparent">
+                  for Business in India
+                  <span className="absolute -bottom-2 left-0 h-[10px] w-full rounded-full bg-[linear-gradient(90deg,rgba(57,217,138,0),rgba(57,217,138,0.75),rgba(10,166,201,0))] blur-[2px]" />
+                </span>
+              </h1>
+            </div>
+            <div className="mt-5 h-px w-40 bg-[linear-gradient(90deg,rgba(10,166,201,0.9),rgba(57,217,138,0.65),rgba(255,255,255,0))]" />
+            <p className="mt-5 max-w-2xl text-base leading-8 text-slate-200 sm:text-lg">
+              Manage billing, GST, receivables and month-end accounting in one sharper, faster workflow built for modern teams.
+            </p>
+          </div>
+
+          <div className="space-y-3.5 text-[1rem] text-white sm:text-[1.06rem] lg:text-[1.1rem]">
+            <div className="flex items-center gap-3.5 py-0.5">
+              <span className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-[#34c759]/12 ring-1 ring-[#34c759]/30">
+                <CheckCircle2 className="h-6 w-6 text-[#34c759]" />
+              </span>
+              <p className="flex-1 leading-[1.45]">
+                Reconcile books faster with <span className="font-semibold text-white">real-time GST entries</span>
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="h-7 w-7 flex-none text-[#34c759]" />
-              <p>
-                Track receivables, expenses, and tax dues in <span className="font-semibold">one live dashboard</span>
+            <div className="flex items-center gap-3.5 py-0.5">
+              <span className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-[#34c759]/12 ring-1 ring-[#34c759]/30">
+                <CheckCircle2 className="h-6 w-6 text-[#34c759]" />
+              </span>
+              <p className="flex-1 leading-[1.45]">
+                Track receivables, expenses, and tax dues in <span className="font-semibold text-white">one live dashboard</span>
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="h-7 w-7 flex-none text-[#34c759]" />
-              <p>
-                Close monthly accounting with <span className="font-semibold">clean audit-ready reports</span>
+            <div className="flex items-center gap-3.5 py-0.5">
+              <span className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-[#34c759]/12 ring-1 ring-[#34c759]/30">
+                <CheckCircle2 className="h-6 w-6 text-[#34c759]" />
+              </span>
+              <p className="flex-1 leading-[1.45]">
+                Close monthly accounting with <span className="font-semibold text-white">clean audit-ready reports</span>
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <div className="relative flex flex-col gap-3 pt-1 sm:flex-row sm:items-center">
+            <div className="pointer-events-none absolute -left-4 top-1/2 h-24 w-48 -translate-y-1/2 rounded-full bg-[#ef6c10]/20 blur-3xl" />
             <Link
               href="/register"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#ef6c10] px-8 py-3 text-lg font-semibold text-white shadow-xl transition hover:bg-[#d65f0c]"
+              className="relative inline-flex items-center justify-center gap-2 rounded-full bg-[#ef6c10] px-8 py-3 text-lg font-semibold text-white shadow-[0_18px_36px_rgba(239,108,16,0.32)] transition hover:-translate-y-0.5 hover:bg-[#d65f0c]"
             >
               Start Free Billing
               <ArrowRight size={18} />
@@ -106,15 +173,15 @@ const Hero: React.FC = () => {
 
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center rounded-full border border-white/70 px-8 py-3 text-lg font-medium text-white transition hover:bg-white/10"
+              className="inline-flex items-center justify-center rounded-full border border-white/50 bg-white/[0.03] px-8 py-3 text-lg font-medium text-white shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition hover:-translate-y-0.5 hover:bg-white/10"
             >
               Book Free Demo
             </Link>
           </div>
         </div>
 
-        <div className="relative flex-1">
-          <div className="relative mx-auto w-full max-w-[440px]">
+        <div className="relative flex-[0.9] lg:ml-2 xl:ml-4">
+          <div className="relative mx-auto w-full max-w-[440px] lg:mr-0 lg:ml-auto">
             <div className="absolute -left-6 top-6 h-14 w-14 rounded-br-full bg-[#0aa6c9]" />
             <div className="absolute -right-8 -bottom-10 h-16 w-16 rounded-tl-full border-4 border-[#0aa6c9]/60" />
             <div className="absolute inset-0 -z-10 rounded-3xl bg-white/5 blur-3xl" />

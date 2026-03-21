@@ -91,7 +91,7 @@ export default function AboutSection() {
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
             <Link
               href="/about"
-              className="inline-flex w-fit items-center gap-3 rounded-full bg-[#0b7ea1] px-8 py-4 text-lg font-semibold text-white transition hover:bg-[#096b8a]"
+              className="inline-flex w-fit items-center gap-3 rounded-xl bg-[#0b7ea1] px-6 py-3.5 text-base font-semibold text-white transition hover:bg-[#096b8a]"
             >
               About RoboBooks
               <Plus size={20} />
