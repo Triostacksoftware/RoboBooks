@@ -11,39 +11,16 @@ import {
   ShieldCheck,
   Users,
 } from 'lucide-react';
+import { services } from '../../services/serviceData';
 
-const services = [
-  {
-    icon: ReceiptText,
-    title: 'Smart Invoicing',
-    desc: 'Create branded GST invoices, recurring bills, and automated reminders without manual follow-up.',
-  },
-  {
-    icon: Banknote,
-    title: 'Cash Flow Tracking',
-    desc: 'Monitor receivables, payouts, and payment cycles from one live financial command center.',
-  },
-  {
-    icon: Boxes,
-    title: 'Inventory Control',
-    desc: 'Track stock movement, reorder levels, valuation, and invoice-linked inventory updates in real time.',
-  },
-  {
-    icon: Users,
-    title: 'Customer & Vendor Books',
-    desc: 'Keep ledgers, payment history, and tax details organized for every business relationship.',
-  },
-  {
-    icon: FileSpreadsheet,
-    title: 'GST & Compliance',
-    desc: 'Generate tax-ready reports, reconcile entries, and stay prepared for filing with less effort.',
-  },
-  {
-    icon: ChartNoAxesCombined,
-    title: 'Decision Dashboards',
-    desc: 'Turn accounting activity into clear trends, margin snapshots, and business performance insights.',
-  },
-];
+const serviceIcons = {
+  'Smart Invoicing': ReceiptText,
+  'Cash Flow Tracking': Banknote,
+  'Inventory Control': Boxes,
+  'Customer & Vendor Books': Users,
+  'GST & Compliance': FileSpreadsheet,
+  'Decision Dashboards': ChartNoAxesCombined,
+};
 
 export default function ServicesSection() {
   return (
@@ -80,22 +57,27 @@ export default function ServicesSection() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {services.map(({ icon: Icon, title, desc }) => (
-            <div
-              key={title}
-              className="group rounded-[30px] border border-[#d6e6f2] bg-white p-8 shadow-[0_20px_50px_rgba(15,35,68,0.07)] transition duration-300 hover:-translate-y-2 hover:border-[#0aa6c9]/40"
-            >
-              <div className="flex h-16 w-16 items-center justify-center rounded-[22px] bg-[#ebfaff] text-[#0aa6c9] transition group-hover:bg-[#0f2344] group-hover:text-white">
-                <Icon size={30} />
-              </div>
-              <h3 className="mt-6 text-2xl font-semibold text-[#0f2344]">{title}</h3>
-              <p className="mt-4 text-base leading-7 text-slate-600">{desc}</p>
-              <div className="mt-8 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-[#0aa6c9]">
-                <span>Available in RoboBooks</span>
-                <ArrowRight size={16} />
-              </div>
-            </div>
-          ))}
+          {services.map(({ slug, title, desc }) => {
+            const Icon = serviceIcons[title as keyof typeof serviceIcons];
+
+            return (
+              <Link
+                key={title}
+                href={`/services/${slug}`}
+                className="group block rounded-[30px] border border-[#d6e6f2] bg-white p-8 text-left shadow-[0_20px_50px_rgba(15,35,68,0.07)] transition duration-300 hover:-translate-y-2 hover:border-[#0aa6c9]/40"
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-[22px] bg-[#ebfaff] text-[#0aa6c9] transition group-hover:bg-[#0f2344] group-hover:text-white">
+                  <Icon size={30} />
+                </div>
+                <h3 className="mt-6 text-2xl font-semibold text-[#0f2344]">{title}</h3>
+                <p className="mt-4 text-base leading-7 text-slate-600">{desc}</p>
+                <div className="mt-8 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-[#0aa6c9]">
+                  <span>Available in RoboBooks</span>
+                  <ArrowRight size={16} />
+                </div>
+              </Link>
+            );
+          })}
         </div>
 
         <div className="mt-16 rounded-[34px] bg-[#0f2344] px-8 py-10 text-white shadow-[0_24px_70px_rgba(15,35,68,0.2)] lg:flex lg:items-center lg:justify-between">

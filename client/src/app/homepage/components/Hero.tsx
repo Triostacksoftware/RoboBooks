@@ -181,7 +181,7 @@ const Hero: React.FC = () => {
         </div>
 
         <div className="relative flex-[0.9] lg:ml-2 xl:ml-4">
-          <div className="relative mx-auto w-full max-w-[440px] lg:mr-0 lg:ml-auto">
+          <div className="relative mx-auto flex w-full max-w-[440px] flex-col gap-5 lg:mr-0 lg:ml-auto">
             <div className="absolute -left-6 top-6 h-14 w-14 rounded-br-full bg-[#0aa6c9]" />
             <div className="absolute -right-8 -bottom-10 h-16 w-16 rounded-tl-full border-4 border-[#0aa6c9]/60" />
             <div className="absolute inset-0 -z-10 rounded-3xl bg-white/5 blur-3xl" />
@@ -202,32 +202,6 @@ const Hero: React.FC = () => {
               <form className="space-y-3 sm:space-y-4">
                 <label className="block text-sm text-slate-100/80">
                   <span className="mb-1 inline-flex items-center gap-2 text-sm font-semibold text-white">
-                    <User size={16} />
-                    Full name
-                  </span>
-                  <div className="relative">
-                    <input
-                      type="text"
-                    placeholder="Enter your name"
-                      className="w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 shadow-inner shadow-black/20 focus:border-[#0aa6c9] focus:outline-none sm:py-3"
-                    />
-                  </div>
-                </label>
-
-                <label className="block text-sm text-slate-100/80">
-                  <span className="mb-1 inline-flex items-center gap-2 text-sm font-semibold text-white">
-                    <Mail size={16} />
-                    Work email
-                  </span>
-                  <input
-                    type="email"
-                    placeholder="you@company.com"
-                    className="w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 shadow-inner shadow-black/20 focus:border-[#0aa6c9] focus:outline-none sm:py-3"
-                  />
-                </label>
-
-                <label className="block text-sm text-slate-100/80">
-                  <span className="mb-1 inline-flex items-center gap-2 text-sm font-semibold text-white">
                     <Phone size={16} />
                     Phone
                   </span>
@@ -239,20 +213,33 @@ const Hero: React.FC = () => {
                     className="w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 shadow-inner shadow-black/20 focus:border-[#0aa6c9] focus:outline-none sm:py-3"
                   />
                 </label>
-
-                <div className="overflow-hidden rounded-2xl border border-white/15 bg-black/20 shadow-inner shadow-black/20">
-                  <div className="aspect-video w-full">
-                    <iframe
-                      src="https://www.youtube.com/embed/YaiT6rz5YRA?autoplay=1&mute=1&loop=1&playlist=YaiT6rz5YRA&rel=0&playsinline=1"
-                      title="RoboBooks Demo Video"
-                      className="h-full w-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allowFullScreen
-                    />
-                  </div>
-                </div>
               </form>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-white/10 p-4 shadow-[0_25px_80px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:p-5">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-white sm:text-xl">
+                    Watch RoboBooks in action
+                  </h3>
+                </div>
+                <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-100">
+                  Video
+                </span>
+              </div>
+
+              <div className="overflow-hidden rounded-2xl border border-white/15 bg-black/20 shadow-inner shadow-black/20">
+                <div className="aspect-video w-full">
+                  <iframe
+                    src="https://www.youtube.com/embed/YaiT6rz5YRA?autoplay=1&mute=1&loop=1&playlist=YaiT6rz5YRA&rel=0&playsinline=1"
+                    title="RoboBooks Demo Video"
+                    className="h-full w-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>

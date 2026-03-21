@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import {
@@ -215,6 +216,20 @@ function ThermalView() {
   );
 }
 
+function InvoiceQr() {
+  return (
+    <div className="relative h-16 w-16 overflow-hidden rounded-[4px] border border-[#d7e8f1] bg-white p-[3px] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.8)]">
+      <Image
+        src="/images/payment-qr.png"
+        alt="Payment QR code"
+        fill
+        className="object-contain p-[3px]"
+        sizes="64px"
+      />
+    </div>
+  );
+}
+
 function A4Card({
   title,
   accent,
@@ -349,15 +364,7 @@ function A4Card({
                   </div>
                 ))}
                 <div className="mt-4 flex items-end justify-between gap-4 pt-4">
-                  <div className="relative h-14 w-14 rounded border border-[#d7e8f1] bg-white">
-                    <div className="absolute left-1 top-1 h-4 w-4 border-2 border-[#0f2344]" />
-                    <div className="absolute right-1 top-1 h-4 w-4 border-2 border-[#0f2344]" />
-                    <div className="absolute left-1 bottom-1 h-4 w-4 border-2 border-[#0f2344]" />
-                    <div className="absolute inset-[22px] bg-[#0f2344]" />
-                    <div className="absolute left-[22px] top-[8px] h-1.5 w-3 bg-[#0f2344]" />
-                    <div className="absolute right-[8px] bottom-[18px] h-1.5 w-2 bg-[#0f2344]" />
-                    <div className="absolute left-[18px] bottom-[8px] h-2 w-1.5 bg-[#0f2344]" />
-                  </div>
+                  <InvoiceQr />
                   <div className="text-right">
                     <div className="h-10 w-24 rounded border border-[#e5e7eb] bg-white" />
                     <p className="mt-1 text-[9px]">Signature</p>
@@ -487,15 +494,7 @@ function A4Card({
                   </div>
                 ))}
                 <div className="mt-4 flex items-end justify-end gap-4">
-                  <div className="relative h-14 w-14 rounded border border-[#d7e8f1] bg-white">
-                    <div className="absolute left-1 top-1 h-4 w-4 border-2 border-[#0f2344]" />
-                    <div className="absolute right-1 top-1 h-4 w-4 border-2 border-[#0f2344]" />
-                    <div className="absolute left-1 bottom-1 h-4 w-4 border-2 border-[#0f2344]" />
-                    <div className="absolute inset-[22px] bg-[#0f2344]" />
-                    <div className="absolute left-[22px] top-[8px] h-1.5 w-3 bg-[#0f2344]" />
-                    <div className="absolute right-[8px] bottom-[18px] h-1.5 w-2 bg-[#0f2344]" />
-                    <div className="absolute left-[18px] bottom-[8px] h-2 w-1.5 bg-[#0f2344]" />
-                  </div>
+                  <InvoiceQr />
                 </div>
                 <p className="text-[9px] leading-4">Five Hundred Sixty Six Rupees and Fifty Paise only.</p>
               </div>
@@ -682,7 +681,9 @@ function A5Sheet({
         </div>
         <div className="border-r border-[#bfd9e7] p-3">
           <p className="font-semibold text-[#0f2344]">Payment QR Code</p>
-          <div className="mt-2 h-16 w-16 border border-[#d7e8f1] bg-[repeating-linear-gradient(45deg,#0f2344_0,#0f2344_2px,#fff_2px,#fff_4px)]" />
+          <div className="mt-2">
+            <InvoiceQr />
+          </div>
         </div>
         <div className="p-3">
           <p className="font-semibold text-[#0f2344]">Terms and Conditions</p>

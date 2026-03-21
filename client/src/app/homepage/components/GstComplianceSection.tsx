@@ -3,13 +3,23 @@
 import { useState } from 'react';
 import {
   ArrowUpRight,
+  ArrowLeftRight,
+  BarChart3,
   FileDigit,
   FileSpreadsheet,
+  Landmark,
   ReceiptText,
   ScrollText,
 } from 'lucide-react';
 
-type ComplianceKey = 'gstr' | 'einvoice' | 'eway' | 'tally';
+type ComplianceKey =
+  | 'gstr'
+  | 'einvoice'
+  | 'eway'
+  | 'tally'
+  | 'bank'
+  | 'data'
+  | 'reporting';
 
 const items = [
   {
@@ -47,6 +57,33 @@ const items = [
     badge: 'Sales Sync',
     description:
       'Move structured sales and tax records from RoboBooks to your accounting workflows with less manual re-entry.',
+  },
+  {
+    key: 'bank' as ComplianceKey,
+    label: 'Bank Reconciliation',
+    icon: Landmark,
+    title: 'Bank Reconciliation',
+    badge: 'Auto Match',
+    description:
+      'Match bank entries, track pending transactions, and keep your books aligned with real account activity using a cleaner reconciliation workflow.',
+  },
+  {
+    key: 'data' as ComplianceKey,
+    label: 'Import Export of Data',
+    icon: ArrowLeftRight,
+    title: 'Import and Export Center',
+    badge: 'Data Sync',
+    description:
+      'Move invoices, books, ledgers, and structured reports between RoboBooks and your external accounting workflows with less manual effort.',
+  },
+  {
+    key: 'reporting' as ComplianceKey,
+    label: 'Multiple Financial Reporting',
+    icon: BarChart3,
+    title: 'Financial Reporting Hub',
+    badge: 'Insight Ready',
+    description:
+      'Generate multiple financial reports from one dashboard, compare business metrics, and share cleaner summaries with your team or accountant.',
   },
 ];
 
@@ -129,10 +166,13 @@ function CompliancePreview({
 }: {
   current: (typeof items)[number];
 }) {
-  if (current.key === 'eway') return <DeliveryChallanPreview current={current} />;
+  if (current.key === 'gstr') return <SalesOrdersPreview current={current} />;
   if (current.key === 'einvoice') return <InvoicesPreview current={current} />;
+  if (current.key === 'eway') return <DeliveryChallanPreview current={current} />;
   if (current.key === 'tally') return <CreditNotesPreview current={current} />;
-  return <SalesOrdersPreview current={current} />;
+  if (current.key === 'data') return <DataImportExportPreview current={current} />;
+  if (current.key === 'reporting') return <FinancialReportingPreview current={current} />;
+  return <BankReconciliationPreview current={current} />;
 }
 
 function PreviewShell({
@@ -159,6 +199,36 @@ function PreviewShell({
         </div>
       </div>
       {children}
+    </div>
+  );
+}
+
+function FinanceSidebar({ activeItem }: { activeItem: string }) {
+  return (
+    <div className="border-r border-[#e2e8f0] bg-white px-4 py-5">
+      <p className="text-2xl font-semibold text-[#0f172a]">Books</p>
+      <div className="mt-6 space-y-2 text-[15px] text-slate-700">
+        {['Home', 'Items', 'Banking'].map((entry) => (
+          <div key={entry} className="rounded-xl px-4 py-3">
+            {entry}
+          </div>
+        ))}
+        <div className="rounded-xl bg-[#eaf1ff] px-4 py-3 font-medium text-[#2563eb]">
+          Finance
+        </div>
+        <div className="space-y-2 pl-5 text-slate-600">
+          {['Bank Reconciliation', 'Import Data', 'Export Data', 'Reports', 'Profit & Loss', 'Balance Sheet'].map((entry) => (
+            <div
+              key={entry}
+              className={`rounded-lg px-4 py-2 ${
+                entry === activeItem ? 'bg-[#eef4ff] font-medium text-[#2563eb]' : ''
+              }`}
+            >
+              {entry}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -388,29 +458,6 @@ function InvoicesPreview({
                 ))}
               </div>
             </div>
-            <div className="px-5 pb-5">
-              <div className="rounded-[22px] border border-[#dbe4ef] bg-white px-6 py-5">
-                <p className="text-center text-[20px] font-semibold text-[#0f172a]">
-                  Life cycle of an Invoice
-                </p>
-                <div className="mt-6 grid grid-cols-5 gap-3 text-center">
-                  {[
-                    ['Draft', 'bg-slate-100', 'text-slate-500'],
-                    ['Sent', 'bg-blue-100', 'text-blue-600'],
-                    ['Unpaid', 'bg-yellow-100', 'text-yellow-600'],
-                    ['Overdue', 'bg-red-100', 'text-red-600'],
-                    ['Paid', 'bg-emerald-100', 'text-emerald-600'],
-                  ].map(([label, bg, color]) => (
-                    <div key={label} className="flex flex-col items-center">
-                      <div className={`flex h-16 w-16 items-center justify-center rounded-full ${bg} ${color}`}>
-                        <current.icon size={24} />
-                      </div>
-                      <p className="mt-3 text-sm font-medium text-slate-700">{label}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -496,6 +543,239 @@ function CreditNotesPreview({
                     <span>{row[4]}</span>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </PreviewShell>
+  );
+}
+
+function BankReconciliationPreview({
+  current,
+}: {
+  current: (typeof items)[number];
+}) {
+  return (
+    <PreviewShell current={current}>
+      <div className="grid min-h-[470px] grid-cols-[220px_1fr] bg-[#f8fafc]">
+        <FinanceSidebar activeItem="Bank Reconciliation" />
+        <div className="p-5">
+          <div className="rounded-[24px] border border-[#dbe4ef] bg-white">
+            <div className="flex items-center justify-between border-b border-[#e2e8f0] px-5 py-4">
+              <div className="flex items-center gap-3">
+                <button className="rounded-xl border border-[#d7e3ef] px-4 py-2 text-sm text-slate-600">
+                  Back
+                </button>
+                <h3 className="text-[22px] font-bold text-[#0f172a]">Bank Reconciliation</h3>
+              </div>
+              <p className="text-sm text-slate-500">3 bank accounts connected</p>
+            </div>
+            <div className="border-b border-[#e2e8f0] px-5 py-4">
+              <div className="flex gap-3">
+                <div className="flex-1 rounded-xl border border-[#d7e3ef] px-4 py-3 text-slate-400">
+                  Search transaction, narration...
+                </div>
+                <div className="rounded-xl border border-[#d7e3ef] px-4 py-3 text-slate-600">
+                  Match Status
+                </div>
+              </div>
+            </div>
+            <div className="overflow-hidden px-5 py-5">
+              <div className="overflow-hidden rounded-[18px] border border-[#dbe4ef]">
+                <div className="grid grid-cols-[1.2fr_1.6fr_1fr_1fr_1fr_0.9fr] bg-[#f8fafc] px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  <span>Date</span>
+                  <span>Description</span>
+                  <span>Reference</span>
+                  <span>Bank</span>
+                  <span>Amount</span>
+                  <span>Match</span>
+                </div>
+                {[
+                  ['15 Oct 2025', 'UPI collection from Suraj Jha', 'BNK-2034', 'HDFC Current', 'Rs 5,900.00', 'Matched'],
+                  ['1 Sept 2025', 'Vendor payout to Tech Solutions', 'BNK-1982', 'ICICI Current', 'Rs 35,400.00', 'Review'],
+                ].map((row) => (
+                  <div
+                    key={row[0]}
+                    className="grid grid-cols-[1.2fr_1.6fr_1fr_1fr_1fr_0.9fr] items-center border-t border-[#e2e8f0] px-4 py-4 text-sm text-slate-600"
+                  >
+                    <span>{row[0]}</span>
+                    <span className="font-medium text-slate-800">{row[1]}</span>
+                    <span>{row[2]}</span>
+                    <span>{row[3]}</span>
+                    <span className="font-semibold text-slate-800">{row[4]}</span>
+                    <span>
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        row[5] === 'Matched' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'
+                      }`}>
+                        {row[5]}
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </PreviewShell>
+  );
+}
+
+function DataImportExportPreview({
+  current,
+}: {
+  current: (typeof items)[number];
+}) {
+  return (
+    <PreviewShell current={current}>
+      <div className="grid min-h-[470px] grid-cols-[220px_1fr] bg-[#f8fafc]">
+        <FinanceSidebar activeItem="Import Data" />
+        <div className="p-5">
+          <div className="rounded-[24px] border border-[#dbe4ef] bg-white">
+            <div className="border-b border-[#e2e8f0] px-5 py-5">
+              <h3 className="text-[22px] font-bold text-[#0f172a]">Import and Export Data</h3>
+              <p className="mt-1 text-slate-500">Move records between RoboBooks and external systems</p>
+            </div>
+            <div className="border-b border-[#e2e8f0] px-5 py-4">
+              <div className="flex gap-3">
+                <div className="flex-1 rounded-xl border border-[#d7e3ef] px-4 py-3 text-slate-400">
+                  Search files, modules, templates...
+                </div>
+                <div className="rounded-xl border border-[#d7e3ef] px-4 py-3 text-slate-600">
+                  File Type
+                </div>
+              </div>
+            </div>
+            <div className="px-5 py-5">
+              <div className="overflow-hidden rounded-[18px] border border-[#dbe4ef]">
+                <div className="flex items-center justify-between border-b border-[#e2e8f0] px-5 py-4">
+                  <div className="text-xl font-semibold text-[#0f172a]">Recent Import Export Jobs</div>
+                  <div className="rounded-xl bg-[#2563eb] px-4 py-2 text-sm font-semibold text-white">+ New Job</div>
+                </div>
+                <div className="grid grid-cols-[1fr_1.2fr_0.8fr_2.3fr_0.8fr] bg-[#f8fafc] px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  <span>Module</span>
+                  <span>Template</span>
+                  <span>Rows</span>
+                  <span>Direction</span>
+                  <span>Status</span>
+                </div>
+                {[
+                  ['Invoices', 'GST Sales Template', '245', 'Export to Excel', 'Completed'],
+                  ['Customers', 'Bulk Import CSV', '120', 'Import from CSV', 'Processing'],
+                ].map((row) => (
+                  <div
+                    key={row[0]}
+                    className="grid grid-cols-[1fr_1.2fr_0.8fr_2.3fr_0.8fr] items-center border-t border-[#e2e8f0] px-4 py-5 text-sm text-slate-600"
+                  >
+                    <span className="font-medium text-slate-800">{row[0]}</span>
+                    <span className="font-semibold text-[#2563eb]">{row[1]}</span>
+                    <span>{row[2]}</span>
+                    <span className="text-slate-800">{row[3]}</span>
+                    <span>
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        row[4] === 'Completed' ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'
+                      }`}>
+                        {row[4]}
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </PreviewShell>
+  );
+}
+
+function FinancialReportingPreview({
+  current,
+}: {
+  current: (typeof items)[number];
+}) {
+  return (
+    <PreviewShell current={current}>
+      <div className="grid min-h-[470px] grid-cols-[220px_1fr] bg-[#f8fafc]">
+        <FinanceSidebar activeItem="Reports" />
+        <div className="p-5">
+          <div className="rounded-[24px] border border-[#dbe4ef] bg-white">
+            <div className="flex items-center justify-between border-b border-[#e2e8f0] px-5 py-4">
+              <div className="flex items-center gap-3">
+                <button className="rounded-xl border border-[#d7e3ef] px-4 py-2 text-sm text-slate-600">
+                  Back
+                </button>
+                <h3 className="text-[22px] font-bold text-[#0f172a]">Financial Reports</h3>
+              </div>
+              <div className="rounded-xl bg-[#2563eb] px-4 py-2 text-sm font-semibold text-white">+ New Report</div>
+            </div>
+            <div className="border-b border-[#e2e8f0] px-5 py-4">
+              <div className="flex gap-3">
+                <div className="flex-1 rounded-xl border border-[#d7e3ef] px-4 py-3 text-slate-400">
+                  Search reports...
+                </div>
+                <div className="rounded-xl border border-[#d7e3ef] px-4 py-3 text-slate-600">
+                  This Quarter
+                </div>
+              </div>
+            </div>
+            <div className="overflow-hidden px-5 py-5">
+              <div className="overflow-hidden rounded-[18px] border border-[#dbe4ef]">
+                <div className="grid grid-cols-[1.1fr_1.6fr_1fr_1fr_1fr_0.9fr] bg-[#f8fafc] px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  <span>Report</span>
+                  <span>Category</span>
+                  <span>Period</span>
+                  <span>Owner</span>
+                  <span>Value</span>
+                  <span>Status</span>
+                </div>
+                {[
+                  ['Profit & Loss', 'Performance', 'Q2 FY25', 'Finance Team', 'Rs 4.2L', 'Ready', 'bg-emerald-100 text-emerald-600'],
+                  ['Cash Flow', 'Liquidity', 'Q2 FY25', 'Accounts', 'Rs 1.1L', 'Live', 'bg-blue-100 text-blue-600'],
+                ].map((row) => (
+                  <div
+                    key={row[0]}
+                    className="grid grid-cols-[1.1fr_1.6fr_1fr_1fr_1fr_0.9fr] items-center border-t border-[#e2e8f0] px-4 py-4 text-sm text-slate-600"
+                  >
+                    <span className="font-semibold text-[#2563eb]">{row[0]}</span>
+                    <span>
+                      <span className="block font-medium text-slate-800">{row[1]}</span>
+                      <span className="block text-slate-500">{row[1].replace(' ', '')}@gmail.com</span>
+                    </span>
+                    <span>{row[2]}</span>
+                    <span>{row[3]}</span>
+                    <span className="font-semibold text-slate-800">{row[4]}</span>
+                    <span>
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${row[6]}`}>
+                        {row[5]}
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="px-5 pb-5">
+              <div className="rounded-[22px] border border-[#dbe4ef] bg-white px-6 py-5">
+                <p className="text-center text-[20px] font-semibold text-[#0f172a]">
+                  Reporting overview
+                </p>
+                <div className="mt-6 grid grid-cols-4 gap-3 text-center">
+                  {[
+                    ['Balance Sheet', 'bg-slate-100', 'text-slate-500'],
+                    ['P&L', 'bg-blue-100', 'text-blue-600'],
+                    ['Cash Flow', 'bg-yellow-100', 'text-yellow-600'],
+                    ['Tax Summary', 'bg-emerald-100', 'text-emerald-600'],
+                  ].map(([label, bg, color]) => (
+                    <div key={label} className="flex flex-col items-center">
+                      <div className={`flex h-16 w-16 items-center justify-center rounded-full ${bg} ${color}`}>
+                        <current.icon size={24} />
+                      </div>
+                      <p className="mt-3 text-sm font-medium text-slate-700">{label}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
