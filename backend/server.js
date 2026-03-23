@@ -65,6 +65,7 @@ import bulkOperationsRoutes from "./routes/bulkOperationsRoutes.js";
 import transactionLockingRoutes from "./routes/transactionLockingRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import dashboardEventsRoutes from "./routes/dashboardEvents.js";
+import cmsRoutes from "./routes/cmsRoutes.js";
 
 // Import models to ensure they are registered with mongoose
 import "./models/ExpenseHistory.js";
@@ -167,6 +168,7 @@ app.use("/api/bulk-operations", bulkOperationsRoutes);
 app.use("/api/transaction-locking", transactionLockingRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/dashboard", dashboardEventsRoutes);
+app.use("/api/cms", cmsRoutes);
 
 // Health check and welcome routes
 app.get("/", (_req, res) => {

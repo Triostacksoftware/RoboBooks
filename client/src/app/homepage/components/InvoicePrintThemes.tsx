@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ArrowRight,
   CheckCircle2,
@@ -10,14 +10,16 @@ import {
   ReceiptText,
   ShieldCheck,
 } from 'lucide-react';
+import {
+  defaultInvoiceThemesContent,
+  fetchPublicCmsSection,
+  resolveCmsAssetUrl,
+  type InvoiceThemesCmsContent,
+} from '@/services/cmsService';
 
 type TabKey = 'thermal' | 'a4' | 'a5';
 
-const tabs: { key: TabKey; label: string }[] = [
-  { key: 'thermal', label: 'Thermal Prints' },
-  { key: 'a4', label: 'A4 Prints' },
-  { key: 'a5', label: 'A5 Prints' },
-];
+const tabKeys: TabKey[] = ['thermal', 'a4', 'a5'];
 
 const invoicePreviewData = {
   stylish: {
@@ -66,47 +68,46 @@ const invoicePreviewData = {
   },
 };
 
-function SectionIntro() {
+function hasImage(url: string) {
+  return url.trim().length > 0;
+}
+
+function SectionIntro({ content }: { content: InvoiceThemesCmsContent }) {
+  const icons = [ReceiptText, ShieldCheck];
+
   return (
     <div className="flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
       <div className="max-w-4xl">
         <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
-          Invoice Themes
+          {content.eyebrow}
         </p>
         <h2 className="mt-4 text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
-          Your bill, your brand and more with RoboBooks
+          {content.title}
         </h2>
         <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">
-          Fully customizable GST and non-GST invoices with multiple invoice print
-          options. Personalize every RoboBooks invoice so it reflects your brand
-          clearly across thermal, A4, and A5 formats.
+          {content.description}
         </p>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2 xl:w-[640px] xl:translate-y-10">
-        {[
-          {
-            icon: ReceiptText,
-            title: 'Print-ready',
-            body: 'Designed to feel like real client-facing invoices, not placeholder mockups.',
-          },
-          {
-            icon: ShieldCheck,
-            title: 'GST-ready',
-            body: 'Important fields, totals, and tax summaries stay visible and believable.',
-          },
-        ].map(({ icon: Icon, title, body }) => (
-          <div
-            key={title}
-            className="min-h-[280px] rounded-[30px] border border-[#d7e6f2] bg-white/90 p-7 shadow-[0_18px_40px_rgba(15,35,68,0.07)] backdrop-blur"
-          >
-            <span className="flex h-14 w-14 items-center justify-center rounded-[18px] bg-[#ebfaff] text-[#0aa6c9]">
-              <Icon size={24} />
-            </span>
-            <p className="mt-5 text-[28px] font-semibold leading-tight text-[#0f2344]">{title}</p>
-            <p className="mt-3 text-base leading-8 text-slate-600">{body}</p>
-          </div>
-        ))}
+        {content.infoCards.map(({ title, body }, index) => {
+          const Icon = icons[index] || ReceiptText;
+
+          return (
+            <div
+              key={`${title}-${index}`}
+              className="min-h-[280px] rounded-[30px] border border-[#d7e6f2] bg-white/90 p-7 shadow-[0_18px_40px_rgba(15,35,68,0.07)] backdrop-blur"
+            >
+              <span className="flex h-14 w-14 items-center justify-center rounded-[18px] bg-[#ebfaff] text-[#0aa6c9]">
+                <Icon size={24} />
+              </span>
+              <p className="mt-5 text-[28px] font-semibold leading-tight text-[#0f2344]">
+                {title}
+              </p>
+              <p className="mt-3 text-base leading-8 text-slate-600">{body}</p>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -115,10 +116,17 @@ function SectionIntro() {
 function Tabs({
   activeTab,
   setActiveTab,
+  labels,
 }: {
   activeTab: TabKey;
   setActiveTab: (tab: TabKey) => void;
+  labels: string[];
 }) {
+  const tabs = tabKeys.map((key, index) => ({
+    key,
+    label: labels[index] || defaultInvoiceThemesContent.tabLabels[index],
+  }));
+
   return (
     <div className="mt-10 inline-flex flex-wrap items-center gap-2 rounded-full border border-[#d8e2ec] bg-white p-2 shadow-[0_14px_32px_rgba(15,35,68,0.06)]">
       {tabs.map((tab) => (
@@ -209,6 +217,76 @@ function ThermalView() {
           widthLabel="3 inch"
           className="absolute bottom-0 left-1/2 z-20 w-[300px] -translate-x-1/2 sm:w-[380px] lg:w-[470px]"
         />
+        <div className="absolute left-0 bottom-0 hidden h-48 w-48 rounded-tr-[32px] bg-[#cddfea] lg:block" />
+        <div className="absolute right-0 bottom-0 hidden h-52 w-52 rounded-tl-[36px] bg-[#cddfea] lg:block" />
+      </div>
+    </div>
+  );
+}
+
+function CmsPreviewImage({
+  src,
+  alt,
+  className,
+  imageClassName,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  imageClassName?: string;
+}) {
+  return (
+    <div
+      className={`overflow-hidden rounded-[24px] border border-[#d7e6f1] bg-white shadow-[0_18px_45px_rgba(15,35,68,0.10)] ${
+        className || ""
+      }`}
+    >
+      <img
+        src={resolveCmsAssetUrl(src)}
+        alt={alt}
+        className={`h-full w-full bg-white object-contain ${imageClassName || ""}`}
+      />
+    </div>
+  );
+}
+
+function ThermalCmsView({
+  images,
+}: {
+  images: InvoiceThemesCmsContent["thermalImages"];
+}) {
+  return (
+    <div className="relative mt-12 overflow-hidden rounded-[36px] border border-[#dce8f3] bg-[radial-gradient(circle_at_top,_rgba(10,166,201,0.08),_transparent_32%),linear-gradient(180deg,#fbfdff_0%,#eef5fb_100%)] px-6 pb-16 pt-10 shadow-[0_18px_50px_rgba(15,35,68,0.08)] lg:px-12">
+      <div className="absolute left-[-10px] bottom-0 h-36 w-36 rounded-tr-[70px] bg-[#dbeaf2]/90 blur-[1px]" />
+      <div className="absolute right-0 bottom-0 h-40 w-40 rounded-tl-[90px] bg-[#dbeaf2]/90 blur-[1px]" />
+
+      <div className="relative flex min-h-[650px] items-end justify-center">
+        {images[0] && hasImage(images[0].imageUrl) ? (
+          <div className="absolute bottom-4 left-[18%] z-10 w-[260px] rotate-[-1deg] sm:w-[320px] lg:w-[400px]">
+            <CmsPreviewImage
+              src={images[0].imageUrl}
+              alt={images[0].alt}
+              imageClassName="max-h-[520px]"
+            />
+            <div className="absolute bottom-10 left-[-56px] rounded-r-md border border-[#d7e6f1] bg-white px-4 py-8 text-[18px] text-[#0f2344] shadow-[0_10px_25px_rgba(15,35,68,0.08)] [writing-mode:vertical-rl]">
+              {images[0].widthLabel}
+            </div>
+          </div>
+        ) : null}
+
+        {images[1] && hasImage(images[1].imageUrl) ? (
+          <div className="absolute bottom-0 left-1/2 z-20 w-[300px] -translate-x-1/2 sm:w-[380px] lg:w-[470px]">
+            <CmsPreviewImage
+              src={images[1].imageUrl}
+              alt={images[1].alt}
+              imageClassName="max-h-[620px]"
+            />
+            <div className="absolute bottom-10 left-[-56px] rounded-r-md border border-[#d7e6f1] bg-white px-4 py-8 text-[18px] text-[#0f2344] shadow-[0_10px_25px_rgba(15,35,68,0.08)] [writing-mode:vertical-rl]">
+              {images[1].widthLabel}
+            </div>
+          </div>
+        ) : null}
+
         <div className="absolute left-0 bottom-0 hidden h-48 w-48 rounded-tr-[32px] bg-[#cddfea] lg:block" />
         <div className="absolute right-0 bottom-0 hidden h-52 w-52 rounded-tl-[36px] bg-[#cddfea] lg:block" />
       </div>
@@ -570,7 +648,54 @@ function A4Card({
   );
 }
 
-function A4View() {
+function A4View({ content }: { content: InvoiceThemesCmsContent }) {
+  const cmsImages = content.a4Images.filter((image) => hasImage(image.imageUrl));
+
+  if (cmsImages.length > 0) {
+    return (
+      <div className="relative mt-12 overflow-hidden rounded-[34px] border border-[#dce8f3] bg-[radial-gradient(circle_at_top,_rgba(10,166,201,0.08),_transparent_26%),linear-gradient(180deg,#fbfdff_0%,#eef5fb_100%)] px-6 py-10 shadow-[0_18px_50px_rgba(15,35,68,0.08)] lg:px-10 lg:py-12">
+        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/70 to-transparent" />
+        <div className="absolute right-[-5rem] top-6 h-44 w-44 rounded-full bg-[#0aa6c9]/10 blur-3xl" />
+        <div className="absolute left-[-3rem] bottom-4 h-40 w-40 rounded-full bg-[#0f2344]/5 blur-3xl" />
+
+        <div className="relative mb-8 flex flex-wrap items-center justify-between gap-4 px-1">
+          <div className="flex items-center gap-6">
+            <p className="text-[18px] font-medium text-[#0f2344] sm:text-[20px]">
+              {content.showcaseTitle}
+            </p>
+            <div className="hidden h-6 w-px bg-[#dbe7f1] lg:block" />
+            <div className="hidden items-center gap-2 rounded-full border border-[#d8e7f3] bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-[#0f2344] lg:flex">
+              <CheckCircle2 size={14} className="text-[#0aa6c9]" />
+              {content.showcaseBadge}
+            </div>
+          </div>
+
+          <Link
+            href={content.showcaseCtaUrl}
+            className="inline-flex items-center gap-2 text-[16px] font-medium text-[#3290ff] transition hover:text-[#1d4ed8]"
+          >
+            {content.showcaseCtaLabel}
+            <ArrowRight size={18} />
+          </Link>
+        </div>
+
+        <div className="relative overflow-x-auto pb-4">
+          <div className="flex min-w-max gap-8">
+            {cmsImages.map((image, index) => (
+              <CmsPreviewImage
+                key={`${image.alt}-${index}`}
+                src={image.imageUrl}
+                alt={image.alt}
+                className="min-w-[420px] p-4"
+                imageClassName="max-h-[720px] rounded-[12px]"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative mt-12 overflow-hidden rounded-[34px] border border-[#dce8f3] bg-[radial-gradient(circle_at_top,_rgba(10,166,201,0.08),_transparent_26%),linear-gradient(180deg,#fbfdff_0%,#eef5fb_100%)] px-6 py-10 shadow-[0_18px_50px_rgba(15,35,68,0.08)] lg:px-10 lg:py-12">
       <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/70 to-transparent" />
@@ -579,19 +704,21 @@ function A4View() {
 
       <div className="relative mb-8 flex flex-wrap items-center justify-between gap-4 px-1">
         <div className="flex items-center gap-6">
-          <p className="text-[18px] font-medium text-[#0f2344] sm:text-[20px]">Special Themes</p>
+          <p className="text-[18px] font-medium text-[#0f2344] sm:text-[20px]">
+            {content.showcaseTitle}
+          </p>
           <div className="hidden h-6 w-px bg-[#dbe7f1] lg:block" />
           <div className="hidden items-center gap-2 rounded-full border border-[#d8e7f3] bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-[#0f2344] lg:flex">
             <CheckCircle2 size={14} className="text-[#0aa6c9]" />
-            Real invoice layouts
+            {content.showcaseBadge}
           </div>
         </div>
 
         <Link
-          href="/register"
+          href={content.showcaseCtaUrl}
           className="inline-flex items-center gap-2 text-[16px] font-medium text-[#3290ff] transition hover:text-[#1d4ed8]"
         >
-          Start Using Templates
+          {content.showcaseCtaLabel}
           <ArrowRight size={18} />
         </Link>
       </div>
@@ -694,7 +821,28 @@ function A5Sheet({
   );
 }
 
-function A5View() {
+function A5View({ content }: { content: InvoiceThemesCmsContent }) {
+  const cmsImages = content.a5Images.filter((image) => hasImage(image.imageUrl));
+
+  if (cmsImages.length > 0) {
+    return (
+      <div className="relative mt-12 overflow-hidden rounded-[34px] border border-[#dce8f3] bg-[radial-gradient(circle_at_top,_rgba(10,166,201,0.08),_transparent_28%),linear-gradient(180deg,#fbfdff_0%,#eef5fb_100%)] p-6 shadow-[0_18px_50px_rgba(15,35,68,0.08)] lg:p-8">
+        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/70 to-transparent" />
+        <div className="relative grid gap-8 xl:grid-cols-2">
+          {cmsImages.map((image, index) => (
+            <CmsPreviewImage
+              key={`${image.alt}-${index}`}
+              src={image.imageUrl}
+              alt={image.alt}
+              className="p-4"
+              imageClassName="max-h-[700px] rounded-[12px]"
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative mt-12 overflow-hidden rounded-[34px] border border-[#dce8f3] bg-[radial-gradient(circle_at_top,_rgba(10,166,201,0.08),_transparent_28%),linear-gradient(180deg,#fbfdff_0%,#eef5fb_100%)] p-6 shadow-[0_18px_50px_rgba(15,35,68,0.08)] lg:p-8">
       <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/70 to-transparent" />
@@ -708,6 +856,17 @@ function A5View() {
 
 export default function InvoicePrintThemes() {
   const [activeTab, setActiveTab] = useState<TabKey>('a4');
+  const [content, setContent] = useState<InvoiceThemesCmsContent>(defaultInvoiceThemesContent);
+  const hasThermalCmsImages = content.thermalImages.some((image) => hasImage(image.imageUrl));
+
+  useEffect(() => {
+    fetchPublicCmsSection<InvoiceThemesCmsContent>(
+      'invoiceThemes',
+      defaultInvoiceThemesContent
+    ).then((response) => {
+      setContent(response);
+    });
+  }, []);
 
   return (
     <section className="relative overflow-hidden bg-[#f7fbff] pb-16 pt-6 lg:pb-20 lg:pt-8">
@@ -716,11 +875,16 @@ export default function InvoicePrintThemes() {
       <div className="absolute left-[-8rem] bottom-0 h-80 w-80 rounded-full bg-[#0f2344]/6 blur-3xl" />
 
       <div className="relative mx-auto max-w-[1600px] px-4 md:px-8 lg:px-10">
-        <SectionIntro />
-        <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
-        {activeTab === 'thermal' && <ThermalView />}
-        {activeTab === 'a4' && <A4View />}
-        {activeTab === 'a5' && <A5View />}
+        <SectionIntro content={content} />
+        <Tabs activeTab={activeTab} setActiveTab={setActiveTab} labels={content.tabLabels} />
+        {activeTab === 'thermal' &&
+          (hasThermalCmsImages ? (
+            <ThermalCmsView images={content.thermalImages} />
+          ) : (
+            <ThermalView />
+          ))}
+        {activeTab === 'a4' && <A4View content={content} />}
+        {activeTab === 'a5' && <A5View content={content} />}
       </div>
     </section>
   );

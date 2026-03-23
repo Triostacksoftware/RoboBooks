@@ -14,6 +14,7 @@ import {
   UserCircleIcon,
   ArrowRightOnRectangleIcon,
   TableCellsIcon,
+  ChevronDownIcon,
 } from "@heroicons/react/24/outline";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 
@@ -33,6 +34,7 @@ export default function AdminLayout({
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
   const authCheckRef = useRef(false);
   const redirectAttemptsRef = useRef(0);
 
@@ -118,6 +120,17 @@ export default function AdminLayout({
     { name: "Users", href: "/admin/users", icon: UsersIcon },
     { name: "Reports", href: "/admin/reports", icon: DocumentTextIcon },
     { name: "Billing", href: "/admin/billing", icon: CurrencyDollarIcon },
+    {
+      name: "CMS",
+      href: "/admin/cms",
+      icon: TableCellsIcon,
+      children: [
+        { name: "Hero Section", href: "/admin/cms/hero" },
+        { name: "About Section", href: "/admin/cms/about" },
+        { name: "Invoice Themes", href: "/admin/cms/invoice-themes" },
+        { name: "Services Section", href: "/admin/cms/services" },
+      ],
+    },
     { name: "Settings", href: "/admin/settings", icon: CogIcon },
   ];
 
@@ -130,25 +143,86 @@ export default function AdminLayout({
 
   const NavItem = ({ item }: { item: (typeof navigation)[0] }) => {
     const isActive = isActiveTab(item.href);
+    const isExpanded = Boolean(
+      item.children && (expandedMenus[item.name] || pathname.startsWith(`${item.href}/`))
+    );
+
+    const toggleMenu = () => {
+      setExpandedMenus((current) => ({
+        ...current,
+        [item.name]: !current[item.name],
+      }));
+    };
 
     return (
-      <Link
-        href={item.href}
-        className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
-          isActive
-            ? "bg-purple-100 text-purple-900 border-r-2 border-purple-600"
-            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-        }`}
-      >
-        <item.icon
-          className={`mr-3 h-5 w-5 ${
-            isActive
-              ? "text-purple-600"
-              : "text-gray-400 group-hover:text-gray-500"
-          }`}
-        />
-        {item.name}
-      </Link>
+      <div className="space-y-1">
+        {item.children ? (
+          <button
+            type="button"
+            onClick={toggleMenu}
+            className={`group flex w-full items-center justify-between px-2 py-2 text-sm font-medium rounded-md transition-colors ${
+              isActive || isExpanded
+                ? "bg-purple-100 text-purple-900 border-r-2 border-purple-600"
+                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            }`}
+          >
+            <span className="flex items-center">
+              <item.icon
+                className={`mr-3 h-5 w-5 ${
+                  isActive || isExpanded
+                    ? "text-purple-600"
+                    : "text-gray-400 group-hover:text-gray-500"
+                }`}
+              />
+              {item.name}
+            </span>
+            <ChevronDownIcon
+              className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+            />
+          </button>
+        ) : (
+          <Link
+            href={item.href}
+            className={`group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md transition-colors ${
+              isActive || isExpanded
+                ? "bg-purple-100 text-purple-900 border-r-2 border-purple-600"
+                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            }`}
+          >
+            <span className="flex items-center">
+              <item.icon
+                className={`mr-3 h-5 w-5 ${
+                  isActive || isExpanded
+                    ? "text-purple-600"
+                    : "text-gray-400 group-hover:text-gray-500"
+                }`}
+              />
+              {item.name}
+            </span>
+          </Link>
+        )}
+
+        {item.children && isExpanded ? (
+          <div className="ml-10 space-y-1 border-l border-gray-200 pl-3">
+            {item.children.map((child) => {
+              const isChildActive = pathname.startsWith(child.href);
+              return (
+                <Link
+                  key={child.href}
+                  href={child.href}
+                  className={`block rounded-md px-2 py-2 text-sm transition-colors ${
+                    isChildActive
+                      ? "bg-purple-50 font-medium text-purple-700"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                  }`}
+                >
+                  {child.name}
+                </Link>
+              );
+            })}
+          </div>
+        ) : null}
+      </div>
     );
   };
 

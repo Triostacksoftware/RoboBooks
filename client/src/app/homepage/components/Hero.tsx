@@ -14,6 +14,7 @@ import {
   BriefcaseBusiness,
   X,
 } from "lucide-react";
+import { defaultHeroContent, fetchPublicCmsSection, type HeroCmsContent } from "@/services/cmsService";
 
 const heroSlides = [
   "/images/homehero.png",
@@ -24,6 +25,7 @@ const heroSlides = [
 ];
 
 const Hero: React.FC = () => {
+  const [content, setContent] = useState<HeroCmsContent>(defaultHeroContent);
   const [phoneValue, setPhoneValue] = useState("");
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [hasTriggeredModal, setHasTriggeredModal] = useState(false);
@@ -40,6 +42,10 @@ const Hero: React.FC = () => {
     }, 3000);
 
     return () => window.clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    fetchPublicCmsSection("hero", defaultHeroContent).then(setContent);
   }, []);
 
   const handlePhoneChange = (value: string) => {
@@ -114,68 +120,52 @@ const Hero: React.FC = () => {
 
           <div className="relative max-w-5xl">
             <div className="mb-5 inline-flex items-center rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.24em] text-cyan-100 shadow-[0_10px_30px_rgba(10,166,201,0.16)]">
-              Made for growing Indian businesses
+              {content.eyebrow}
             </div>
             <div className="pointer-events-none absolute -left-6 top-12 h-28 w-28 rounded-full bg-[#39d98a]/10 blur-3xl" />
             <div className="pointer-events-none absolute left-16 top-24 h-20 w-56 rounded-full bg-[#0aa6c9]/12 blur-3xl" />
             <div className="relative">
               <div className="pointer-events-none absolute -inset-x-3 top-8 h-24 rounded-[32px] bg-[linear-gradient(90deg,rgba(10,166,201,0),rgba(10,166,201,0.12),rgba(57,217,138,0.08),rgba(10,166,201,0))] blur-2xl" />
               <h1 className="relative max-w-[16ch] text-[1.98rem] font-extrabold leading-[1.08] tracking-[-0.028em] text-white drop-shadow-[0_14px_34px_rgba(5,18,38,0.55)] sm:max-w-[15ch] sm:text-[2.85rem] md:max-w-[16ch] md:text-[3.12rem] lg:max-w-[17ch] lg:text-[3.35rem]">
-                <span className="block whitespace-nowrap">Best GST Accounting Software</span>
+                <span className="block whitespace-nowrap">{content.titleLine1}</span>
                 <span className="relative mt-2 block w-fit whitespace-nowrap bg-[linear-gradient(180deg,#ffffff_0%,#e6f7ff_100%)] bg-clip-text text-transparent">
-                  for Business in India
+                  {content.titleLine2}
                   <span className="absolute -bottom-2 left-0 h-[10px] w-full rounded-full bg-[linear-gradient(90deg,rgba(57,217,138,0),rgba(57,217,138,0.75),rgba(10,166,201,0))] blur-[2px]" />
                 </span>
               </h1>
             </div>
             <div className="mt-5 h-px w-40 bg-[linear-gradient(90deg,rgba(10,166,201,0.9),rgba(57,217,138,0.65),rgba(255,255,255,0))]" />
             <p className="mt-5 max-w-2xl text-base leading-8 text-slate-200 sm:text-lg">
-              Manage billing, GST, receivables and month-end accounting in one sharper, faster workflow built for modern teams.
+              {content.description}
             </p>
           </div>
 
           <div className="space-y-3.5 text-[1rem] text-white sm:text-[1.06rem] lg:text-[1.1rem]">
-            <div className="flex items-center gap-3.5 py-0.5">
-              <span className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-[#34c759]/12 ring-1 ring-[#34c759]/30">
-                <CheckCircle2 className="h-6 w-6 text-[#34c759]" />
-              </span>
-              <p className="flex-1 leading-[1.45]">
-                Reconcile books faster with <span className="font-semibold text-white">real-time GST entries</span>
-              </p>
-            </div>
-            <div className="flex items-center gap-3.5 py-0.5">
-              <span className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-[#34c759]/12 ring-1 ring-[#34c759]/30">
-                <CheckCircle2 className="h-6 w-6 text-[#34c759]" />
-              </span>
-              <p className="flex-1 leading-[1.45]">
-                Track receivables, expenses, and tax dues in <span className="font-semibold text-white">one live dashboard</span>
-              </p>
-            </div>
-            <div className="flex items-center gap-3.5 py-0.5">
-              <span className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-[#34c759]/12 ring-1 ring-[#34c759]/30">
-                <CheckCircle2 className="h-6 w-6 text-[#34c759]" />
-              </span>
-              <p className="flex-1 leading-[1.45]">
-                Close monthly accounting with <span className="font-semibold text-white">clean audit-ready reports</span>
-              </p>
-            </div>
+            {content.features.map((feature) => (
+              <div key={feature} className="flex items-center gap-3.5 py-0.5">
+                <span className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-[#34c759]/12 ring-1 ring-[#34c759]/30">
+                  <CheckCircle2 className="h-6 w-6 text-[#34c759]" />
+                </span>
+                <p className="flex-1 leading-[1.45]">{feature}</p>
+              </div>
+            ))}
           </div>
 
           <div className="relative flex flex-col gap-3 pt-1 sm:flex-row sm:items-center">
             <div className="pointer-events-none absolute -left-4 top-1/2 h-24 w-48 -translate-y-1/2 rounded-full bg-[#ef6c10]/20 blur-3xl" />
             <Link
-              href="/register"
+              href={content.primaryButtonUrl}
               className="relative inline-flex items-center justify-center gap-2 rounded-full bg-[#ef6c10] px-8 py-3 text-lg font-semibold text-white shadow-[0_18px_36px_rgba(239,108,16,0.32)] transition hover:-translate-y-0.5 hover:bg-[#d65f0c]"
             >
-              Start Free Billing
+              {content.primaryButtonLabel}
               <ArrowRight size={18} />
             </Link>
 
             <Link
-              href="/contact"
+              href={content.secondaryButtonUrl}
               className="inline-flex items-center justify-center rounded-full border border-white/50 bg-white/[0.03] px-8 py-3 text-lg font-medium text-white shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition hover:-translate-y-0.5 hover:bg-white/10"
             >
-              Book Free Demo
+              {content.secondaryButtonLabel}
             </Link>
           </div>
         </div>

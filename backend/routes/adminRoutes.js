@@ -25,12 +25,30 @@ import {
   adminRoleGuard,
   requirePermission,
 } from "../middleware/adminAuth.js";
+import {
+  getAllCmsSections,
+  getCmsSection,
+  upsertCmsSection,
+  uploadCmsImage,
+  uploadCmsImageMiddleware,
+} from "../controllers/cmsController.js";
 
 const router = express.Router();
 
 // Public routes
 router.post("/login", adminLogin);
 router.post("/logout", adminLogout);
+
+router.get("/cms", adminAuthGuard, requirePermission("manage_content"), getAllCmsSections);
+router.post(
+  "/cms/upload-image",
+  adminAuthGuard,
+  requirePermission("manage_content"),
+  uploadCmsImageMiddleware,
+  uploadCmsImage
+);
+router.get("/cms/:section", adminAuthGuard, requirePermission("manage_content"), getCmsSection);
+router.put("/cms/:section", adminAuthGuard, requirePermission("manage_content"), upsertCmsSection);
 
 // Simple admin creation route (for testing - remove in production)
 router.post("/create-simple", async (req, res) => {

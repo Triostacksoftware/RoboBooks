@@ -2,16 +2,17 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
-
-const highlights = [
-  'Automated invoicing, recurring billing, and payment reminders',
-  'GST-ready reports, expense tracking, and bank reconciliation',
-  'Inventory, payroll, and financial dashboards in one workspace',
-  'Role-based access and cloud security for growing teams',
-];
+import { defaultAboutContent, fetchPublicCmsSection, type AboutCmsContent } from '@/services/cmsService';
 
 export default function AboutSection() {
+  const [content, setContent] = useState<AboutCmsContent>(defaultAboutContent);
+
+  useEffect(() => {
+    fetchPublicCmsSection('about', defaultAboutContent).then(setContent);
+  }, []);
+
   return (
     <section
       id="about"
@@ -64,23 +65,20 @@ export default function AboutSection() {
         </div>
 
         <div className="relative space-y-8">
-          <div className="space-y-4">
-            <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[#0aa6c9]">
-              About RoboBooks
-            </p>
-            <h2 className="max-w-xl text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
-              Accounting Software That Keeps Every Number in Sync
-            </h2>
-            <p className="max-w-2xl text-lg leading-8 text-slate-600">
-              RoboBooks is an accounting SaaS platform built for businesses that
-              want faster bookkeeping, cleaner compliance, and complete control
-              over cash flow. From invoices to tax-ready reports, every workflow
-              stays connected in one simple dashboard.
-            </p>
-          </div>
+            <div className="space-y-4">
+              <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[#0aa6c9]">
+              {content.eyebrow}
+              </p>
+              <h2 className="max-w-xl text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
+              {content.title}
+              </h2>
+              <p className="max-w-2xl text-lg leading-8 text-slate-600">
+              {content.description}
+              </p>
+            </div>
 
           <div className="grid gap-x-10 gap-y-5 sm:grid-cols-2">
-            {highlights.map((item) => (
+            {content.highlights.map((item) => (
               <div key={item} className="flex items-start gap-3">
                 <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full border border-[#0aa6c9] bg-white" />
                 <p className="text-lg leading-8 text-[#0f2344]">{item}</p>
@@ -90,19 +88,19 @@ export default function AboutSection() {
 
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
             <Link
-              href="/about"
+              href={content.primaryButtonUrl}
               className="inline-flex w-fit items-center gap-3 rounded-xl bg-[#0b7ea1] px-6 py-3.5 text-base font-semibold text-white transition hover:bg-[#096b8a]"
             >
-              About RoboBooks
+              {content.primaryButtonLabel}
               <Plus size={20} />
             </Link>
 
             <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">
-                Trusted for
+                {content.trustedLabel}
               </p>
               <p className="mt-1 text-xl font-bold text-[#0f2344]">
-                billing, books, tax, and team operations
+                {content.trustedText}
               </p>
             </div>
           </div>
