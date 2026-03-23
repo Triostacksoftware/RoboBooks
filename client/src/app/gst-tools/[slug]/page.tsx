@@ -67,7 +67,7 @@ export default async function GstToolDetailPage({ params }: GstToolDetailPagePro
           <div className="relative mx-auto max-w-[1600px] px-4 pb-18 md:px-8 lg:px-10 lg:pb-24">
             <div className="grid gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
               <div className="max-w-3xl">
-                <h1 className="text-4xl font-bold leading-[1.05] sm:text-5xl md:text-6xl">
+                <h1 className="max-w-[18ch] text-[clamp(2rem,3.8vw,3.6rem)] font-bold leading-[1.08]">
                   {tool.detailTitle}
                 </h1>
                 <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">

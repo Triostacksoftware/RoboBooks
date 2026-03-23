@@ -26,11 +26,11 @@ export const gstTools: GstToolItem[] = [
       'Export your GSTR1 data in a simple format and help your team or CA complete GST filing faster with clean invoice summaries.',
     image: '/images/dashboard.png',
     eyebrow: 'GST Returns',
-    detailTitle: 'Prepare GSTR filing data with cleaner invoice records and faster exports',
+    detailTitle: 'Prepare GSTR filing data faster',
     detail:
-      'RoboBooks helps your team organize taxable sales, invoice summaries, and customer-wise values so GST return preparation becomes much more structured.',
+      'RoboBooks organizes taxable sales, invoice summaries, and customer-wise values so GST return preparation stays structured.',
     detailExtended:
-      'Instead of rebuilding numbers manually at month-end, finance teams can review ready-to-export records, verify sales data quickly, and share cleaner files with internal accountants or external CAs. This reduces filing stress and improves confidence before submission deadlines.',
+      'Finance teams can review ready-to-export records faster and share cleaner files with accountants before filing deadlines.',
     points: [
       'GST-ready sales summaries with invoice-level visibility',
       'Cleaner export structure for accountant or CA workflows',
@@ -57,11 +57,11 @@ export const gstTools: GstToolItem[] = [
       'Generate invoice data with the right business fields so e-invoice workflows stay cleaner, faster, and easier to validate.',
     image: '/images/invoicing.png',
     eyebrow: 'E-Invoice Automation',
-    detailTitle: 'Create e-invoice ready records with correct fields, tax data, and faster validation',
+    detailTitle: 'Create e-invoice records faster',
     detail:
-      'Build invoice data in a structured way so your GST billing workflows are ready for IRN-related processes, validation checks, and cleaner downstream compliance work.',
+      'Build invoice data in a structured way so GST billing stays ready for validation and cleaner compliance work.',
     detailExtended:
-      'When item details, GST amounts, customer information, and invoice references are maintained properly from the start, e-invoicing becomes much easier to manage. RoboBooks helps your team reduce correction cycles, speed up invoice preparation, and keep sales documentation more consistent across customers and transactions.',
+      'RoboBooks helps reduce correction cycles, speed up invoice preparation, and keep sales documentation more consistent.',
     points: [
       'Invoice structures aligned for e-invoice workflows',
       'Customer, tax, and item details stored in one clean record',
@@ -88,11 +88,11 @@ export const gstTools: GstToolItem[] = [
       'Prepare bill details, customer data, and shipment records in one place before sharing or exporting transport-related documents.',
     image: '/images/homehero.png',
     eyebrow: 'Dispatch Documentation',
-    detailTitle: 'Manage delivery challans with item details, dispatch references, and customer records together',
+    detailTitle: 'Manage delivery challans easily',
     detail:
-      'Create and review delivery challans from one organized workspace so your dispatch team can move goods with better accuracy and supporting documentation.',
+      'Create and review delivery challans from one organized workspace so dispatch moves with better accuracy.',
     detailExtended:
-      'RoboBooks helps keep customer details, references, dates, and line items aligned before goods move out. That means fewer manual mistakes, faster document preparation, and better visibility for teams coordinating sales, logistics, and proof of delivery.',
+      'Customer details, references, dates, and line items stay aligned for faster document preparation and fewer manual mistakes.',
     points: [
       'Create challans with structured customer and item details',
       'Keep dispatch references and document status easy to track',
@@ -119,11 +119,11 @@ export const gstTools: GstToolItem[] = [
       'Move structured sales and tax records from RoboBooks to your accounting workflows with less manual re-entry.',
     image: '/images/Decision Dashboards.png',
     eyebrow: 'Sales Data Movement',
-    detailTitle: 'Export sales data in a structured format for smoother accounting and reporting workflows',
+    detailTitle: 'Export sales data with less work',
     detail:
-      'Send organized sales entries, tax values, and invoice records into downstream workflows without rebuilding the same data again in separate systems.',
+      'Send organized sales entries, tax values, and invoice records into downstream workflows without duplicate work.',
     detailExtended:
-      'This is especially useful for teams that still rely on external accounting review, partner systems, or handoff-based reporting processes. RoboBooks makes the export step cleaner so your finance team can move data faster while reducing format issues and duplicate entry work.',
+      'RoboBooks makes exports cleaner so finance teams can move data faster and reduce format issues.',
     points: [
       'Structured export flow for sales and tax records',
       'Cleaner data handoff to accounting and reporting teams',
@@ -150,11 +150,11 @@ export const gstTools: GstToolItem[] = [
       'Match bank entries, track pending transactions, and keep your books aligned with real account activity using a cleaner reconciliation workflow.',
     image: '/images/Cash Flow Tracking.png',
     eyebrow: 'Books Matching',
-    detailTitle: 'Match bank activity with accounting records and close gaps before month-end',
+    detailTitle: 'Reconcile bank entries faster',
     detail:
-      'Review imported transactions, compare ledger entries, and identify unmatched items from one reconciliation flow built for faster financial accuracy.',
+      'Review imported transactions, compare ledger entries, and identify unmatched items from one reconciliation flow.',
     detailExtended:
-      'With better visibility into bank activity and pending matches, your team can spot issues earlier, reduce month-end surprises, and keep books aligned with actual account movement. RoboBooks makes reconciliation easier to manage for both daily review and period-close workflows.',
+      'Teams can spot issues earlier, reduce month-end surprises, and keep books aligned with actual account movement.',
     points: [
       'Track matched, pending, and review-needed bank transactions',
       'Improve accuracy between bank accounts and internal books',
@@ -181,11 +181,11 @@ export const gstTools: GstToolItem[] = [
       'Move invoices, books, ledgers, and structured reports between RoboBooks and your external accounting workflows with less manual effort.',
     image: '/images/usability.png',
     eyebrow: 'Bulk Data Operations',
-    detailTitle: 'Import and export business data cleanly across modules, reports, and external files',
+    detailTitle: 'Import and export data cleanly',
     detail:
-      'Handle bulk movement of invoices, books, customer records, and reports with a cleaner process that reduces manual formatting work.',
+      'Handle bulk movement of invoices, books, customer records, and reports with a cleaner process.',
     detailExtended:
-      'Whether you are onboarding historical data, migrating from older systems, or sharing periodic exports with stakeholders, RoboBooks helps standardize the flow. This makes uploads easier to validate and exports easier to trust across teams that depend on accurate records.',
+      'RoboBooks standardizes the flow so uploads are easier to validate and exports are easier to trust.',
     points: [
       'Support bulk imports for operational and accounting records',
       'Generate cleaner exports for sharing and downstream processing',
@@ -212,11 +212,11 @@ export const gstTools: GstToolItem[] = [
       'Generate multiple financial reports from one dashboard, compare business metrics, and share cleaner summaries with your team or accountant.',
     image: '/images/Decision Dashboards.png',
     eyebrow: 'Finance Reporting',
-    detailTitle: 'Build multiple financial reports from one connected reporting workspace',
+    detailTitle: 'Build financial reports faster',
     detail:
-      'Access important business reports such as profit and loss, balance sheet, cash flow, and performance snapshots from a single reporting view.',
+      'Access profit and loss, balance sheet, cash flow, and performance snapshots from a single reporting view.',
     detailExtended:
-      'Instead of collecting numbers from different places, your team can work from one reporting hub to compare periods, review performance, and share summaries more confidently. RoboBooks helps finance leaders move from raw entries to readable, decision-friendly reports without extra reporting friction.',
+      'Your team can compare periods, review performance, and share cleaner summaries from one reporting hub.',
     points: [
       'Centralized reporting access across core financial statements',
       'Cleaner summaries for internal review and stakeholder sharing',
