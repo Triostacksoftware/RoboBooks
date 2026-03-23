@@ -3,11 +3,19 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
+import { gstTools } from '../../gst-tools/toolData';
 
 const productLinks = [
   { href: '/about', label: 'About RoboBooks' },
   { href: '/contact', label: 'Book a demo' },
   { href: '/register', label: 'Start free trial' },
+  { href: `/gst-tools/${gstTools[0].slug}`, label: gstTools[0].label },
+  { href: `/gst-tools/${gstTools[1].slug}`, label: gstTools[1].label },
+  { href: `/gst-tools/${gstTools[2].slug}`, label: gstTools[2].label },
+  { href: `/gst-tools/${gstTools[3].slug}`, label: gstTools[3].label },
+  { href: `/gst-tools/${gstTools[4].slug}`, label: gstTools[4].label },
+  { href: `/gst-tools/${gstTools[5].slug}`, label: gstTools[5].label },
+  { href: `/gst-tools/${gstTools[6].slug}`, label: gstTools[6].label },
 ];
 
 const companyLinks = [

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import {
   BadgeIndianRupee,
   BookOpenText,
@@ -33,38 +34,38 @@ import {
 } from 'lucide-react';
 
 const industries = [
-  { title: 'Hotel', icon: Hotel, span: 'xl:col-span-1' },
-  { title: 'Export-Import', icon: Plane, span: 'xl:col-span-2' },
-  { title: 'Recycling', icon: Recycle, span: 'xl:col-span-1' },
-  { title: 'Telecom', icon: Wifi, span: 'xl:col-span-2' },
-  { title: 'IT Sector', icon: Monitor, span: 'xl:col-span-1' },
-  { title: 'Beverages', icon: Receipt, span: 'xl:col-span-3' },
-  { title: 'Oil & Gas', icon: Fuel, span: 'xl:col-span-1' },
-  { title: 'Apparels', icon: Shirt, span: 'xl:col-span-2' },
-  { title: 'Entertainment', icon: MonitorPlay, span: 'xl:col-span-1' },
-  { title: 'Manufacturing', icon: Factory, span: 'xl:col-span-3' },
-  { title: 'Retail', icon: ShoppingBag, span: 'xl:col-span-1' },
-  { title: 'Banks', icon: University, span: 'xl:col-span-2' },
-  { title: 'Finance', icon: BadgeIndianRupee, span: 'xl:col-span-1' },
-  { title: 'BPO', icon: Globe2, span: 'xl:col-span-2' },
-  { title: 'Furniture', icon: Sofa, span: 'xl:col-span-1' },
-  { title: 'Real Estate', icon: House, span: 'xl:col-span-2' },
-  { title: 'HealthCare', icon: HeartPulse, span: 'xl:col-span-1' },
-  { title: 'Railways', icon: TrainFront, span: 'xl:col-span-2' },
-  { title: 'Gems', icon: Gem, span: 'xl:col-span-1' },
-  { title: 'Automobile', icon: Car, span: 'xl:col-span-2' },
-  { title: 'IOT', icon: Cpu, span: 'xl:col-span-1' },
-  { title: 'Electrical', icon: PlugZap, span: 'xl:col-span-2' },
-  { title: 'Hardware', icon: Cpu, span: 'xl:col-span-1' },
-  { title: 'SaaS', icon: Building2, span: 'xl:col-span-2' },
-  { title: 'Restaurant', icon: UtensilsCrossed, span: 'xl:col-span-1' },
-  { title: 'Salon', icon: Sparkles, span: 'xl:col-span-1' },
-  { title: 'Cloud Kitchen', icon: UtensilsCrossed, span: 'xl:col-span-2' },
-  { title: 'Pharma', icon: Pill, span: 'xl:col-span-1' },
-  { title: 'Books', icon: BookOpenText, span: 'xl:col-span-2' },
-  { title: 'Education', icon: GraduationCap, span: 'xl:col-span-2' },
-  { title: 'Logistics', icon: Truck, span: 'xl:col-span-2' },
-  { title: 'Consulting', icon: Building2, span: 'xl:col-span-1' },
+  { title: 'Hotel', slug: 'hotel', icon: Hotel, span: 'xl:col-span-1' },
+  { title: 'Export-Import', slug: 'export-import', icon: Plane, span: 'xl:col-span-2' },
+  { title: 'Recycling', slug: 'recycling', icon: Recycle, span: 'xl:col-span-1' },
+  { title: 'Telecom', slug: 'telecom', icon: Wifi, span: 'xl:col-span-2' },
+  { title: 'IT Sector', slug: 'it-sector', icon: Monitor, span: 'xl:col-span-1' },
+  { title: 'Beverages', slug: 'beverages', icon: Receipt, span: 'xl:col-span-3' },
+  { title: 'Oil & Gas', slug: 'oil-gas', icon: Fuel, span: 'xl:col-span-1' },
+  { title: 'Apparels', slug: 'apparels', icon: Shirt, span: 'xl:col-span-2' },
+  { title: 'Entertainment', slug: 'entertainment', icon: MonitorPlay, span: 'xl:col-span-1' },
+  { title: 'Manufacturing', slug: 'manufacturing', icon: Factory, span: 'xl:col-span-3' },
+  { title: 'Retail', slug: 'retail', icon: ShoppingBag, span: 'xl:col-span-1' },
+  { title: 'Banks', slug: 'banks', icon: University, span: 'xl:col-span-2' },
+  { title: 'Finance', slug: 'finance', icon: BadgeIndianRupee, span: 'xl:col-span-1' },
+  { title: 'BPO', slug: 'bpo', icon: Globe2, span: 'xl:col-span-2' },
+  { title: 'Furniture', slug: 'furniture', icon: Sofa, span: 'xl:col-span-1' },
+  { title: 'Real Estate', slug: 'real-estate', icon: House, span: 'xl:col-span-2' },
+  { title: 'HealthCare', slug: 'healthcare', icon: HeartPulse, span: 'xl:col-span-1' },
+  { title: 'Railways', slug: 'railways', icon: TrainFront, span: 'xl:col-span-2' },
+  { title: 'Gems', slug: 'gems', icon: Gem, span: 'xl:col-span-1' },
+  { title: 'Automobile', slug: 'automobile', icon: Car, span: 'xl:col-span-2' },
+  { title: 'IOT', slug: 'iot', icon: Cpu, span: 'xl:col-span-1' },
+  { title: 'Electrical', slug: 'electrical', icon: PlugZap, span: 'xl:col-span-2' },
+  { title: 'Hardware', slug: 'hardware', icon: Cpu, span: 'xl:col-span-1' },
+  { title: 'SaaS', slug: 'saas', icon: Building2, span: 'xl:col-span-2' },
+  { title: 'Restaurant', slug: 'restaurant', icon: UtensilsCrossed, span: 'xl:col-span-1' },
+  { title: 'Salon', slug: 'salon', icon: Sparkles, span: 'xl:col-span-1' },
+  { title: 'Cloud Kitchen', slug: 'cloud-kitchen', icon: UtensilsCrossed, span: 'xl:col-span-2' },
+  { title: 'Pharma', slug: 'pharma', icon: Pill, span: 'xl:col-span-1' },
+  { title: 'Books', slug: 'books', icon: BookOpenText, span: 'xl:col-span-2' },
+  { title: 'Education', slug: 'education', icon: GraduationCap, span: 'xl:col-span-2' },
+  { title: 'Logistics', slug: 'logistics', icon: Truck, span: 'xl:col-span-2' },
+  { title: 'Consulting', slug: 'consulting', icon: Building2, span: 'xl:col-span-1' },
 ];
 
 export default function IndustriesSection() {
@@ -89,9 +90,10 @@ export default function IndustriesSection() {
         </div>
 
         <div className="relative mt-10 grid gap-[6px] md:grid-cols-2 xl:grid-cols-10">
-          {industries.map(({ title, icon: Icon, span }) => (
-            <div
+          {industries.map(({ title, slug, icon: Icon, span }) => (
+            <Link
               key={title}
+              href={`/industries/${slug}`}
               className={`flex min-h-[138px] flex-col items-center justify-center rounded-2xl border border-[#d6e6f2] bg-[#0f2344] px-4 py-6 text-center text-white shadow-[0_18px_45px_rgba(15,35,68,0.12)] transition duration-300 hover:-translate-y-1 hover:border-[#0aa6c9]/40 hover:bg-[#12305c] ${span}`}
             >
               <div className="flex h-[60px] w-[60px] items-center justify-center rounded-xl bg-[#0aa6c9]/18 text-[#8ee7fb] ring-1 ring-white/10">
@@ -100,7 +102,7 @@ export default function IndustriesSection() {
               <h3 className="mt-4 text-[17px] font-semibold leading-tight text-white sm:text-[19px]">
                 {title}
               </h3>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

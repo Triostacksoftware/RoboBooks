@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import type { ComponentType } from 'react';
+import Link from 'next/link';
 import {
   ArrowUpRight,
   ArrowLeftRight,
@@ -11,88 +13,31 @@ import {
   ReceiptText,
   ScrollText,
 } from 'lucide-react';
+import { gstTools } from '../../gst-tools/toolData';
 
-type ComplianceKey =
-  | 'gstr'
-  | 'einvoice'
-  | 'eway'
-  | 'tally'
-  | 'bank'
-  | 'data'
-  | 'reporting';
+type ComplianceKey = (typeof gstTools)[number]['key'];
 
-const items = [
-  {
-    key: 'gstr' as ComplianceKey,
-    label: 'GSTR Filing',
-    icon: FileSpreadsheet,
-    title: 'GSTR-1 Sales',
-    badge: 'Export Data',
-    description:
-      'Export your GSTR1 data in a simple format and help your team or CA complete GST filing faster with clean invoice summaries.',
-  },
-  {
-    key: 'einvoice' as ComplianceKey,
-    label: 'E-Invoicing',
-    icon: FileDigit,
-    title: 'IRN & E-Invoice Ready',
-    badge: 'Auto Sync',
-    description:
-      'Generate invoice data with the right business fields so e-invoice workflows stay cleaner, faster, and easier to validate.',
-  },
-  {
-    key: 'eway' as ComplianceKey,
-    label: 'Delivery Challan',
-    icon: ReceiptText,
-    title: 'Delivery Challan Flow',
-    badge: 'Dispatch Ready',
-    description:
-      'Prepare bill details, customer data, and shipment records in one place before sharing or exporting transport-related documents.',
-  },
-  {
-    key: 'tally' as ComplianceKey,
-    label: 'Data Export to Sale',
-    icon: ScrollText,
-    title: 'Sales Data Export',
-    badge: 'Sales Sync',
-    description:
-      'Move structured sales and tax records from RoboBooks to your accounting workflows with less manual re-entry.',
-  },
-  {
-    key: 'bank' as ComplianceKey,
-    label: 'Bank Reconciliation',
-    icon: Landmark,
-    title: 'Bank Reconciliation',
-    badge: 'Auto Match',
-    description:
-      'Match bank entries, track pending transactions, and keep your books aligned with real account activity using a cleaner reconciliation workflow.',
-  },
-  {
-    key: 'data' as ComplianceKey,
-    label: 'Import Export of Data',
-    icon: ArrowLeftRight,
-    title: 'Import and Export Center',
-    badge: 'Data Sync',
-    description:
-      'Move invoices, books, ledgers, and structured reports between RoboBooks and your external accounting workflows with less manual effort.',
-  },
-  {
-    key: 'reporting' as ComplianceKey,
-    label: 'Multiple Financial Reporting',
-    icon: BarChart3,
-    title: 'Financial Reporting Hub',
-    badge: 'Insight Ready',
-    description:
-      'Generate multiple financial reports from one dashboard, compare business metrics, and share cleaner summaries with your team or accountant.',
-  },
-];
+const iconMap = {
+  gstr: FileSpreadsheet,
+  einvoice: FileDigit,
+  eway: ReceiptText,
+  tally: ScrollText,
+  bank: Landmark,
+  data: ArrowLeftRight,
+  reporting: BarChart3,
+} satisfies Record<ComplianceKey, ComponentType<{ size?: number; className?: string }>>;
+
+const items = gstTools.map((tool) => ({
+  ...tool,
+  icon: iconMap[tool.key as ComplianceKey],
+}));
 
 export default function GstComplianceSection() {
   const [active, setActive] = useState<ComplianceKey>('gstr');
   const current = items.find((item) => item.key === active) ?? items[0];
 
   return (
-    <section className="relative overflow-hidden bg-white py-16 lg:py-20">
+    <section id="gst-compliance" className="relative overflow-hidden bg-white py-16 lg:py-20">
       <div className="absolute inset-0">
         <div className="absolute left-[10%] top-16 h-56 w-56 rounded-full bg-[#6558df]/8 blur-3xl" />
         <div className="absolute right-[12%] bottom-8 h-64 w-64 rounded-full bg-[#0aa6c9]/8 blur-3xl" />
@@ -132,7 +77,7 @@ export default function GstComplianceSection() {
                   >
                     <Icon size={24} />
                   </span>
-                  <span className="text-[20px] font-medium">{label}</span>
+                  <span className="flex-1 text-[20px] font-medium">{label}</span>
                 </button>
               );
             })}
@@ -148,10 +93,13 @@ export default function GstComplianceSection() {
                 <p className="max-w-5xl text-lg leading-8 text-slate-700">
                   {current.description}
                 </p>
-                <button className="mt-5 inline-flex items-center gap-2 text-lg font-semibold text-[#4a90ff]">
+                <Link
+                  href={`/gst-tools/${current.slug}`}
+                  className="mt-5 inline-flex items-center gap-2 text-lg font-semibold text-[#4a90ff]"
+                >
                   Explore GST tools
                   <ArrowUpRight size={18} />
-                </button>
+                </Link>
               </div>
             </div>
           </div>
