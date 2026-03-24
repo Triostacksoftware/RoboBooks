@@ -586,22 +586,6 @@ div.main-content-scrollbar::-webkit-scrollbar-corner {
   background: transparent !important;
 }
 
-/* Hide default browser scrollbar completely and show only custom one */
-html, body, * {
-  scrollbar-width: none !important; /* Firefox */
-  -ms-overflow-style: none !important; /* Internet Explorer 10+ */
-}
-
-html::-webkit-scrollbar, 
-body::-webkit-scrollbar, 
-*::-webkit-scrollbar {
-  width: 0px !important;
-  height: 0px !important;
-  background: transparent !important;
-  display: none !important;
-}
-
-/* Ensure no scrollbars on the main page */
 body {
   overflow-x: hidden !important;
 }
@@ -630,7 +614,7 @@ html {
   display: none !important;
 }
 
-/* But show our custom scrollbars - 50% lighter and 40% thinner (20% more than before) */
+/* Keep custom scrollbars visible on the targeted containers */
 .sidebar-scrollbar,
 .main-content-scrollbar {
   scrollbar-width: thin !important;
@@ -639,21 +623,23 @@ html {
 
 .sidebar-scrollbar::-webkit-scrollbar,
 .main-content-scrollbar::-webkit-scrollbar {
-  width: 0.5px !important;
+  width: 8px !important;
+  height: 8px !important;
   background: transparent !important;
 }
 
 .sidebar-scrollbar::-webkit-scrollbar-track,
 .main-content-scrollbar::-webkit-scrollbar-track {
   background: #f8fafc !important;
-  border-radius: 0.5px !important;
+  border-radius: 9999px !important;
 }
 
 .sidebar-scrollbar::-webkit-scrollbar-thumb,
 .main-content-scrollbar::-webkit-scrollbar-thumb {
   background: #93c5fd !important;
-  border-radius: 0.5px !important;
+  border-radius: 9999px !important;
   min-height: 20px !important;
+  border: 2px solid #f8fafc !important;
 }
 
 .sidebar-scrollbar::-webkit-scrollbar-thumb:hover,

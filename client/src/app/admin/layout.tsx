@@ -24,6 +24,14 @@ interface Admin {
   email?: string;
 }
 
+type NavNode = {
+  name: string;
+  href: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  children?: NavNode[];
+  menuKey?: string;
+};
+
 export default function AdminLayout({
   children,
 }: {
@@ -115,7 +123,7 @@ export default function AdminLayout({
     }
   };
 
-  const navigation = [
+  const navigation: NavNode[] = [
     { name: "Dashboard", href: "/admin/dashboard", icon: ChartBarIcon },
     { name: "Users", href: "/admin/users", icon: UsersIcon },
     { name: "Reports", href: "/admin/reports", icon: DocumentTextIcon },
@@ -123,26 +131,34 @@ export default function AdminLayout({
     {
       name: "CMS",
       href: "/admin/cms",
+      menuKey: "cms-root",
       icon: TableCellsIcon,
       children: [
-        { name: "Logo Section", href: "/admin/cms/logo" },
-        { name: "Hero Section", href: "/admin/cms/hero" },
-        { name: "About Section", href: "/admin/cms/about" },
-        { name: "Invoice Themes", href: "/admin/cms/invoice-themes" },
-        { name: "Services Section", href: "/admin/cms/services" },
-        { name: "Industries Section", href: "/admin/cms/industries" },
-        { name: "GST Compliance", href: "/admin/cms/gst-compliance" },
-        { name: "Features Section", href: "/admin/cms/features" },
-        { name: "Usability Section", href: "/admin/cms/usability" },
-        { name: "Business Impact", href: "/admin/cms/business-impact" },
-        { name: "Team Management", href: "/admin/cms/team-management" },
-        { name: "FAQ Section", href: "/admin/cms/faq" },
-        { name: "Trusted Partner", href: "/admin/cms/trusted-partner" },
-        { name: "App CTA Section", href: "/admin/cms/pre-footer-cta" },
-        { name: "Contact Section", href: "/admin/cms/contact-section" },
-        { name: "Footer Section", href: "/admin/cms/footer" },
-        { name: "Pricing Plans", href: "/admin/cms/pricing-plans" },
-        { name: "Testimonials", href: "/admin/cms/testimonials" },
+        {
+          name: "Home Page",
+          href: "/admin/cms",
+          menuKey: "cms-home-page",
+          children: [
+            { name: "Logo Section", href: "/admin/cms/logo" },
+            { name: "Hero Section", href: "/admin/cms/hero" },
+            { name: "About Section", href: "/admin/cms/about" },
+            { name: "Invoice Themes", href: "/admin/cms/invoice-themes" },
+            { name: "Services Section", href: "/admin/cms/services" },
+            { name: "Industries Section", href: "/admin/cms/industries" },
+            { name: "GST Compliance", href: "/admin/cms/gst-compliance" },
+            { name: "Features Section", href: "/admin/cms/features" },
+            { name: "Usability Section", href: "/admin/cms/usability" },
+            { name: "Business Impact", href: "/admin/cms/business-impact" },
+            { name: "Team Management", href: "/admin/cms/team-management" },
+            { name: "FAQ Section", href: "/admin/cms/faq" },
+            { name: "Trusted Partner", href: "/admin/cms/trusted-partner" },
+            { name: "App CTA Section", href: "/admin/cms/pre-footer-cta" },
+            { name: "Contact Section", href: "/admin/cms/contact-section" },
+            { name: "Footer Section", href: "/admin/cms/footer" },
+            { name: "Pricing Plans", href: "/admin/cms/pricing-plans" },
+            { name: "Testimonials", href: "/admin/cms/testimonials" },
+          ],
+        },
       ],
     },
     { name: "Settings", href: "/admin/settings", icon: CogIcon },
@@ -155,16 +171,91 @@ export default function AdminLayout({
     return pathname.startsWith(href);
   };
 
-  const NavItem = ({ item }: { item: (typeof navigation)[0] }) => {
-    const isActive = isActiveTab(item.href);
-    const isExpanded = Boolean(
-      item.children && (expandedMenus[item.name] || pathname.startsWith(`${item.href}/`))
+  const isMenuExpanded = (href: string) => {
+    const defaultExpanded = pathname.startsWith(`${href}/`);
+    return expandedMenus[href] ?? defaultExpanded;
+  };
+
+  const getMenuStateKey = (item: NavNode) => item.menuKey || item.href;
+
+  const NavChildren = ({
+    items,
+    depth = 0,
+  }: {
+    items: NavNode[];
+    depth?: number;
+  }) => {
+    return (
+      <div
+        className={`space-y-1 border-l border-[#d8e7f1] ${
+          depth === 0 ? "ml-10 pl-4" : "ml-4 pl-4"
+        }`}
+      >
+        {items.map((child) => {
+          const childStateKey = getMenuStateKey(child);
+          const childExpanded = Boolean(
+            child.children && isMenuExpanded(childStateKey)
+          );
+          const isChildActive = isActiveTab(child.href);
+
+          if (child.children) {
+            return (
+              <div key={child.href} className="space-y-1">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setExpandedMenus((current) => ({
+                      ...current,
+                      [childStateKey]: !current[childStateKey],
+                    }))
+                  }
+                  className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition ${
+                    isChildActive || childExpanded
+                      ? "bg-[#ebfaff] font-semibold text-[#0088c5]"
+                      : "text-[#5d708f] hover:bg-[#f4fbff] hover:text-[#0f2344]"
+                  }`}
+                >
+                  <span>{child.name}</span>
+                  <ChevronDownIcon
+                    className={`h-4 w-4 transition-transform ${
+                      childExpanded ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {childExpanded ? (
+                  <NavChildren items={child.children} depth={depth + 1} />
+                ) : null}
+              </div>
+            );
+          }
+
+          return (
+            <Link
+              key={child.href}
+              href={child.href}
+              className={`block rounded-xl px-3 py-2.5 text-sm transition ${
+                isChildActive
+                  ? "bg-[#ebfaff] font-semibold text-[#0088c5]"
+                  : "text-[#5d708f] hover:bg-[#f4fbff] hover:text-[#0f2344]"
+              }`}
+            >
+              {child.name}
+            </Link>
+          );
+        })}
+      </div>
     );
+  };
+
+  const NavItem = ({ item }: { item: NavNode }) => {
+    const itemStateKey = getMenuStateKey(item);
+    const isActive = isActiveTab(item.href);
+    const isExpanded = Boolean(item.children && isMenuExpanded(itemStateKey));
 
     const toggleMenu = () => {
       setExpandedMenus((current) => ({
         ...current,
-        [item.name]: !current[item.name],
+        [itemStateKey]: !current[itemStateKey],
       }));
     };
 
@@ -216,26 +307,7 @@ export default function AdminLayout({
           </Link>
         )}
 
-        {item.children && isExpanded ? (
-          <div className="ml-10 space-y-1 border-l border-[#d8e7f1] pl-4">
-            {item.children.map((child) => {
-              const isChildActive = pathname.startsWith(child.href);
-              return (
-                <Link
-                  key={child.href}
-                  href={child.href}
-                  className={`block rounded-xl px-3 py-2.5 text-sm transition ${
-                    isChildActive
-                      ? "bg-[#ebfaff] font-semibold text-[#0088c5]"
-                      : "text-[#5d708f] hover:bg-[#f4fbff] hover:text-[#0f2344]"
-                  }`}
-                >
-                  {child.name}
-                </Link>
-              );
-            })}
-          </div>
-        ) : null}
+        {item.children && isExpanded ? <NavChildren items={item.children} /> : null}
       </div>
     );
   };
@@ -305,7 +377,7 @@ export default function AdminLayout({
           </div>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-3 py-4">
+        <nav className="sidebar-scrollbar flex-1 overflow-y-auto px-3 py-4">
           <div className="space-y-1.5 pr-1">
             {navigation.map((item) => (
               <NavItem key={item.name} item={item} />
@@ -350,7 +422,7 @@ export default function AdminLayout({
       </div>
 
       {/* Main Content Area */}
-      <div className="ml-72 flex-1">
+      <div className="main-content-scrollbar ml-72 h-screen flex-1 overflow-y-auto">
         {/* Top Header */}
         <div className="sticky top-0 z-40 px-4 pt-4 sm:px-6 lg:px-8">
           <div className="flex min-h-[76px] items-center gap-x-4 rounded-[28px] border border-[#d8e7f1] bg-white/90 px-5 shadow-[0_16px_40px_rgba(15,35,68,0.06)] backdrop-blur sm:px-6">
