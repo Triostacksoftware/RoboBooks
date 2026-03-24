@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ComponentType } from 'react';
 import Link from 'next/link';
 import {
@@ -14,8 +14,17 @@ import {
   ScrollText,
 } from 'lucide-react';
 import { gstTools } from '../../gst-tools/toolData';
+import {
+  defaultGstComplianceContent,
+  fetchPublicCmsSection,
+  resolveCmsAssetUrl,
+  type GstComplianceCmsContent,
+} from '@/services/cmsService';
 
 type ComplianceKey = (typeof gstTools)[number]['key'];
+type ComplianceBaseItem = (typeof items)[number];
+type ComplianceCmsTool = GstComplianceCmsContent['tools'][number];
+type ComplianceItem = ComplianceBaseItem & ComplianceCmsTool;
 
 const iconMap = {
   gstr: FileSpreadsheet,
@@ -34,7 +43,23 @@ const items = gstTools.map((tool) => ({
 
 export default function GstComplianceSection() {
   const [active, setActive] = useState<ComplianceKey>('gstr');
-  const current = items.find((item) => item.key === active) ?? items[0];
+  const [content, setContent] = useState<GstComplianceCmsContent>(defaultGstComplianceContent);
+
+  useEffect(() => {
+    fetchPublicCmsSection<GstComplianceCmsContent>(
+      'gstCompliance',
+      defaultGstComplianceContent
+    ).then((response) => {
+      setContent(response);
+    });
+  }, []);
+
+  const currentCmsTool = content.tools.find((item) => item.key === active) ?? content.tools[0];
+  const currentDefaultTool = items.find((item) => item.key === active) ?? items[0];
+  const current = {
+    ...currentDefaultTool,
+    ...currentCmsTool,
+  };
 
   return (
     <section id="gst-compliance" className="relative overflow-hidden bg-white py-16 lg:py-20">
@@ -46,16 +71,19 @@ export default function GstComplianceSection() {
       <div className="relative mx-auto max-w-[1600px] px-4 md:px-8 lg:px-10">
         <div className="max-w-5xl">
           <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
-            GST Compliance
+            {content.eyebrow}
           </p>
           <h2 className="mt-4 text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl lg:text-6xl">
-            Experience effortless GST compliance with RoboBooks invoicing software
+            {content.title}
           </h2>
         </div>
 
         <div className="mt-12 grid gap-8 lg:grid-cols-[0.32fr_0.68fr] lg:items-start">
           <div className="space-y-5">
-            {items.map(({ key, label, icon: Icon }) => {
+            {content.tools.map((tool) => {
+              const defaultTool = items.find((item) => item.key === tool.key) ?? items[0];
+              const Icon = defaultTool.icon;
+              const key = tool.key as ComplianceKey;
               const isActive = key === active;
               return (
                 <button
@@ -75,9 +103,17 @@ export default function GstComplianceSection() {
                         : 'border-slate-200 bg-white text-slate-500'
                     }`}
                   >
-                    <Icon size={24} />
+                    {tool.iconUrl.trim() ? (
+                      <img
+                        src={resolveCmsAssetUrl(tool.iconUrl)}
+                        alt={tool.label}
+                        className="h-6 w-6 object-contain"
+                      />
+                    ) : (
+                      <Icon size={24} />
+                    )}
                   </span>
-                  <span className="flex-1 text-[20px] font-medium">{label}</span>
+                  <span className="flex-1 text-[20px] font-medium">{tool.label}</span>
                 </button>
               );
             })}
@@ -97,7 +133,7 @@ export default function GstComplianceSection() {
                   href={`/gst-tools/${current.slug}`}
                   className="mt-5 inline-flex items-center gap-2 text-lg font-semibold text-[#4a90ff]"
                 >
-                  Explore GST tools
+                  {content.exploreLabel}
                   <ArrowUpRight size={18} />
                 </Link>
               </div>
@@ -112,7 +148,7 @@ export default function GstComplianceSection() {
 function CompliancePreview({
   current,
 }: {
-  current: (typeof items)[number];
+  current: ComplianceItem;
 }) {
   if (current.key === 'gstr') return <SalesOrdersPreview current={current} />;
   if (current.key === 'einvoice') return <InvoicesPreview current={current} />;
@@ -127,9 +163,23 @@ function PreviewShell({
   current,
   children,
 }: {
-  current: (typeof items)[number];
+  current: ComplianceItem;
   children: React.ReactNode;
 }) {
+  if (current.previewImageUrl?.trim()) {
+    return (
+      <div className="overflow-hidden rounded-[28px] border border-[#d6e2ee] bg-white shadow-[0_20px_55px_rgba(15,35,68,0.08)]">
+        <div className="relative bg-[#f8fafc] p-6 sm:p-8 lg:p-10">
+          <img
+            src={resolveCmsAssetUrl(current.previewImageUrl)}
+            alt={current.label}
+            className="max-h-[560px] w-full rounded-[24px] border border-[#dbe4ef] bg-white object-contain shadow-[0_20px_55px_rgba(15,35,68,0.08)]"
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="overflow-hidden rounded-[28px] border border-[#d6e2ee] bg-white shadow-[0_20px_55px_rgba(15,35,68,0.08)]">
       <div className="flex items-center justify-between bg-[#1f2b40] px-5 py-4 text-white">
@@ -214,7 +264,7 @@ function SalesSidebar({ activeItem }: { activeItem: string }) {
 function SalesOrdersPreview({
   current,
 }: {
-  current: (typeof items)[number];
+  current: ComplianceItem;
 }) {
   return (
     <PreviewShell current={current}>
@@ -286,7 +336,7 @@ function SalesOrdersPreview({
 function DeliveryChallanPreview({
   current,
 }: {
-  current: (typeof items)[number];
+  current: ComplianceItem;
 }) {
   return (
     <PreviewShell current={current}>
@@ -344,7 +394,7 @@ function DeliveryChallanPreview({
 function InvoicesPreview({
   current,
 }: {
-  current: (typeof items)[number];
+  current: ComplianceItem;
 }) {
   return (
     <PreviewShell current={current}>
@@ -416,7 +466,7 @@ function InvoicesPreview({
 function CreditNotesPreview({
   current,
 }: {
-  current: (typeof items)[number];
+  current: ComplianceItem;
 }) {
   return (
     <PreviewShell current={current}>
@@ -503,7 +553,7 @@ function CreditNotesPreview({
 function BankReconciliationPreview({
   current,
 }: {
-  current: (typeof items)[number];
+  current: ComplianceItem;
 }) {
   return (
     <PreviewShell current={current}>
@@ -574,7 +624,7 @@ function BankReconciliationPreview({
 function DataImportExportPreview({
   current,
 }: {
-  current: (typeof items)[number];
+  current: ComplianceItem;
 }) {
   return (
     <PreviewShell current={current}>
@@ -642,7 +692,7 @@ function DataImportExportPreview({
 function FinancialReportingPreview({
   current,
 }: {
-  current: (typeof items)[number];
+  current: ComplianceItem;
 }) {
   return (
     <PreviewShell current={current}>

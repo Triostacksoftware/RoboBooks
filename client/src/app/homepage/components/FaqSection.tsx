@@ -1,33 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Minus, Plus } from 'lucide-react';
-
-const faqs = [
-  {
-    question: 'What kind of businesses can use RoboBooks?',
-    answer:
-      'RoboBooks is suited for service businesses, retailers, distributors, agencies, and growing teams that need invoicing, bookkeeping, GST reporting, and finance visibility in one product.',
-  },
-  {
-    question: 'Does RoboBooks support GST-ready accounting?',
-    answer:
-      'Yes. The product is positioned for accounting workflows that need GST-ready invoicing, tax summaries, and cleaner reporting for everyday compliance work.',
-  },
-  {
-    question: 'Can multiple team members work together?',
-    answer:
-      'Yes. Teams can collaborate with role-based access so owners, accountants, and operations users can each work in the same system with controlled permissions.',
-  },
-  {
-    question: 'Is RoboBooks only for billing?',
-    answer:
-      'No. RoboBooks is an accounting SaaS platform that goes beyond billing into bookkeeping, bank reconciliation, reporting, inventory-linked workflows, and team operations.',
-  },
-];
+import {
+  defaultFaqContent,
+  fetchPublicCmsSection,
+  type FaqCmsContent,
+} from '@/services/cmsService';
 
 export default function FaqSection() {
+  const [content, setContent] = useState<FaqCmsContent>(defaultFaqContent);
   const [openIndex, setOpenIndex] = useState(0);
+
+  useEffect(() => {
+    fetchPublicCmsSection<FaqCmsContent>('faq', defaultFaqContent).then(setContent);
+  }, []);
 
   return (
     <section className="relative overflow-hidden bg-white py-16 lg:py-20">
@@ -37,23 +24,23 @@ export default function FaqSection() {
       <div className="relative mx-auto max-w-[1280px] px-4 md:px-8 lg:px-12">
         <div className="mb-12 text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
-            FAQ
+            {content.eyebrow}
           </p>
           <h2 className="mt-4 text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
-            Questions teams usually ask before they switch
+            {content.title}
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-slate-600">
-            Clear answers for businesses looking for a more complete and modern accounting setup.
+            {content.description}
           </p>
         </div>
 
         <div className="space-y-4">
-          {faqs.map((faq, index) => {
+          {content.items.map((faq, index) => {
             const isOpen = openIndex === index;
 
             return (
               <div
-                key={faq.question}
+                key={`${faq.question}-${index}`}
                 className="rounded-[26px] border border-[#d8e7f1] bg-[#fbfdff] px-6 py-2 shadow-[0_14px_40px_rgba(15,35,68,0.05)]"
               >
                 <button
@@ -67,11 +54,11 @@ export default function FaqSection() {
                     {isOpen ? <Minus size={18} /> : <Plus size={18} />}
                   </span>
                 </button>
-                {isOpen && (
+                {isOpen ? (
                   <div className="pb-5 pr-14 text-base leading-8 text-slate-600">
                     {faq.answer}
                   </div>
-                )}
+                ) : null}
               </div>
             );
           })}

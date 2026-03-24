@@ -4,6 +4,11 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Navbar from '../../homepage/components/Navbar';
 import Footer from '../../homepage/components/Footer';
 import { getIndustryBySlug, industries } from '../industryData';
+import {
+  fetchPublicCmsSection,
+  getDefaultIndustryPageContent,
+  type IndustryPageCmsContent,
+} from '@/services/cmsService';
 
 type IndustryDetailPageProps = {
   params: Promise<{
@@ -19,7 +24,10 @@ export async function generateStaticParams() {
 
 export default async function IndustryDetailPage({ params }: IndustryDetailPageProps) {
   const { slug } = await params;
-  const industry = getIndustryBySlug(slug);
+  const fallbackIndustry = getDefaultIndustryPageContent(slug);
+  const industry = fallbackIndustry
+    ? await fetchPublicCmsSection<IndustryPageCmsContent>(`industry-${slug}`, fallbackIndustry)
+    : getIndustryBySlug(slug);
 
   if (!industry) {
     notFound();

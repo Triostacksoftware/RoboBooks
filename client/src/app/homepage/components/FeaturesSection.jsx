@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import {
   ArrowRight,
   BadgeCheck,
@@ -13,51 +14,32 @@ import {
   PackageCheck,
   UsersRound,
 } from 'lucide-react';
+import {
+  defaultFeaturesContent,
+  fetchPublicCmsSection,
+  resolveCmsAssetUrl,
+} from '@/services/cmsService';
 
-const features = [
-  {
-    icon: UsersRound,
-    title: 'Customer Accounts',
-    desc: 'Maintain customer ledgers, credits, dues, and GST details with complete visibility.',
-  },
-  {
-    icon: Landmark,
-    title: 'Bank Reconciliation',
-    desc: 'Match bank activity against books faster and reduce month-end closing effort.',
-  },
-  {
-    icon: ClipboardList,
-    title: 'Purchase Workflows',
-    desc: 'Handle purchase orders, bills, and vendor liabilities from one connected process.',
-  },
-  {
-    icon: CreditCard,
-    title: 'Recurring Billing',
-    desc: 'Automate subscription invoices, due date alerts, and consistent payment collection.',
-  },
-  {
-    icon: FileCheck2,
-    title: 'Tax-Ready Reports',
-    desc: 'Export clean summaries for GST, audits, and internal reviews without manual cleanup.',
-  },
-  {
-    icon: PackageCheck,
-    title: 'Inventory Linking',
-    desc: 'Connect stock movement directly to sales and purchase entries to avoid blind spots.',
-  },
-  {
-    icon: ChartColumnIncreasing,
-    title: 'Growth Analytics',
-    desc: 'Understand margins, revenue trends, and business health with executive-friendly dashboards.',
-  },
-  {
-    icon: BookOpenText,
-    title: 'Bookkeeping History',
-    desc: 'Track every adjustment, approval, and transaction with structured accounting records.',
-  },
+const fallbackIcons = [
+  UsersRound,
+  Landmark,
+  ClipboardList,
+  CreditCard,
+  FileCheck2,
+  PackageCheck,
+  ChartColumnIncreasing,
+  BookOpenText,
 ];
 
 export default function FeaturesSection() {
+  const [content, setContent] = useState(defaultFeaturesContent);
+
+  useEffect(() => {
+    fetchPublicCmsSection('features', defaultFeaturesContent).then((response) => {
+      setContent(response);
+    });
+  }, []);
+
   return (
     <section className="relative overflow-hidden bg-white pb-8 pt-12 lg:pb-10 lg:pt-14">
       <div className="absolute inset-0">
@@ -69,37 +51,47 @@ export default function FeaturesSection() {
         <div className="mb-14 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-[#bfe8f2] bg-[#effbfe] px-4 py-2 text-sm font-semibold uppercase tracking-[0.22em] text-[#0aa6c9]">
             <BadgeCheck size={16} />
-            Product Features
+            {content.eyebrow}
           </div>
           <h2 className="mx-auto mt-6 max-w-5xl text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
-            Purpose-built features for modern accounting operations
+            {content.title}
           </h2>
           <p className="mx-auto mt-5 max-w-5xl text-lg leading-8 text-slate-600">
-            Every feature is designed to reduce finance admin, improve accuracy, and help teams move from transaction entry to business insight.
+            {content.description}
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {features.map(({ icon: Icon, title, desc }) => (
+          {content.cards.map((card, index) => {
+            const Icon = fallbackIcons[index] || UsersRound;
+            return (
             <div
-              key={title}
+              key={`${card.title}-${index}`}
               className="rounded-[28px] border border-slate-200 bg-[#fbfdff] p-7 shadow-[0_16px_40px_rgba(15,35,68,0.06)] transition duration-300 hover:-translate-y-2 hover:border-[#0aa6c9]/35 hover:bg-white"
             >
               <div className="flex h-14 w-14 items-center justify-center rounded-[18px] bg-[#0f2344] text-white">
-                <Icon size={24} />
+                {card.iconUrl?.trim() ? (
+                  <img
+                    src={resolveCmsAssetUrl(card.iconUrl)}
+                    alt={card.title}
+                    className="h-6 w-6 object-contain"
+                  />
+                ) : (
+                  <Icon size={24} />
+                )}
               </div>
-              <h3 className="mt-5 text-xl font-semibold text-[#0f2344]">{title}</h3>
-              <p className="mt-3 text-sm leading-7 text-slate-600">{desc}</p>
+              <h3 className="mt-5 text-xl font-semibold text-[#0f2344]">{card.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-slate-600">{card.description}</p>
             </div>
-          ))}
+          )})}
         </div>
 
         <div className="mt-10 flex justify-center">
           <Link
-            href="/register"
+            href={content.ctaUrl}
             className="inline-flex items-center gap-3 rounded-full border border-[#0f2344] px-7 py-3 text-base font-semibold text-[#0f2344] transition hover:bg-[#0f2344] hover:text-white"
           >
-            Explore RoboBooks
+            {content.ctaLabel}
             <ArrowRight size={18} />
           </Link>
         </div>

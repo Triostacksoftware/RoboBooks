@@ -53,6 +53,96 @@ export default function AdminCmsPage() {
             Edit core services heading, highlight box, service cards, CTA block, and uploaded icons.
           </p>
         </Link>
+
+        <Link
+          href="/admin/cms/industries"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Industries Section</h2>
+          <p className="mt-3 text-gray-600">
+            Edit the industries homepage section and manage each industry detail page separately.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/cms/gst-compliance"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">GST Compliance Section</h2>
+          <p className="mt-3 text-gray-600">
+            Edit GST compliance heading, tab content, uploaded icons, and preview images.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/cms/features"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Features Section</h2>
+          <p className="mt-3 text-gray-600">
+            Edit features heading, card text, uploaded icons, and CTA button.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/cms/usability"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Usability Section</h2>
+          <p className="mt-3 text-gray-600">
+            Edit product experience heading, intro text, usability cards, and uploaded icons.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/cms/business-impact"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Business Impact Section</h2>
+          <p className="mt-3 text-gray-600">
+            Edit business impact heading, highlight content, and right-side benefit items.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/cms/team-management"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Team Management Section</h2>
+          <p className="mt-3 text-gray-600">
+            Edit the collaboration heading, intro text, and team management cards.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/cms/faq"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">FAQ Section</h2>
+          <p className="mt-3 text-gray-600">
+            Edit the FAQ heading, intro copy, and expandable question and answer items.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/cms/pricing-plans"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Pricing Plans Section</h2>
+          <p className="mt-3 text-gray-600">
+            Edit pricing heading, plan cards, selected label, CTA, and feature lists.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/cms/testimonials"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Testimonials Section</h2>
+          <p className="mt-3 text-gray-600">
+            Edit testimonials heading, description, and each testimonial card separately.
+          </p>
+        </Link>
       </div>
     </div>
   );
