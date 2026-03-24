@@ -281,8 +281,8 @@ export default function AdminLayout({
             className="absolute inset-y-0 left-0 hidden w-full bg-gradient-to-r from-[#08c1c9] via-[#04a6c7] to-[#006fae] lg:block"
             style={{ clipPath: "polygon(0 0, 100% 0, 82% 100%, 0 100%)" }}
           />
-          <div className="relative flex h-20 items-center px-4">
-            <div className="flex items-center gap-2.5">
+          <div className="relative flex h-20 items-center justify-center px-4">
+            <div className="flex w-full items-center justify-center gap-2.5 lg:-translate-x-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-lg">
                 <Image
                   src="/images/logo.png"

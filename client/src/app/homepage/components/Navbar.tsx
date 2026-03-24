@@ -58,7 +58,7 @@ const Navbar: React.FC = () => {
           {/* Brand */}
           <Link
             href="/"
-            className="flex items-center gap-3 lg:absolute lg:inset-y-0 lg:left-0 lg:w-[360px] lg:items-center lg:justify-start lg:pl-4 lg:gap-0"
+            className="flex items-center gap-3 lg:absolute lg:inset-y-0 lg:left-0 lg:w-[360px] lg:items-center lg:justify-start lg:px-12 lg:gap-0"
           >
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-lg lg:hidden">
               <Image
