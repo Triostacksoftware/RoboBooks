@@ -144,17 +144,19 @@ export default function AdminShell({
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Fixed Sidebar */}
-      <div className="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 flex flex-col z-50">
-        <div className="flex h-16 items-center px-4 border-b">
+      <div className="fixed inset-y-0 left-0 z-50 flex w-64 min-h-0 flex-col overflow-hidden border-r border-gray-200 bg-white">
+        <div className="flex h-16 shrink-0 items-center border-b px-4">
           <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
         </div>
-        <nav className="flex-1 space-y-1 px-2 py-4">
-          {navigation.map((item) => (
-            <NavItem key={item.name} item={item} />
-          ))}
+        <nav className="flex-1 overflow-y-auto px-2 py-4">
+          <div className="space-y-1 pr-1">
+            {navigation.map((item) => (
+              <NavItem key={item.name} item={item} />
+            ))}
+          </div>
         </nav>
         {/* Logout Section */}
-        <div className="p-4 border-t border-gray-200">
+        <div className="shrink-0 border-t border-gray-200 p-4">
           <div className="flex items-center space-x-3 mb-3">
             <UserCircleIcon className="h-8 w-8 text-gray-400" />
             <div>

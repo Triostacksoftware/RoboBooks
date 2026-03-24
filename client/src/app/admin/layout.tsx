@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useState, useEffect, useRef, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { api } from "@/lib/api";
 import {
   ChartBarIcon,
@@ -16,7 +17,6 @@ import {
   TableCellsIcon,
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";
-import { XMarkIcon } from "@heroicons/react/24/solid";
 
 interface Admin {
   fullName?: string;
@@ -27,14 +27,14 @@ interface Admin {
 export default function AdminLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
-  const router = useRouter();
   const pathname = usePathname();
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const authCheckRef = useRef(false);
   const redirectAttemptsRef = useRef(0);
 
@@ -129,6 +129,15 @@ export default function AdminLayout({
         { name: "About Section", href: "/admin/cms/about" },
         { name: "Invoice Themes", href: "/admin/cms/invoice-themes" },
         { name: "Services Section", href: "/admin/cms/services" },
+        { name: "Industries Section", href: "/admin/cms/industries" },
+        { name: "GST Compliance", href: "/admin/cms/gst-compliance" },
+        { name: "Features Section", href: "/admin/cms/features" },
+        { name: "Usability Section", href: "/admin/cms/usability" },
+        { name: "Business Impact", href: "/admin/cms/business-impact" },
+        { name: "Team Management", href: "/admin/cms/team-management" },
+        { name: "FAQ Section", href: "/admin/cms/faq" },
+        { name: "Pricing Plans", href: "/admin/cms/pricing-plans" },
+        { name: "Testimonials", href: "/admin/cms/testimonials" },
       ],
     },
     { name: "Settings", href: "/admin/settings", icon: CogIcon },
@@ -160,18 +169,18 @@ export default function AdminLayout({
           <button
             type="button"
             onClick={toggleMenu}
-            className={`group flex w-full items-center justify-between px-2 py-2 text-sm font-medium rounded-md transition-colors ${
+            className={`group flex w-full items-center justify-between rounded-2xl px-3 py-3 text-sm font-medium transition ${
               isActive || isExpanded
-                ? "bg-purple-100 text-purple-900 border-r-2 border-purple-600"
-                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                ? "bg-[linear-gradient(135deg,#eff8ff_0%,#eefbff_100%)] text-[#0f2344] shadow-[0_12px_25px_rgba(10,166,201,0.12)] ring-1 ring-[#b7e9f2]"
+                : "text-[#4d5f7c] hover:bg-[#f4fbff] hover:text-[#0f2344]"
             }`}
           >
             <span className="flex items-center">
               <item.icon
                 className={`mr-3 h-5 w-5 ${
                   isActive || isExpanded
-                    ? "text-purple-600"
-                    : "text-gray-400 group-hover:text-gray-500"
+                    ? "text-[#0aa6c9]"
+                    : "text-[#8fa4bf] group-hover:text-[#0088c5]"
                 }`}
               />
               {item.name}
@@ -183,18 +192,18 @@ export default function AdminLayout({
         ) : (
           <Link
             href={item.href}
-            className={`group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md transition-colors ${
+            className={`group flex items-center justify-between rounded-2xl px-3 py-3 text-sm font-medium transition ${
               isActive || isExpanded
-                ? "bg-purple-100 text-purple-900 border-r-2 border-purple-600"
-                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                ? "bg-[linear-gradient(135deg,#eff8ff_0%,#eefbff_100%)] text-[#0f2344] shadow-[0_12px_25px_rgba(10,166,201,0.12)] ring-1 ring-[#b7e9f2]"
+                : "text-[#4d5f7c] hover:bg-[#f4fbff] hover:text-[#0f2344]"
             }`}
           >
             <span className="flex items-center">
               <item.icon
                 className={`mr-3 h-5 w-5 ${
                   isActive || isExpanded
-                    ? "text-purple-600"
-                    : "text-gray-400 group-hover:text-gray-500"
+                    ? "text-[#0aa6c9]"
+                    : "text-[#8fa4bf] group-hover:text-[#0088c5]"
                 }`}
               />
               {item.name}
@@ -203,17 +212,17 @@ export default function AdminLayout({
         )}
 
         {item.children && isExpanded ? (
-          <div className="ml-10 space-y-1 border-l border-gray-200 pl-3">
+          <div className="ml-10 space-y-1 border-l border-[#d8e7f1] pl-4">
             {item.children.map((child) => {
               const isChildActive = pathname.startsWith(child.href);
               return (
                 <Link
                   key={child.href}
                   href={child.href}
-                  className={`block rounded-md px-2 py-2 text-sm transition-colors ${
+                  className={`block rounded-xl px-3 py-2.5 text-sm transition ${
                     isChildActive
-                      ? "bg-purple-50 font-medium text-purple-700"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-[#ebfaff] font-semibold text-[#0088c5]"
+                      : "text-[#5d708f] hover:bg-[#f4fbff] hover:text-[#0f2344]"
                   }`}
                 >
                   {child.name}
@@ -233,10 +242,10 @@ export default function AdminLayout({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#f8fbff]">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading admin panel...</p>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-[#0aa6c9] border-t-transparent"></div>
+          <p className="text-[#4d5f7c]">Loading admin panel...</p>
         </div>
       </div>
     );
@@ -245,10 +254,10 @@ export default function AdminLayout({
   // If not authenticated, show passive fallback (redirect handled in effect)
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#f8fbff]">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Redirecting to login...</p>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-[#0aa6c9] border-t-transparent"></div>
+          <p className="text-[#4d5f7c]">Redirecting to login...</p>
         </div>
       </div>
     );
@@ -256,46 +265,102 @@ export default function AdminLayout({
 
   // If authenticated, show full layout with sidebar
   return (
-    <div className="min-h-screen bg-gray-50 flex overflow-x-hidden">
+    <div className="relative flex min-h-screen overflow-x-hidden bg-[#f8fbff] text-[#0f2344]">
+      <div className="pointer-events-none absolute left-[-10rem] top-[-8rem] h-72 w-72 rounded-full bg-[#0aa6c9]/10 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[-8rem] right-[-10rem] h-80 w-80 rounded-full bg-[#0f2344]/8 blur-3xl" />
+
       {/* Fixed Sidebar - Only visible when authenticated */}
-      <div className="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 flex flex-col z-50">
-        <div className="flex h-16 items-center px-4 border-b">
-          <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
-        </div>
-        <nav className="flex-1 space-y-1 px-2 py-4">
-          {navigation.map((item) => (
-            <NavItem key={item.name} item={item} />
-          ))}
-        </nav>
-        {/* Logout Section */}
-        <div className="p-4 border-t border-gray-200">
-          <div className="flex items-center space-x-3 mb-3">
-            <UserCircleIcon className="h-8 w-8 text-gray-400" />
-            <div>
-              <p className="text-sm font-medium text-gray-900">
-                {admin?.fullName || "Admin"}
-              </p>
-              <p className="text-xs text-gray-500">{admin?.role || "Admin"}</p>
+      <div className="fixed inset-y-0 left-0 z-50 flex w-72 min-h-0 flex-col overflow-hidden border-r border-[#d8e7f1] bg-white/95 shadow-[0_20px_50px_rgba(15,35,68,0.08)] backdrop-blur">
+        <div className="relative shrink-0 overflow-hidden border-b border-[#d8e7f1]">
+          <div
+            className="absolute inset-y-0 left-0 hidden w-full bg-gradient-to-r from-[#08c1c9] via-[#04a6c7] to-[#006fae] lg:block"
+            style={{ clipPath: "polygon(0 0, 100% 0, 82% 100%, 0 100%)" }}
+          />
+          <div className="relative flex h-20 items-center px-4">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-lg">
+                <Image
+                  src="/images/logo.png"
+                  alt="RoboBooks logo"
+                  width={42}
+                  height={42}
+                  className="h-9 w-9 object-contain"
+                  priority
+                />
+              </div>
+              <div className="lg:text-white">
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#0f2344]/70 lg:text-white/80">
+                  RoboBooks
+                </p>
+                <h1 className="text-[1.7rem] font-bold leading-none text-[#0f2344] lg:text-white">
+                  Admin Panel
+                </h1>
+              </div>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-x-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors"
-          >
-            <ArrowRightOnRectangleIcon className="h-5 w-5" />
-            <span>Logout</span>
-          </button>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto px-3 py-4">
+          <div className="space-y-1.5 pr-1">
+            {navigation.map((item) => (
+              <NavItem key={item.name} item={item} />
+            ))}
+          </div>
+        </nav>
+        <div className="shrink-0 border-t border-[#d8e7f1] p-4">
+          <div className="rounded-[20px] border border-[#d8e7f1] bg-[#f8fbff]">
+            <button
+              type="button"
+              onClick={() => setIsProfileMenuOpen((current) => !current)}
+              className="flex w-full items-center justify-between gap-3 p-3 text-left"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#0f2344] text-white shadow-[0_10px_20px_rgba(15,35,68,0.18)]">
+                  <UserCircleIcon className="h-7 w-7" />
+                </div>
+                <div>
+                  <p className="text-sm text-[#0f2344]">{admin?.fullName || "Admin"}</p>
+                </div>
+              </div>
+              <ChevronDownIcon
+                className={`h-5 w-5 text-[#5d708f] transition-transform ${
+                  isProfileMenuOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {isProfileMenuOpen ? (
+              <div className="border-t border-[#d8e7f1] px-3 py-2">
+                <button
+                  onClick={handleLogout}
+                  className="flex w-full items-center gap-x-2 rounded-xl px-3 py-2 text-sm text-[#0f2344] transition hover:bg-white hover:text-[#0088c5]"
+                >
+                  <ArrowRightOnRectangleIcon className="h-5 w-5" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 ml-64">
+      <div className="ml-72 flex-1">
         {/* Top Header */}
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-          <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-            <div className="flex flex-1"></div>
+        <div className="sticky top-0 z-40 px-4 pt-4 sm:px-6 lg:px-8">
+          <div className="flex min-h-[76px] items-center gap-x-4 rounded-[28px] border border-[#d8e7f1] bg-white/90 px-5 shadow-[0_16px_40px_rgba(15,35,68,0.06)] backdrop-blur sm:px-6">
+            <div className="flex flex-1 items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#0aa6c9]">
+                  RoboBooks Admin
+                </p>
+                <p className="mt-1 text-sm text-[#4d5f7c]">
+                  {pathname.replace("/admin", "").replaceAll("/", " / ") || " / dashboard"}
+                </p>
+              </div>
+            </div>
             <div className="flex items-center gap-x-4 lg:gap-x-6">
-              <button className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
+              <button className="flex h-11 w-11 items-center justify-center rounded-full border border-[#d8e7f1] bg-[#f8fbff] text-[#4d5f7c] transition hover:border-[#0aa6c9]/40 hover:text-[#0088c5]">
                 <BellIcon className="h-6 w-6" />
               </button>
             </div>
@@ -303,7 +368,7 @@ export default function AdminLayout({
         </div>
 
         {/* Page content */}
-        <main className="py-6">
+        <main className="relative z-10 py-6">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             {children}
           </div>

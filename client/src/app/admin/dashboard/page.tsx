@@ -1,25 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useState, useEffect, type ComponentType } from "react";
+
+import { useEffect, useState, type ComponentType, type ReactNode } from "react";
 import { api } from "@/lib/api";
 import { formatCurrency } from "@/utils/currency";
 import {
-  UsersIcon,
-  CurrencyDollarIcon,
-  ChartBarIcon,
-  DocumentTextIcon,
-  ArrowUpIcon,
   ArrowDownIcon,
-  EyeIcon,
-  UserGroupIcon,
+  ArrowUpIcon,
   BanknotesIcon,
-  ClockIcon,
-  FolderIcon,
   CalendarIcon,
+  ChartBarIcon,
   CheckCircleIcon,
+  ClockIcon,
+  CurrencyDollarIcon,
+  DocumentTextIcon,
+  FolderIcon,
+  UserGroupIcon,
+  UsersIcon,
   XCircleIcon,
-  ExclamationTriangleIcon,
-  TableCellsIcon,
 } from "@heroicons/react/24/outline";
 
 export default function AdminDashboard() {
@@ -50,10 +48,10 @@ export default function AdminDashboard() {
     icon: ComponentType<{ className?: string }>;
     color: string;
   }
+
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
 
   useEffect(() => {
-    // Set the page title
     document.title = "RoboBooks-admin";
 
     fetchStats();
@@ -68,8 +66,6 @@ export default function AdminDashboard() {
         success: boolean;
         stats: Record<string, number>;
       };
-
-      console.log("response1", response);
 
       if (response.success) {
         setStats({
@@ -91,12 +87,11 @@ export default function AdminDashboard() {
 
   const fetchPendingUsers = async () => {
     try {
-      const response = (await api(
-        "/api/admin/user-approval/pending-users"
-      )) as {
+      const response = (await api("/api/admin/user-approval/pending-users")) as {
         success: boolean;
         pendingUsers: any[];
       };
+
       if (response.success) {
         setPendingUsers(response.pendingUsers || []);
       }
@@ -107,9 +102,7 @@ export default function AdminDashboard() {
 
   const fetchApprovalStats = async () => {
     try {
-      const response = (await api(
-        "/api/admin/user-approval/approval-stats"
-      )) as {
+      const response = (await api("/api/admin/user-approval/approval-stats")) as {
         success: boolean;
         stats: {
           pendingApprovals: number;
@@ -117,6 +110,7 @@ export default function AdminDashboard() {
           rejectedUsers: number;
         };
       };
+
       if (response.success) {
         setApprovalStats(response.stats);
       }
@@ -137,12 +131,7 @@ export default function AdminDashboard() {
       )) as { success: boolean; message?: string };
 
       if (response.success) {
-        // Refresh the data
-        await Promise.all([
-          fetchPendingUsers(),
-          fetchApprovalStats(),
-          fetchStats(),
-        ]);
+        await Promise.all([fetchPendingUsers(), fetchApprovalStats(), fetchStats()]);
         alert("User approved successfully!");
       } else {
         alert("Failed to approve user: " + response.message);
@@ -173,12 +162,7 @@ export default function AdminDashboard() {
       )) as { success: boolean; message?: string };
 
       if (response.success) {
-        // Refresh the data
-        await Promise.all([
-          fetchPendingUsers(),
-          fetchApprovalStats(),
-          fetchStats(),
-        ]);
+        await Promise.all([fetchPendingUsers(), fetchApprovalStats(), fetchStats()]);
         alert("User rejected successfully!");
       } else {
         alert("Failed to reject user: " + response.message);
@@ -192,7 +176,6 @@ export default function AdminDashboard() {
   };
 
   const fetchRecentActivity = async () => {
-    // Mock recent activity data
     const mockActivity: ActivityItem[] = [
       {
         id: 1,
@@ -201,7 +184,7 @@ export default function AdminDashboard() {
         time: "2 minutes ago",
         type: "user",
         icon: UsersIcon,
-        color: "text-blue-500",
+        color: "text-sky-500",
       },
       {
         id: 2,
@@ -210,7 +193,7 @@ export default function AdminDashboard() {
         time: "15 minutes ago",
         type: "invoice",
         icon: DocumentTextIcon,
-        color: "text-green-500",
+        color: "text-emerald-500",
       },
       {
         id: 3,
@@ -219,7 +202,7 @@ export default function AdminDashboard() {
         time: "1 hour ago",
         type: "payment",
         icon: BanknotesIcon,
-        color: "text-purple-500",
+        color: "text-indigo-500",
       },
       {
         id: 4,
@@ -228,7 +211,7 @@ export default function AdminDashboard() {
         time: "2 hours ago",
         type: "project",
         icon: FolderIcon,
-        color: "text-orange-500",
+        color: "text-amber-500",
       },
       {
         id: 5,
@@ -237,9 +220,10 @@ export default function AdminDashboard() {
         time: "3 hours ago",
         type: "timesheet",
         icon: ClockIcon,
-        color: "text-indigo-500",
+        color: "text-cyan-600",
       },
     ];
+
     setRecentActivity(mockActivity);
   };
 
@@ -260,247 +244,68 @@ export default function AdminDashboard() {
     color: string;
     subtitle?: string;
   }) => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <div className="flex items-center justify-between">
+    <div className="rounded-[28px] border border-[#d8e7f1] bg-white p-6 shadow-[0_16px_40px_rgba(15,35,68,0.06)]">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">
-            {typeof value === "number" && value >= 1000
-              ? `${(value / 1000).toFixed(1)}k`
-              : typeof value === "number" && value >= 1000000
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#0aa6c9]">
+            {title}
+          </p>
+          <p className="mt-3 text-3xl font-bold text-[#0f2344]">
+            {typeof value === "number" && value >= 1000000
               ? `${formatCurrency(value / 1000000)}M`
-              : typeof value === "number" &&
-                title.toLowerCase().includes("revenue")
+              : typeof value === "number" && value >= 1000
+              ? `${(value / 1000).toFixed(1)}k`
+              : typeof value === "number" && title.toLowerCase().includes("revenue")
               ? formatCurrency(value)
               : value}
           </p>
-          {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
-          {change && (
-            <div className="flex items-center mt-2">
+          {subtitle ? (
+            <p className="mt-2 text-sm text-[#5d708f]">{subtitle}</p>
+          ) : null}
+          {change ? (
+            <div className="mt-3 flex items-center">
               {changeType === "increase" ? (
-                <ArrowUpIcon className="h-4 w-4 text-green-500" />
+                <ArrowUpIcon className="h-4 w-4 text-emerald-500" />
               ) : (
-                <ArrowDownIcon className="h-4 w-4 text-red-500" />
+                <ArrowDownIcon className="h-4 w-4 text-rose-500" />
               )}
               <span
-                className={`text-sm font-medium ml-1 ${
-                  changeType === "increase" ? "text-green-600" : "text-red-600"
+                className={`ml-1 text-sm font-medium ${
+                  changeType === "increase" ? "text-emerald-600" : "text-rose-600"
                 }`}
               >
                 {change}%
               </span>
-              <span className="text-sm text-gray-500 ml-1">
-                from last month
-              </span>
+              <span className="ml-1 text-sm text-[#5d708f]">from last month</span>
             </div>
-          )}
+          ) : null}
         </div>
-        <div className={`p-3 rounded-lg ${color}`}>
+        <div className={`rounded-[22px] p-4 shadow-[0_18px_35px_rgba(15,35,68,0.12)] ${color}`}>
           <Icon className="h-6 w-6 text-white" />
         </div>
       </div>
     </div>
   );
 
-  const PendingApprovals = () => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">
-          Pending User Approvals
-        </h3>
-        <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-          {pendingUsers.length} pending
-        </span>
-      </div>
-
-      {pendingUsers.length === 0 ? (
-        <div className="text-center py-8">
-          <CheckCircleIcon className="h-12 w-12 text-green-400 mx-auto mb-2" />
-          <p className="text-gray-500">No pending approvals</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {pendingUsers.map((user: any) => (
-            <div
-              key={user._id}
-              className="border border-gray-200 rounded-lg p-4"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <h4 className="font-medium text-gray-900">
-                    {user.companyName}
-                  </h4>
-                  <p className="text-sm text-gray-500">{user.email}</p>
-                  <p className="text-sm text-gray-500">{user.phone}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs text-gray-400">
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleApproveUser(user._id)}
-                  disabled={approvalLoading}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 disabled:opacity-50"
-                >
-                  <CheckCircleIcon className="h-4 w-4" />
-                  Approve
-                </button>
-                <button
-                  onClick={() => handleRejectUser(user._id)}
-                  disabled={approvalLoading}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 disabled:opacity-50"
-                >
-                  <XCircleIcon className="h-4 w-4" />
-                  Reject
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-
-  const ApprovalStats = () => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        User Approval Statistics
-      </h3>
-      <div className="grid grid-cols-3 gap-4">
-        <div className="text-center">
-          <div className="text-2xl font-bold text-yellow-600">
-            {approvalStats.pendingApprovals}
-          </div>
-          <div className="text-sm text-gray-500">Pending</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-green-600">
-            {approvalStats.approvedUsers}
-          </div>
-          <div className="text-sm text-gray-500">Approved</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-red-600">
-            {approvalStats.rejectedUsers}
-          </div>
-          <div className="text-sm text-gray-500">Rejected</div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const RecentActivity = () => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Recent Activity
-      </h3>
-      <div className="space-y-4">
-        {recentActivity.map((activity) => (
-          <div key={activity.id} className="flex items-center space-x-3">
-            <div className="flex-shrink-0">
-              <div className={`w-2 h-2 ${activity.color} rounded-full`}></div>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900">
-                {activity.action}
-              </p>
-              <p className="text-sm text-gray-500">
-                {activity.user} • {activity.time}
-              </p>
-            </div>
-            <activity.icon className={`h-4 w-4 ${activity.color}`} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  const QuickActions = () => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Quick Actions
-      </h3>
-      <div className="grid grid-cols-2 gap-4">
-        {[
-          {
-            name: "View Users",
-            icon: UsersIcon,
-            href: "/admin/users",
-            color: "bg-blue-500",
-            description: "Manage user accounts",
-          },
-
-          {
-            name: "Generate Report",
-            icon: DocumentTextIcon,
-            href: "/admin/reports",
-            color: "bg-green-500",
-            description: "Create system reports",
-          },
-          {
-            name: "Manage Billing",
-            icon: BanknotesIcon,
-            href: "/admin/billing",
-            color: "bg-purple-500",
-            description: "Handle subscriptions",
-          },
-        ].map((action) => (
-          <a
-            key={action.name}
-            href={action.href}
-            className="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors group"
-          >
-            <div
-              className={`p-2 rounded-lg ${action.color} mr-3 group-hover:scale-110 transition-transform`}
-            >
-              <action.icon className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <span className="text-sm font-medium text-gray-900 block">
-                {action.name}
-              </span>
-              <span className="text-xs text-gray-500">
-                {action.description}
-              </span>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-
-  const SystemHealth = () => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        System Health
-      </h3>
-      <div className="space-y-4">
-        {[
-          { name: "Server Status", status: "Online", color: "text-green-600" },
-          { name: "Database", status: "Connected", color: "text-green-600" },
-          { name: "API Response", status: "Normal", color: "text-green-600" },
-          { name: "Storage", status: "85% Used", color: "text-yellow-600" },
-        ].map((item, index) => (
-          <div key={index} className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">{item.name}</span>
-            <span className={`text-sm font-medium ${item.color}`}>
-              {item.status}
-            </span>
-          </div>
-        ))}
-      </div>
+  const Panel = ({
+    title,
+    children,
+  }: {
+    title: string;
+    children: ReactNode;
+  }) => (
+    <div className="rounded-[28px] border border-[#d8e7f1] bg-white p-6 shadow-[0_16px_40px_rgba(15,35,68,0.06)]">
+      <h3 className="mb-4 text-xl font-bold text-[#0f2344]">{title}</h3>
+      {children}
     </div>
   );
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex h-64 items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-[#0aa6c9] border-t-transparent" />
+          <p className="text-[#5d708f]">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -508,21 +313,25 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1">Welcome to your admin dashboard</p>
+      <div className="rounded-[32px] border border-[#d8e7f1] bg-[linear-gradient(135deg,#0f2344_0%,#143160_58%,#0aa6c9_100%)] px-7 py-8 text-white shadow-[0_22px_50px_rgba(15,35,68,0.16)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.34em] text-[#7fe7ff]">
+          Control Center
+        </p>
+        <h1 className="mt-3 text-3xl font-bold">Dashboard</h1>
+        <p className="mt-2 max-w-2xl text-sm text-white/80">
+          Welcome to your admin dashboard. Monitor approvals, platform activity,
+          and business health in one RoboBooks-styled workspace.
+        </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Users"
           value={stats.totalUsers}
           icon={UsersIcon}
           change="12.5"
           changeType="increase"
-          color="bg-blue-500"
+          color="bg-[linear-gradient(135deg,#0aa6c9_0%,#0088c5_100%)]"
           subtitle="Registered accounts"
         />
         <StatCard
@@ -531,7 +340,7 @@ export default function AdminDashboard() {
           icon={UserGroupIcon}
           change="8.2"
           changeType="increase"
-          color="bg-green-500"
+          color="bg-[linear-gradient(135deg,#22c55e_0%,#16a34a_100%)]"
           subtitle="Currently active"
         />
         <StatCard
@@ -540,7 +349,7 @@ export default function AdminDashboard() {
           icon={CurrencyDollarIcon}
           change="15.3"
           changeType="increase"
-          color="bg-purple-500"
+          color="bg-[linear-gradient(135deg,#0f2344_0%,#1d4f91_100%)]"
           subtitle="From paid invoices"
         />
         <StatCard
@@ -549,80 +358,226 @@ export default function AdminDashboard() {
           icon={ChartBarIcon}
           change="-2.1"
           changeType="decrease"
-          color="bg-orange-500"
+          color="bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_100%)]"
           subtitle="User growth rate"
         />
       </div>
 
-      {/* User Approval Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PendingApprovals />
-        <ApprovalStats />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Panel title="Pending User Approvals">
+          <div className="mb-4 flex items-center justify-end">
+            <span className="rounded-full bg-[#fff6d8] px-3 py-1 text-xs font-semibold text-[#b7791f]">
+              {pendingUsers.length} pending
+            </span>
+          </div>
+
+          {pendingUsers.length === 0 ? (
+            <div className="py-8 text-center">
+              <CheckCircleIcon className="mx-auto mb-2 h-12 w-12 text-emerald-400" />
+              <p className="text-[#5d708f]">No pending approvals</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {pendingUsers.map((user: any) => (
+                <div
+                  key={user._id}
+                  className="rounded-[22px] border border-[#d8e7f1] bg-[#fbfdff] p-4"
+                >
+                  <div className="mb-3 flex items-center justify-between gap-4">
+                    <div>
+                      <h4 className="font-semibold text-[#0f2344]">
+                        {user.companyName}
+                      </h4>
+                      <p className="text-sm text-[#5d708f]">{user.email}</p>
+                      <p className="text-sm text-[#5d708f]">{user.phone}</p>
+                    </div>
+                    <p className="text-xs text-[#8fa4bf]">
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleApproveUser(user._id)}
+                      disabled={approvalLoading}
+                      className="flex items-center gap-1 rounded-full bg-[linear-gradient(135deg,#10b981_0%,#059669_100%)] px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(5,150,105,0.22)] transition hover:brightness-105 disabled:opacity-50"
+                    >
+                      <CheckCircleIcon className="h-4 w-4" />
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleRejectUser(user._id)}
+                      disabled={approvalLoading}
+                      className="flex items-center gap-1 rounded-full bg-[linear-gradient(135deg,#ef4444_0%,#dc2626_100%)] px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(220,38,38,0.18)] transition hover:brightness-105 disabled:opacity-50"
+                    >
+                      <XCircleIcon className="h-4 w-4" />
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Panel>
+
+        <Panel title="User Approval Statistics">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-[#d49b11]">
+                {approvalStats.pendingApprovals}
+              </div>
+              <div className="text-sm text-[#5d708f]">Pending</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-emerald-600">
+                {approvalStats.approvedUsers}
+              </div>
+              <div className="text-sm text-[#5d708f]">Approved</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-rose-600">
+                {approvalStats.rejectedUsers}
+              </div>
+              <div className="text-sm text-[#5d708f]">Rejected</div>
+            </div>
+          </div>
+        </Panel>
       </div>
 
-      {/* Additional Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <StatCard
           title="Total Projects"
           value={stats.totalProjects}
           icon={FolderIcon}
-          color="bg-indigo-500"
+          color="bg-[linear-gradient(135deg,#6366f1_0%,#4f46e5_100%)]"
           subtitle="Created projects"
         />
         <StatCard
           title="Active Projects"
           value={stats.activeProjects}
           icon={CalendarIcon}
-          color="bg-teal-500"
+          color="bg-[linear-gradient(135deg,#14b8a6_0%,#0f766e_100%)]"
           subtitle="Currently running"
         />
         <StatCard
           title="Total Hours"
           value={stats.totalHours}
           icon={ClockIcon}
-          color="bg-pink-500"
+          color="bg-[linear-gradient(135deg,#ec4899_0%,#db2777_100%)]"
           subtitle="Logged time"
         />
       </div>
 
-      {/* Charts and Additional Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Revenue Overview
-          </h3>
-          <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Panel title="Revenue Overview">
+          <div className="flex h-64 items-center justify-center rounded-[24px] bg-[linear-gradient(135deg,#eff8ff_0%,#f8fbff_100%)]">
             <div className="text-center">
-              <ChartBarIcon className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-500">Chart placeholder</p>
-              <p className="text-sm text-gray-400">
+              <ChartBarIcon className="mx-auto mb-2 h-12 w-12 text-[#8fa4bf]" />
+              <p className="text-[#4d5f7c]">Chart placeholder</p>
+              <p className="text-sm text-[#8fa4bf]">
                 Revenue analytics will be displayed here
               </p>
             </div>
           </div>
-        </div>
+        </Panel>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            User Activity
-          </h3>
-          <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+        <Panel title="User Activity">
+          <div className="flex h-64 items-center justify-center rounded-[24px] bg-[linear-gradient(135deg,#eff8ff_0%,#f8fbff_100%)]">
             <div className="text-center">
-              <UsersIcon className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-500">Chart placeholder</p>
-              <p className="text-sm text-gray-400">
+              <UsersIcon className="mx-auto mb-2 h-12 w-12 text-[#8fa4bf]" />
+              <p className="text-[#4d5f7c]">Chart placeholder</p>
+              <p className="text-sm text-[#8fa4bf]">
                 User activity analytics will be displayed here
               </p>
             </div>
           </div>
-        </div>
+        </Panel>
       </div>
 
-      {/* Bottom Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <RecentActivity />
-        <QuickActions />
-        <SystemHealth />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <Panel title="Recent Activity">
+          <div className="space-y-4">
+            {recentActivity.map((activity) => (
+              <div key={activity.id} className="flex items-center gap-3">
+                <div className={`h-2.5 w-2.5 rounded-full ${activity.color}`} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-[#0f2344]">
+                    {activity.action}
+                  </p>
+                  <p className="text-sm text-[#5d708f]">
+                    {activity.user} • {activity.time}
+                  </p>
+                </div>
+                <activity.icon className={`h-4 w-4 ${activity.color}`} />
+              </div>
+            ))}
+          </div>
+        </Panel>
+
+        <Panel title="Quick Actions">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-1">
+            {[
+              {
+                name: "View Users",
+                icon: UsersIcon,
+                href: "/admin/users",
+                color: "bg-[linear-gradient(135deg,#0aa6c9_0%,#0088c5_100%)]",
+                description: "Manage user accounts",
+              },
+              {
+                name: "Generate Report",
+                icon: DocumentTextIcon,
+                href: "/admin/reports",
+                color: "bg-[linear-gradient(135deg,#22c55e_0%,#16a34a_100%)]",
+                description: "Create system reports",
+              },
+              {
+                name: "Manage Billing",
+                icon: BanknotesIcon,
+                href: "/admin/billing",
+                color: "bg-[linear-gradient(135deg,#0f2344_0%,#1d4f91_100%)]",
+                description: "Handle subscriptions",
+              },
+            ].map((action) => (
+              <a
+                key={action.name}
+                href={action.href}
+                className="group flex items-center rounded-[22px] border border-[#d8e7f1] bg-[#fbfdff] p-3 transition hover:-translate-y-0.5 hover:border-[#0aa6c9]/30 hover:bg-[#f4fbff]"
+              >
+                <div
+                  className={`mr-3 rounded-2xl p-2.5 transition-transform group-hover:scale-110 ${action.color}`}
+                >
+                  <action.icon className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <span className="block text-sm font-semibold text-[#0f2344]">
+                    {action.name}
+                  </span>
+                  <span className="text-xs text-[#5d708f]">
+                    {action.description}
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </Panel>
+
+        <Panel title="System Health">
+          <div className="space-y-4">
+            {[
+              { name: "Server Status", status: "Online", color: "text-emerald-600" },
+              { name: "Database", status: "Connected", color: "text-emerald-600" },
+              { name: "API Response", status: "Normal", color: "text-emerald-600" },
+              { name: "Storage", status: "85% Used", color: "text-amber-600" },
+            ].map((item) => (
+              <div key={item.name} className="flex items-center justify-between">
+                <span className="text-sm text-[#4d5f7c]">{item.name}</span>
+                <span className={`text-sm font-semibold ${item.color}`}>
+                  {item.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Panel>
       </div>
     </div>
   );
