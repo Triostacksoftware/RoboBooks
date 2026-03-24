@@ -145,6 +145,36 @@ export default function AdminCmsPage() {
         </Link>
 
         <Link
+          href="/admin/cms/pre-footer-cta"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">App CTA Section</h2>
+          <p className="mt-3 text-gray-600">
+            Edit the start using RoboBooks CTA, feature pills, store badges, and mobile preview content.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/cms/contact-section"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Contact Section</h2>
+          <p className="mt-3 text-gray-600">
+            Edit the contact block, callback form heading, field labels, placeholders, and button text.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/cms/footer"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Footer Section</h2>
+          <p className="mt-3 text-gray-600">
+            View all footer groups, open footer dynamic pages, and manage the footer navigation structure overview.
+          </p>
+        </Link>
+
+        <Link
           href="/admin/cms/pricing-plans"
           className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
         >

@@ -6,7 +6,6 @@ const cmsContentSchema = new Schema(
       type: String,
       required: true,
       unique: true,
-      enum: ["hero", "about"],
     },
     content: {
       type: Schema.Types.Mixed,

@@ -4,45 +4,28 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
-import { gstTools } from '../../gst-tools/toolData';
 import {
+  defaultFooterContent,
   defaultLogoContent,
   fetchPublicCmsSection,
   resolveCmsAssetUrl,
+  type FooterCmsContent,
   type LogoCmsContent,
 } from '@/services/cmsService';
-
-const productLinks = [
-  { href: '/about', label: 'About RoboBooks' },
-  { href: '/contact', label: 'Book a demo' },
-  { href: '/register', label: 'Start free trial' },
-  { href: `/gst-tools/${gstTools[0].slug}`, label: gstTools[0].label },
-  { href: `/gst-tools/${gstTools[1].slug}`, label: gstTools[1].label },
-  { href: `/gst-tools/${gstTools[2].slug}`, label: gstTools[2].label },
-  { href: `/gst-tools/${gstTools[3].slug}`, label: gstTools[3].label },
-  { href: `/gst-tools/${gstTools[4].slug}`, label: gstTools[4].label },
-  { href: `/gst-tools/${gstTools[5].slug}`, label: gstTools[5].label },
-  { href: `/gst-tools/${gstTools[6].slug}`, label: gstTools[6].label },
-];
-
-const companyLinks = [
-  { href: '/about', label: 'Company' },
-  { href: '/contact', label: 'Contact' },
-  { href: '/faq', label: 'FAQ' },
-];
-
-const legalLinks = [
-  { href: '/legal/terms', label: 'Terms' },
-  { href: '/legal/privacy', label: 'Privacy' },
-  { href: '/legal/cookies', label: 'Cookies' },
-];
 
 export default function Footer() {
   const year = new Date().getFullYear();
   const [logo, setLogo] = useState<LogoCmsContent>(defaultLogoContent);
+  const [footerContent, setFooterContent] =
+    useState<FooterCmsContent>(defaultFooterContent);
 
   useEffect(() => {
-    fetchPublicCmsSection<LogoCmsContent>('logo', defaultLogoContent).then(setLogo);
+    fetchPublicCmsSection<LogoCmsContent>('logo', defaultLogoContent).then(
+      setLogo
+    );
+    fetchPublicCmsSection<FooterCmsContent>('footer', defaultFooterContent).then(
+      setFooterContent
+    );
   }, []);
 
   return (
@@ -65,7 +48,7 @@ export default function Footer() {
               />
             </Link>
             <p className="mt-6 max-w-md text-base leading-8 text-slate-300">
-              RoboBooks is an accounting SaaS platform for invoicing, bookkeeping, GST workflows, reporting, and operational finance control.
+              {footerContent.brandDescription}
             </p>
             <div className="mt-7 flex gap-3">
               {[Facebook, Twitter, Linkedin, Instagram].map((Icon, index) => (
@@ -82,12 +65,12 @@ export default function Footer() {
 
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-cyan-200">
-              Product
+              {footerContent.productTitle}
             </h3>
             <div className="mt-6 space-y-4">
-              {productLinks.map((link) => (
+              {footerContent.productLinks.map((link) => (
                 <Link
-                  key={link.label}
+                  key={`${link.label}-${link.href}`}
                   href={link.href}
                   className="block text-base text-slate-300 transition hover:text-white"
                 >
@@ -99,12 +82,12 @@ export default function Footer() {
 
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-cyan-200">
-              Company
+              {footerContent.companyTitle}
             </h3>
             <div className="mt-6 space-y-4">
-              {companyLinks.map((link) => (
+              {footerContent.companyLinks.map((link) => (
                 <Link
-                  key={link.label}
+                  key={`${link.label}-${link.href}`}
                   href={link.href}
                   className="block text-base text-slate-300 transition hover:text-white"
                 >
@@ -116,12 +99,12 @@ export default function Footer() {
 
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-cyan-200">
-              Legal
+              {footerContent.legalTitle}
             </h3>
             <div className="mt-6 space-y-4">
-              {legalLinks.map((link) => (
+              {footerContent.legalLinks.map((link) => (
                 <Link
-                  key={link.label}
+                  key={`${link.label}-${link.href}`}
                   href={link.href}
                   className="block text-base text-slate-300 transition hover:text-white"
                 >
@@ -133,8 +116,8 @@ export default function Footer() {
         </div>
 
         <div className="mt-14 flex flex-col gap-5 border-t border-white/10 pt-6 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} RoboBooks. All rights reserved.</p>
-          <p>Built for modern accounting workflows and growing businesses.</p>
+          <p>&copy; {year} {footerContent.copyrightText}</p>
+          <p>{footerContent.bottomText}</p>
         </div>
       </div>
     </footer>

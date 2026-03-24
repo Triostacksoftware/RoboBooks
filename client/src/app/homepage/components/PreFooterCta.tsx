@@ -2,15 +2,27 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { ArrowRight, CheckCircle2, Play, Sparkles } from 'lucide-react';
-
-const benefits = [
-  'GST-ready invoicing',
-  'Books, banking, and reports in one place',
-  'Built for growing Indian businesses',
-];
+import {
+  defaultPreFooterCtaContent,
+  fetchPublicCmsSection,
+  resolveCmsAssetUrl,
+  type PreFooterCtaCmsContent,
+} from '@/services/cmsService';
 
 export default function PreFooterCta() {
+  const [content, setContent] = useState<PreFooterCtaCmsContent>(
+    defaultPreFooterCtaContent
+  );
+
+  useEffect(() => {
+    fetchPublicCmsSection<PreFooterCtaCmsContent>(
+      'preFooterCta',
+      defaultPreFooterCtaContent
+    ).then(setContent);
+  }, []);
+
   return (
     <section className="relative overflow-hidden bg-[#eef3fb] py-16 text-slate-900 lg:py-20">
       <div className="absolute inset-0">
@@ -22,36 +34,36 @@ export default function PreFooterCta() {
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-[#0f2344]/10 bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-[#0f2344] shadow-sm backdrop-blur">
             <Sparkles size={14} className="text-[#0aa6c9]" />
-            Start with RoboBooks
+            {content.eyebrow}
           </div>
 
           <h2 className="mt-6 max-w-2xl text-4xl font-bold leading-tight text-[#18263c] sm:text-5xl">
-            Start using RoboBooks today
+            {content.title}
           </h2>
 
           <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-            Bring invoicing, GST workflows, payment follow-ups, and accounting visibility together in one clean workspace your whole team can rely on.
+            {content.description}
           </p>
 
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
             <Link
-              href="/register"
+              href={content.primaryButtonUrl}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-[#4f46e5] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-[#4f46e5]/20 transition hover:bg-[#4338ca]"
             >
-              Start Free Trial
+              {content.primaryButtonLabel}
               <ArrowRight size={18} />
             </Link>
             <Link
-              href="/contact"
+              href={content.secondaryButtonUrl}
               className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-8 py-4 text-base font-semibold text-slate-900 transition hover:border-slate-400 hover:bg-slate-50"
             >
-              Book Demo
+              {content.secondaryButtonLabel}
               <Play size={18} />
             </Link>
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            {benefits.map((item) => (
+            {content.benefits.map((item) => (
               <div
                 key={item}
                 className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm"
@@ -64,16 +76,16 @@ export default function PreFooterCta() {
 
           <div className="mt-10">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-              Download app on
+              {content.downloadLabel}
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-4">
               <Link
-                href="/register"
+                href={content.playStoreUrl}
                 className="rounded-2xl bg-black px-4 py-2 shadow-md transition hover:scale-[1.02]"
                 aria-label="Download RoboBooks on Google Play"
               >
                 <Image
-                  src="/images/playstore.png"
+                  src={resolveCmsAssetUrl(content.playStoreImageUrl)}
                   alt="Get it on Google Play"
                   width={180}
                   height={54}
@@ -81,12 +93,12 @@ export default function PreFooterCta() {
                 />
               </Link>
               <Link
-                href="/register"
+                href={content.appStoreUrl}
                 className="rounded-2xl bg-black px-4 py-2 shadow-md transition hover:scale-[1.02]"
                 aria-label="Download RoboBooks on App Store"
               >
                 <Image
-                  src="/images/appstore.png"
+                  src={resolveCmsAssetUrl(content.appStoreImageUrl)}
                   alt="Download on the App Store"
                   width={180}
                   height={54}
@@ -104,23 +116,28 @@ export default function PreFooterCta() {
           <div className="relative h-[390px] w-full max-w-[560px] sm:h-[450px]">
             <div className="absolute left-1/2 top-1/2 w-[64%] -translate-x-1/2 -translate-y-1/2 sm:w-[60%]">
               <PhoneMockup
-                title="RoboBooks App"
-                subtitle="Collections"
-                accent="bg-emerald-500"
+                title={content.phoneTitle}
+                subtitle={content.phoneSubtitle}
+                accent={content.phoneAccentColor}
+                imageUrl={content.dashboardPreviewImageUrl}
                 imageClassName="object-left-top"
               />
             </div>
 
             <div className="absolute left-[2%] top-[18%] hidden rounded-[28px] border border-white/70 bg-white/80 px-5 py-4 shadow-[0_20px_45px_rgba(15,35,68,0.14)] backdrop-blur lg:block">
-              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[#0aa6c9]">Collected</p>
-              <p className="mt-2 text-3xl font-bold text-[#18263c]">Rs. 11.4L</p>
-              <p className="mt-1 text-sm text-slate-500">This month</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[#0aa6c9]">
+                {content.collectedLabel}
+              </p>
+              <p className="mt-2 text-3xl font-bold text-[#18263c]">{content.collectedValue}</p>
+              <p className="mt-1 text-sm text-slate-500">{content.collectedMeta}</p>
             </div>
 
             <div className="absolute bottom-[12%] right-[2%] hidden rounded-[28px] border border-white/70 bg-white/80 px-5 py-4 shadow-[0_20px_45px_rgba(15,35,68,0.14)] backdrop-blur lg:block">
-              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[#0aa6c9]">Invoices</p>
-              <p className="mt-2 text-3xl font-bold text-[#18263c]">126</p>
-              <p className="mt-1 text-sm text-slate-500">Auto-tracked in RoboBooks</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[#0aa6c9]">
+                {content.invoicesLabel}
+              </p>
+              <p className="mt-2 text-3xl font-bold text-[#18263c]">{content.invoicesValue}</p>
+              <p className="mt-1 text-sm text-slate-500">{content.invoicesMeta}</p>
             </div>
           </div>
         </div>
@@ -133,10 +150,11 @@ type PhoneMockupProps = {
   title: string;
   subtitle: string;
   accent: string;
+  imageUrl: string;
   imageClassName?: string;
 };
 
-function PhoneMockup({ title, subtitle, accent, imageClassName }: PhoneMockupProps) {
+function PhoneMockup({ title, subtitle, accent, imageUrl, imageClassName }: PhoneMockupProps) {
   return (
     <div className="rounded-[2.8rem] bg-[#111827] p-[10px] shadow-[0_30px_80px_rgba(15,35,68,0.28)]">
       <div className="relative overflow-hidden rounded-[2.3rem] border border-white/10 bg-white">
@@ -154,7 +172,7 @@ function PhoneMockup({ title, subtitle, accent, imageClassName }: PhoneMockupPro
 
         <div className="relative aspect-[10/18] bg-[#f8fbff]">
           <Image
-            src="/images/dashboard.png"
+            src={resolveCmsAssetUrl(imageUrl)}
             alt={`${title} mobile preview`}
             fill
             className={`object-cover ${imageClassName ?? ''}`}

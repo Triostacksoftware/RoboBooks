@@ -60,12 +60,13 @@ const Navbar: React.FC = () => {
             href="/"
             className="flex items-center gap-3 lg:absolute lg:inset-y-0 lg:left-0 lg:w-[360px] lg:items-center lg:justify-start lg:pl-4 lg:gap-0"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg lg:hidden">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-lg lg:hidden">
               <Image
                 src={resolveCmsAssetUrl(logo.logoUrl)}
                 alt={logo.altText}
-                width={42}
-                height={42}
+                width={52}
+                height={52}
+                className="h-12 w-auto object-contain"
                 priority
               />
             </div>
@@ -73,9 +74,9 @@ const Navbar: React.FC = () => {
               <Image
                 src={resolveCmsAssetUrl(logo.logoUrl)}
                 alt={logo.altText}
-                width={170}
-                height={52}
-                className="h-12 w-auto object-contain drop-shadow-md"
+                width={220}
+                height={72}
+                className="h-16 w-auto object-contain drop-shadow-md"
                 priority
               />
             </div>
