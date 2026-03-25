@@ -14,6 +14,14 @@ export function resolveCmsAssetUrl(pathOrUrl: string) {
     return pathOrUrl;
   }
 
+  if (
+    pathOrUrl.startsWith("/images/") ||
+    pathOrUrl.startsWith("/favicon") ||
+    pathOrUrl.startsWith("/_next/")
+  ) {
+    return pathOrUrl;
+  }
+
   return `${backendUrl}${pathOrUrl.startsWith("/") ? pathOrUrl : `/${pathOrUrl}`}`;
 }
 

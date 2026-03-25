@@ -3,3 +3,12 @@ npm-debug.log
 .env
 .env.local
 .git
+Dockerfile*
+README.md
+*.md
+test-*
+check-*
+create-*
+fix-*
+debug-*
+uploads
