@@ -1,329 +1,660 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/api";
+import { useToast } from "@/contexts/ToastContext";
 import {
-  DocumentTextIcon,
-  ChartBarIcon,
-  CalendarIcon,
   ArrowDownTrayIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  DocumentTextIcon,
   EyeIcon,
   PlusIcon,
-  ClockIcon,
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 
+type ReportCategory =
+  | "business_overview"
+  | "sales"
+  | "purchases_expenses"
+  | "banking"
+  | "accounting"
+  | "time_tracking"
+  | "inventory"
+  | "budgets"
+  | "currency"
+  | "activity"
+  | "advanced_financial"
+  | "tds_reports"
+  | "gst_reports";
+
 interface Report {
-  id: number;
+  _id: string;
   name: string;
-  type: string;
-  lastGenerated: string;
-  status: string;
-  size: string;
+  description: string;
+  type: "system" | "custom";
+  category: ReportCategory;
+  subCategory?: string;
+  isFavorite: boolean;
+  isPublic: boolean;
+  lastRun?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ReportsResponse {
+  success: boolean;
+  data: Report[];
+}
+
+interface GenerateResponse {
+  success: boolean;
+  data: unknown;
+}
+
+interface CreateReportPayload {
+  name: string;
+  description: string;
+  category: ReportCategory;
+  subCategory: string;
+  type: "custom";
+  isPublic: boolean;
+  parameters: Record<string, unknown>;
+  filters: {
+    dateRange: {
+      start: string;
+      end: string;
+    };
+    customers: string[];
+    items: string[];
+    categories: string[];
+    status: string[];
+  };
+}
+
+const reportCategories: { value: ReportCategory; label: string }[] = [
+  { value: "business_overview", label: "Business Overview" },
+  { value: "sales", label: "Sales" },
+  { value: "purchases_expenses", label: "Purchases & Expenses" },
+  { value: "banking", label: "Banking" },
+  { value: "accounting", label: "Accounting" },
+  { value: "time_tracking", label: "Time Tracking" },
+  { value: "inventory", label: "Inventory" },
+  { value: "budgets", label: "Budgets" },
+  { value: "currency", label: "Currency" },
+  { value: "activity", label: "Activity" },
+  { value: "advanced_financial", label: "Advanced Financial" },
+  { value: "tds_reports", label: "TDS Reports" },
+  { value: "gst_reports", label: "GST Reports" },
+];
+
+const reportTemplates: Array<{
+  name: string;
+  description: string;
+  category: ReportCategory;
+}> = [
+  {
+    name: "Business Overview",
+    description: "Invoice, customer, revenue, and recent activity summary.",
+    category: "business_overview",
+  },
+  {
+    name: "Sales Performance",
+    description: "Track sales trends and top customer performance.",
+    category: "sales",
+  },
+  {
+    name: "Expense Summary",
+    description: "Analyze purchases and expense movement.",
+    category: "purchases_expenses",
+  },
+  {
+    name: "Accounting Snapshot",
+    description: "Review accounting-level totals and balances.",
+    category: "accounting",
+  },
+  {
+    name: "GST Report",
+    description: "Prepare GST-facing report structures faster.",
+    category: "gst_reports",
+  },
+  {
+    name: "Activity Report",
+    description: "Review recent system or business activity data.",
+    category: "activity",
+  },
+];
+
+const createInitialForm = (): CreateReportPayload => ({
+  name: "",
+  description: "System Generated",
+  category: "business_overview",
+  subCategory: "",
+  type: "custom",
+  isPublic: false,
+  parameters: {},
+  filters: {
+    dateRange: {
+      start: "",
+      end: "",
+    },
+    customers: [],
+    items: [],
+    categories: [],
+    status: [],
+  },
+});
+
+const formatDate = (value?: string | null) => {
+  if (!value) {
+    return "Never";
+  }
+
+  return new Date(value).toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+
+const prettifyCategory = (category: ReportCategory) =>
+  reportCategories.find((item) => item.value === category)?.label ?? category;
+
+const sanitizeFileName = (value: string) =>
+  value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+const downloadJson = (fileName: string, data: unknown) => {
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+};
+
+function PreviewModal({
+  reportName,
+  previewData,
+  onClose,
+}: {
+  reportName: string;
+  previewData: unknown;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
+      <div className="w-full max-w-4xl rounded-2xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">{reportName}</h3>
+            <p className="text-sm text-slate-500">Generated preview</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="max-h-[70vh] overflow-auto px-6 py-5">
+          <pre className="whitespace-pre-wrap break-words rounded-xl bg-slate-950 p-4 text-xs text-slate-100">
+            {JSON.stringify(previewData, null, 2)}
+          </pre>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GenerateReportModal({
+  formData,
+  isSubmitting,
+  onClose,
+  onChange,
+  onSubmit,
+}: {
+  formData: CreateReportPayload;
+  isSubmitting: boolean;
+  onClose: () => void;
+  onChange: (next: CreateReportPayload) => void;
+  onSubmit: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
+      <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">Generate New Report</h3>
+            <p className="text-sm text-slate-500">Create a reusable report entry from template or custom details.</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="space-y-5 px-6 py-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Report Name
+              </label>
+              <input
+                value={formData.name}
+                onChange={(e) => onChange({ ...formData, name: e.target.value })}
+                className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                placeholder="Enter report name"
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Category
+              </label>
+              <select
+                value={formData.category}
+                onChange={(e) =>
+                  onChange({
+                    ...formData,
+                    category: e.target.value as ReportCategory,
+                  })
+                }
+                className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              >
+                {reportCategories.map((category) => (
+                  <option key={category.value} value={category.value}>
+                    {category.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Description
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) =>
+                onChange({ ...formData, description: e.target.value })
+              }
+              rows={3}
+              className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              placeholder="Enter description"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Start Date
+              </label>
+              <input
+                type="date"
+                value={formData.filters.dateRange.start}
+                onChange={(e) =>
+                  onChange({
+                    ...formData,
+                    filters: {
+                      ...formData.filters,
+                      dateRange: {
+                        ...formData.filters.dateRange,
+                        start: e.target.value,
+                      },
+                    },
+                  })
+                }
+                className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                End Date
+              </label>
+              <input
+                type="date"
+                value={formData.filters.dateRange.end}
+                onChange={(e) =>
+                  onChange({
+                    ...formData,
+                    filters: {
+                      ...formData.filters,
+                      dateRange: {
+                        ...formData.filters.dateRange,
+                        end: e.target.value,
+                      },
+                    },
+                  })
+                }
+                className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-3 border-t border-slate-200 pt-5">
+            <button
+              onClick={onClose}
+              className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onSubmit}
+              disabled={isSubmitting || !formData.name.trim()}
+              className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isSubmitting ? "Creating..." : "Create Report"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function AdminReports() {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
-  const [selectedReportType, setSelectedReportType] = useState("");
-  const [dateRange, setDateRange] = useState("last_30_days");
-
-  useEffect(() => {
-    fetchReports();
-  }, []);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeReportId, setActiveReportId] = useState<string | null>(null);
+  const [formData, setFormData] = useState<CreateReportPayload>(createInitialForm);
+  const [previewReportName, setPreviewReportName] = useState("");
+  const [previewData, setPreviewData] = useState<unknown>(null);
+  const { showToast } = useToast();
 
   const fetchReports = async () => {
     try {
-      const response = await api<{ success: boolean; reports: Report[] }>(
-        "/api/admin/reports"
-      );
-      if (response.success) {
-        setReports(response.reports || []);
-      }
+      setLoading(true);
+      const response = await api<ReportsResponse>("/api/admin/reports");
+      setReports(response.data || []);
     } catch (error) {
       console.error("Error fetching reports:", error);
-      // Fallback to mock data
-      const mockReports = [
-        {
-          id: 1,
-          name: "User Activity Report",
-          type: "Analytics",
-          lastGenerated: "2024-01-15",
-          status: "completed",
-          size: "2.3 MB",
-        },
-        {
-          id: 2,
-          name: "Revenue Summary",
-          type: "Financial",
-          lastGenerated: "2024-01-14",
-          status: "completed",
-          size: "1.8 MB",
-        },
-        {
-          id: 3,
-          name: "System Performance",
-          type: "Technical",
-          lastGenerated: "2024-01-13",
-          status: "processing",
-          size: "0.5 MB",
-        },
-      ];
-      setReports(mockReports);
+      showToast(
+        error instanceof Error ? error.message : "Failed to load reports",
+        "error"
+      );
+      setReports([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const ReportCard = ({ report }: { report: Report }) => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="p-3 bg-blue-500 rounded-lg">
-            <DocumentTextIcon className="h-6 w-6 text-white" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">
-              {report.name}
-            </h3>
-            <p className="text-sm text-gray-600">{report.type}</p>
-            <p className="text-xs text-gray-500">
-              Last generated: {report.lastGenerated}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${
-              report.status === "completed"
-                ? "bg-green-100 text-green-800"
-                : "bg-yellow-100 text-yellow-800"
-            }`}
-          >
-            {report.status}
-          </span>
-          <span className="text-xs text-gray-500">{report.size}</span>
-        </div>
-      </div>
-      <div className="mt-4 flex space-x-2">
-        <button className="flex items-center space-x-1 px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-lg">
-          <EyeIcon className="h-4 w-4" />
-          <span>View</span>
-        </button>
-        {report.status === "completed" && (
-          <button className="flex items-center space-x-1 px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded-lg">
-            <ArrowDownTrayIcon className="h-4 w-4" />
-            <span>Download</span>
-          </button>
-        )}
-        {report.status === "failed" && (
-          <button className="flex items-center space-x-1 px-3 py-1 text-sm text-orange-600 hover:bg-orange-50 rounded-lg">
-            <ExclamationTriangleIcon className="h-4 w-4" />
-            <span>Retry</span>
-          </button>
-        )}
-      </div>
-    </div>
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  const generatedReports = useMemo(
+    () => reports.filter((report) => Boolean(report.lastRun)).length,
+    [reports]
   );
 
-  const GenerateReportModal = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Generate New Report</h3>
-        
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Report Type
-            </label>
-            <select
-              value={selectedReportType}
-              onChange={(e) => setSelectedReportType(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
-              <option value="">Select report type</option>
-              <option value="Analytics">Analytics Report</option>
-              <option value="Financial">Financial Report</option>
-              <option value="Technical">Technical Report</option>
-              <option value="Security">Security Report</option>
-              <option value="Custom">Custom Report</option>
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Date Range
-            </label>
-            <select
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
-              <option value="last_7_days">Last 7 days</option>
-              <option value="last_30_days">Last 30 days</option>
-              <option value="last_90_days">Last 90 days</option>
-              <option value="last_year">Last year</option>
-              <option value="custom">Custom range</option>
-            </select>
-          </div>
-        </div>
-        
-        <div className="flex space-x-3 mt-6">
-          <button
-            onClick={() => setShowGenerateModal(false)}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => {
-              // You should define the logic for generating the report here.
-              // For now, just close the modal as a placeholder.
-              // Replace this with your actual report generation logic.
-              setShowGenerateModal(false);
-            }}
-            disabled={!selectedReportType}
-            className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Generate Report
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+  const pendingReports = reports.length - generatedReports;
+
+  const createReport = async () => {
+    if (!formData.name.trim()) {
+      showToast("Report name is required", "error");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await api("/api/admin/reports", {
+        method: "POST",
+        json: formData,
+      });
+      showToast("Report created successfully", "success");
+      setShowGenerateModal(false);
+      setFormData(createInitialForm());
+      await fetchReports();
+    } catch (error) {
+      console.error("Error creating report:", error);
+      showToast(
+        error instanceof Error ? error.message : "Failed to create report",
+        "error"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const generateReportData = async (report: Report, mode: "view" | "download") => {
+    try {
+      setActiveReportId(report._id);
+      const response = await api<GenerateResponse>(
+        `/api/admin/reports/${report._id}/generate`,
+        {
+          method: "POST",
+          json: {
+            filters: {},
+          },
+        }
+      );
+
+      if (mode === "download") {
+        const datePart = new Date().toISOString().split("T")[0];
+        downloadJson(
+          `${sanitizeFileName(report.name || "report")}-${datePart}.json`,
+          response.data
+        );
+        showToast("Report downloaded successfully", "success");
+      } else {
+        setPreviewReportName(report.name);
+        setPreviewData(response.data);
+      }
+
+      await fetchReports();
+    } catch (error) {
+      console.error("Error generating report:", error);
+      showToast(
+        error instanceof Error ? error.message : "Failed to generate report",
+        "error"
+      );
+    } finally {
+      setActiveReportId(null);
+    }
+  };
+
+  const openTemplate = (template: (typeof reportTemplates)[number]) => {
+    setFormData({
+      ...createInitialForm(),
+      name: template.name,
+      description: template.description,
+      category: template.category,
+    });
+    setShowGenerateModal(true);
+  };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex h-64 items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading reports...</p>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-violet-600 border-t-transparent" />
+          <p className="text-slate-600">Loading reports...</p>
         </div>
       </div>
     );
   }
 
-  const completedReports = reports.filter(r => r.status === 'completed').length;
-  const processingReports = reports.filter(r => r.status === 'processing').length;
-  const failedReports = reports.filter(r => r.status === 'failed').length;
-
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Reports</h1>
-          <p className="text-gray-600 mt-1">
-            Generate and manage system reports
+          <h1 className="text-2xl font-bold text-slate-900">Reports</h1>
+          <p className="mt-1 text-slate-600">
+            Generate, preview, and download reports from live data.
           </p>
         </div>
-        <button 
-          onClick={() => setShowGenerateModal(true)}
-          className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+        <button
+          onClick={() => {
+            setFormData(createInitialForm());
+            setShowGenerateModal(true);
+          }}
+          className="flex items-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 font-medium text-white transition hover:bg-violet-700"
         >
           <PlusIcon className="h-5 w-5" />
           <span>Generate New Report</span>
         </button>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center">
-            <div className="p-3 bg-blue-500 rounded-lg">
+            <div className="rounded-xl bg-blue-500 p-3">
               <DocumentTextIcon className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Reports</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {reports.length}
-              </p>
+              <p className="text-sm font-medium text-slate-500">Total Reports</p>
+              <p className="text-2xl font-bold text-slate-900">{reports.length}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center">
-            <div className="p-3 bg-green-500 rounded-lg">
+            <div className="rounded-xl bg-green-500 p-3">
               <CheckCircleIcon className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Completed</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {reports.filter((r) => r.status === "completed").length}
-              </p>
+              <p className="text-sm font-medium text-slate-500">Generated</p>
+              <p className="text-2xl font-bold text-slate-900">{generatedReports}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center">
-            <div className="p-3 bg-yellow-500 rounded-lg">
+            <div className="rounded-xl bg-amber-500 p-3">
               <ClockIcon className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Processing</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {reports.filter((r) => r.status === "processing").length}
-              </p>
+              <p className="text-sm font-medium text-slate-500">Pending Run</p>
+              <p className="text-2xl font-bold text-slate-900">{pendingReports}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Reports Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {reports.map((report) => (
-          <ReportCard key={report.id} report={report} />
-        ))}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {reports.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-500 lg:col-span-2">
+            No reports found yet. Create one from the button above or pick a template below.
+          </div>
+        ) : (
+          reports.map((report) => {
+            const isBusy = activeReportId === report._id;
+            const statusLabel = report.lastRun ? "generated" : "pending";
+
+            return (
+              <div
+                key={report._id}
+                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start gap-4">
+                    <div className="rounded-xl bg-blue-500 p-3">
+                      <DocumentTextIcon className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-slate-900">
+                        {report.name}
+                      </h3>
+                      <p className="text-sm text-slate-600">
+                        {prettifyCategory(report.category)}
+                      </p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        {report.description || "System Generated"}
+                      </p>
+                      <p className="mt-2 text-xs text-slate-500">
+                        Last generated: {formatDate(report.lastRun)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${
+                      report.lastRun
+                        ? "bg-green-100 text-green-700"
+                        : "bg-amber-100 text-amber-700"
+                    }`}
+                  >
+                    {statusLabel}
+                  </span>
+                </div>
+
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <button
+                    onClick={() => generateReportData(report, "view")}
+                    disabled={isBusy}
+                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <EyeIcon className="h-4 w-4" />
+                    <span>{isBusy ? "Working..." : "View"}</span>
+                  </button>
+                  <button
+                    onClick={() => generateReportData(report, "download")}
+                    disabled={isBusy}
+                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-green-600 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <ArrowDownTrayIcon className="h-4 w-4" />
+                    <span>{isBusy ? "Preparing..." : "Download"}</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
 
-      {/* Report Templates */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Report Templates
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[
-            {
-              name: "User Analytics",
-              description: "Detailed user activity and engagement metrics",
-            },
-            {
-              name: "Financial Summary",
-              description: "Revenue, expenses, and profit analysis",
-            },
-            {
-              name: "System Health",
-              description: "Performance and uptime statistics",
-            },
-            {
-              name: "Security Audit",
-              description: "Security events and access logs",
-            },
-            {
-              name: "Usage Statistics",
-              description: "Feature usage and adoption rates",
-            },
-            {
-              name: "Custom Report",
-              description: "Create your own custom report",
-            },
-          ].map((template, index) => (
-            <div
-              key={index}
-              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-slate-900">Report Templates</h3>
+        <p className="mt-1 text-sm text-slate-500">
+          Click any template to prefill the generator and create a working report.
+        </p>
+        <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {reportTemplates.map((template) => (
+            <button
+              key={template.name}
+              onClick={() => openTemplate(template)}
+              className="rounded-2xl border border-slate-200 p-4 text-left transition hover:border-sky-300 hover:bg-sky-50"
             >
-              <h4 className="font-medium text-gray-900">{template.name}</h4>
-              <p className="text-sm text-gray-600 mt-1">
-                {template.description}
+              <h4 className="font-semibold text-slate-900">{template.name}</h4>
+              <p className="mt-1 text-sm text-slate-600">{template.description}</p>
+              <p className="mt-3 text-xs font-medium uppercase tracking-wide text-sky-700">
+                {prettifyCategory(template.category)}
               </p>
-            </div>
+            </button>
           ))}
         </div>
       </div>
 
-      {showGenerateModal && <GenerateReportModal />}
+      {showGenerateModal && (
+        <GenerateReportModal
+          formData={formData}
+          isSubmitting={isSubmitting}
+          onClose={() => setShowGenerateModal(false)}
+          onChange={setFormData}
+          onSubmit={createReport}
+        />
+      )}
+
+      {previewData !== null && (
+        <PreviewModal
+          reportName={previewReportName}
+          previewData={previewData}
+          onClose={() => {
+            setPreviewData(null);
+            setPreviewReportName("");
+          }}
+        />
+      )}
     </div>
   );
 }

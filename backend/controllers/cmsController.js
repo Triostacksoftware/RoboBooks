@@ -596,6 +596,7 @@ const CMS_DEFAULTS = {
         name: "Quarterly",
         price: "Rs. 2,499",
         duration: "/3 months",
+        imageUrl: "",
         description:
           "A flexible entry plan for small businesses starting with structured invoicing and bookkeeping.",
         features: [
@@ -608,6 +609,7 @@ const CMS_DEFAULTS = {
         name: "Semi-Annual",
         price: "Rs. 4,499",
         duration: "/6 months",
+        imageUrl: "",
         description:
           "Balanced pricing for growing teams that need deeper finance visibility and smoother operations.",
         features: [
@@ -620,6 +622,7 @@ const CMS_DEFAULTS = {
         name: "Annual",
         price: "Rs. 7,999",
         duration: "/12 months",
+        imageUrl: "",
         description:
           "Best value for companies that want a complete accounting SaaS workflow throughout the year.",
         features: [

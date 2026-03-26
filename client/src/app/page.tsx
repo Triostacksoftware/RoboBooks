@@ -11,7 +11,7 @@ import ServicesSection from './homepage/components/ServicesSection'
 import TrustedMarquee from './homepage/components/TrustedMarquee'
 import IndustriesSection from './homepage/components/IndustriesSection'
 import BusinessBenefits from './homepage/components/BusinessBenefits'
-import AboutSplit from './homepage/components/AboutSplit'
+import PricingPlans from './homepage/components/PricingPlans'
 import TeamManagement from './homepage/components/TeamManagement'
 import TrustedAcrossIndustries from './homepage/components/TrustedAcrossIndustries'
 import FaqSection from './homepage/components/FaqSection'
@@ -34,7 +34,7 @@ const page = () => {
     <FeaturesSection/>
     <Usability/>
     <BusinessBenefits/>
-    <AboutSplit/>
+    <PricingPlans/>
     <TrustedAcrossIndustries/>
     <TeamManagement/>
     <FaqSection/>

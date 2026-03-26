@@ -32,6 +32,15 @@ import {
   uploadCmsImage,
   uploadCmsImageMiddleware,
 } from "../controllers/cmsController.js";
+import Bill from "../models/Bill.js";
+import Invoice from "../models/invoicemodel.js";
+import Payment from "../models/Payment.js";
+import RecurringBill from "../models/RecurringBill.js";
+import {
+  getAdminReports,
+  createAdminReport,
+  generateAdminReport,
+} from "../controllers/adminReportController.js";
 
 const router = express.Router();
 
@@ -49,6 +58,14 @@ router.post(
 );
 router.get("/cms/:section", adminAuthGuard, requirePermission("manage_content"), getCmsSection);
 router.put("/cms/:section", adminAuthGuard, requirePermission("manage_content"), upsertCmsSection);
+router.get("/reports", adminAuthGuard, requirePermission("view_reports"), getAdminReports);
+router.post("/reports", adminAuthGuard, requirePermission("view_reports"), createAdminReport);
+router.post(
+  "/reports/:id/generate",
+  adminAuthGuard,
+  requirePermission("view_reports"),
+  generateAdminReport
+);
 
 // Simple admin creation route (for testing - remove in production)
 router.post("/create-simple", async (req, res) => {
@@ -474,79 +491,41 @@ router.get(
   requirePermission("manage_billing"),
   async (req, res) => {
     try {
-      // Mock billing data - in production, this would fetch from billing/subscription collections
+      const [recurringBills, bills, invoices, payments] = await Promise.all([
+        RecurringBill.find({}).sort({ nextDueDate: 1, createdAt: -1 }).limit(20).lean(),
+        Bill.find({}).sort({ createdAt: -1 }).limit(20).lean(),
+        Invoice.find({}).sort({ invoiceDate: -1, created_at: -1 }).limit(20).lean(),
+        Payment.find({})
+          .populate("billIds", "billNumber totalAmount status")
+          .sort({ paymentDate: -1, createdAt: -1 })
+          .limit(20)
+          .lean(),
+      ]);
+
+      const monthlyRevenue = payments
+        .filter((payment) => payment.status === "completed")
+        .reduce((sum, payment) => sum + (payment.amount || 0), 0);
+
+      const paidInvoices = invoices.filter((invoice) => invoice.status === "Paid").length;
+      const overdueInvoices = invoices.filter((invoice) => invoice.status === "Overdue").length;
+      const activeRecurringBills = recurringBills.filter(
+        (bill) => bill.status === "active"
+      ).length;
+
       const billingData = {
-        subscriptions: [
-          {
-            id: 1,
-            companyName: "TechCorp Inc",
-            plan: "Premium",
-            amount: 299,
-            status: "active",
-            nextBilling: "2024-02-15",
-            email: "admin@techcorp.com",
-          },
-          {
-            id: 2,
-            companyName: "StartupXYZ",
-            plan: "Basic",
-            amount: 99,
-            status: "active",
-            nextBilling: "2024-02-20",
-            email: "contact@startupxyz.com",
-          },
-          {
-            id: 3,
-            companyName: "Enterprise Ltd",
-            plan: "Enterprise",
-            amount: 599,
-            status: "cancelled",
-            nextBilling: "2024-02-10",
-            email: "info@enterprise.com",
-          },
-        ],
-        invoices: [
-          {
-            id: "INV-001",
-            companyName: "TechCorp Inc",
-            amount: 299,
-            status: "paid",
-            dueDate: "2024-01-15",
-            paidDate: "2024-01-14",
-          },
-          {
-            id: "INV-002",
-            companyName: "StartupXYZ",
-            amount: 99,
-            status: "paid",
-            dueDate: "2024-01-20",
-            paidDate: "2024-01-19",
-          },
-          {
-            id: "INV-003",
-            companyName: "Enterprise Ltd",
-            amount: 599,
-            status: "overdue",
-            dueDate: "2024-01-10",
-            paidDate: null,
-          },
-        ],
-        payments: [
-          {
-            id: "PAY-001",
-            companyName: "TechCorp Inc",
-            amount: 299,
-            method: "Credit Card",
-            date: "2024-01-14",
-          },
-          {
-            id: "PAY-002",
-            companyName: "StartupXYZ",
-            amount: 99,
-            method: "Bank Transfer",
-            date: "2024-01-19",
-          },
-        ],
+        recurringBills,
+        bills,
+        invoices,
+        payments,
+        stats: {
+          monthlyRevenue,
+          activeRecurringBills,
+          paidInvoices,
+          overdueInvoices,
+          totalBills: bills.length,
+          completedPayments: payments.filter((payment) => payment.status === "completed")
+            .length,
+        },
       };
 
       res.json({
@@ -558,6 +537,163 @@ router.get(
       res
         .status(500)
         .json({ success: false, message: "Failed to fetch billing data" });
+    }
+  }
+);
+
+router.get(
+  "/billing/bills/:id",
+  adminAuthGuard,
+  requirePermission("manage_billing"),
+  async (req, res) => {
+    try {
+      const bill = await Bill.findById(req.params.id).lean();
+
+      if (!bill) {
+        return res.status(404).json({ success: false, message: "Bill not found" });
+      }
+
+      res.json({ success: true, data: bill });
+    } catch (error) {
+      console.error("Admin bill detail error:", error);
+      res.status(500).json({ success: false, message: "Failed to fetch bill details" });
+    }
+  }
+);
+
+router.get(
+  "/billing/invoices/:id",
+  adminAuthGuard,
+  requirePermission("manage_billing"),
+  async (req, res) => {
+    try {
+      const invoice = await Invoice.findById(req.params.id).lean();
+
+      if (!invoice) {
+        return res.status(404).json({ success: false, message: "Invoice not found" });
+      }
+
+      res.json({ success: true, data: invoice });
+    } catch (error) {
+      console.error("Admin invoice detail error:", error);
+      res.status(500).json({ success: false, message: "Failed to fetch invoice details" });
+    }
+  }
+);
+
+router.get(
+  "/billing/payments/:id",
+  adminAuthGuard,
+  requirePermission("manage_billing"),
+  async (req, res) => {
+    try {
+      const payment = await Payment.findById(req.params.id)
+        .populate("billIds", "billNumber totalAmount status")
+        .lean();
+
+      if (!payment) {
+        return res.status(404).json({ success: false, message: "Payment not found" });
+      }
+
+      res.json({ success: true, data: payment });
+    } catch (error) {
+      console.error("Admin payment detail error:", error);
+      res.status(500).json({ success: false, message: "Failed to fetch payment details" });
+    }
+  }
+);
+
+router.post(
+  "/billing/recurring-bills/:id/create-bill",
+  adminAuthGuard,
+  requirePermission("manage_billing"),
+  async (req, res) => {
+    try {
+      const recurringBill = await RecurringBill.findById(req.params.id);
+
+      if (!recurringBill) {
+        return res.status(404).json({ success: false, message: "Recurring bill not found" });
+      }
+
+      if (recurringBill.status !== "active") {
+        return res.status(400).json({
+          success: false,
+          message: "Only active recurring bills can generate a bill",
+        });
+      }
+
+      const bill = recurringBill.createBill();
+      await bill.save();
+
+      recurringBill.nextDueDate = recurringBill.calculateNextDueDate();
+      recurringBill.lastCreated = new Date();
+      await recurringBill.save();
+
+      res.json({
+        success: true,
+        message: "Bill generated successfully",
+        data: bill,
+      });
+    } catch (error) {
+      console.error("Admin create bill from recurring error:", error);
+      res.status(500).json({ success: false, message: "Failed to generate bill" });
+    }
+  }
+);
+
+router.post(
+  "/billing/bills/:id/pay",
+  adminAuthGuard,
+  requirePermission("manage_billing"),
+  async (req, res) => {
+    try {
+      const bill = await Bill.findById(req.params.id);
+
+      if (!bill) {
+        return res.status(404).json({ success: false, message: "Bill not found" });
+      }
+
+      bill.status = "paid";
+      bill.paidAt = new Date();
+      await bill.save();
+
+      res.json({
+        success: true,
+        message: "Bill marked as paid",
+        data: bill,
+      });
+    } catch (error) {
+      console.error("Admin mark bill paid error:", error);
+      res.status(500).json({ success: false, message: "Failed to update bill status" });
+    }
+  }
+);
+
+router.post(
+  "/billing/invoices/:id/mark-paid",
+  adminAuthGuard,
+  requirePermission("manage_billing"),
+  async (req, res) => {
+    try {
+      const invoice = await Invoice.findById(req.params.id);
+
+      if (!invoice) {
+        return res.status(404).json({ success: false, message: "Invoice not found" });
+      }
+
+      invoice.amountPaid = invoice.total || 0;
+      invoice.balanceDue = 0;
+      invoice.status = "Paid";
+      await invoice.save();
+
+      res.json({
+        success: true,
+        message: "Invoice marked as paid",
+        data: invoice,
+      });
+    } catch (error) {
+      console.error("Admin mark invoice paid error:", error);
+      res.status(500).json({ success: false, message: "Failed to update invoice status" });
     }
   }
 );
