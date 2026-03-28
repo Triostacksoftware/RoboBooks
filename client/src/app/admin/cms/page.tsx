@@ -193,6 +193,16 @@ export default function AdminCmsPage() {
             Edit testimonials heading, description, and each testimonial card separately.
           </p>
         </Link>
+
+        <Link
+          href="/admin/cms/blog"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Blog Page</h2>
+          <p className="mt-3 text-gray-600">
+            Manage the public blog hero content and add, edit, remove, or reorder blog posts dynamically.
+          </p>
+        </Link>
       </div>
     </div>
   );

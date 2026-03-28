@@ -1,6 +1,6 @@
 import CustomView from '../models/CustomView.js';
 import Expense from '../models/Expense.js';
-import Bill from '../models/bill.model.js';
+import Bill from '../models/Bill.js';
 import Payment from '../models/Payment.js';
 import PurchaseOrder from '../models/PurchaseOrder.js';
 import VendorCredit from '../models/VendorCredit.js';

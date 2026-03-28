@@ -1,5 +1,6 @@
 import { api } from "@/lib/api";
 import { industries } from "../app/industries/industryData";
+import { posts } from "../app/blog/posts";
 import { getDefaultFooterPageContent } from "../app/footer/footerData";
 import { gstTools } from "../app/gst-tools/toolData";
 
@@ -324,6 +325,33 @@ export type TestimonialsCmsContent = {
     role: string;
     content: string;
     image: string;
+  }>;
+};
+
+export type BlogCmsContent = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  primaryButtonLabel: string;
+  primaryButtonUrl: string;
+  secondaryButtonLabel: string;
+  secondaryButtonUrl: string;
+  stats: Array<{
+    value: string;
+    label: string;
+  }>;
+  sectionEyebrow: string;
+  sectionTitle: string;
+  posts: Array<{
+    id: string;
+    title: string;
+    excerpt: string;
+    category: string;
+    readTime: string;
+    date: string;
+    image: string;
+    content: string[];
+    takeaway: string;
   }>;
 };
 
@@ -915,6 +943,38 @@ export const defaultTestimonialsContent: TestimonialsCmsContent = {
   ],
 };
 
+export const defaultBlogContent: BlogCmsContent = {
+  eyebrow: "Blog",
+  title: "Insights for teams building a smarter accounting workflow",
+  description:
+    "Explore practical ideas around invoicing, bookkeeping, reporting, finance operations, and how modern SaaS tools can reduce accounting friction.",
+  primaryButtonLabel: "Read latest posts",
+  primaryButtonUrl: "#blog-posts",
+  secondaryButtonLabel: "Try RoboBooks",
+  secondaryButtonUrl: "/register",
+  stats: [
+    { value: "4+", label: "Latest articles" },
+    { value: "100%", label: "Practical insights" },
+    { value: "Finance", label: "Focused topics" },
+    { value: "Weekly", label: "Fresh ideas" },
+  ],
+  sectionEyebrow: "Latest Articles",
+  sectionTitle: "Practical accounting insights for smarter business decisions",
+  posts: posts.map((post) => ({
+    id: post.id,
+    title: post.title,
+    excerpt: post.excerpt,
+    category: post.category,
+    readTime: post.readTime,
+    date: post.date,
+    image: post.image,
+    content: post.content,
+    takeaway:
+      post.takeaway ||
+      "The best finance systems connect invoicing, collections, reporting, and compliance so teams can act faster with cleaner data.",
+  })),
+};
+
 const industryPageDefaults = industries.reduce<Record<string, IndustryPageCmsContent>>(
   (acc, industry) => {
     acc[industry.slug] = {
@@ -1007,11 +1067,35 @@ export async function uploadAdminCmsImage(file: File) {
   const formData = new FormData();
   formData.append("image", file);
 
-  return api<{ success: boolean; message: string; url: string; filename: string }>(
+  return api<{
+    success: boolean;
+    message: string;
+    url: string;
+    filename: string;
+    kind: "image" | "video";
+    mimeType: string;
+  }>(
     "/api/admin/cms/upload-image",
     {
       method: "POST",
       body: formData,
     }
   );
+}
+
+export async function uploadAdminCmsMedia(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  return api<{
+    success: boolean;
+    message: string;
+    url: string;
+    filename: string;
+    kind: "image" | "video";
+    mimeType: string;
+  }>("/api/admin/cms/upload-media", {
+    method: "POST",
+    body: formData,
+  });
 }

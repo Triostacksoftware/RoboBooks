@@ -57,6 +57,13 @@ router.post(
   uploadCmsImageMiddleware,
   uploadCmsImage
 );
+router.post(
+  "/cms/upload-media",
+  adminAuthGuard,
+  requirePermission("manage_content"),
+  uploadCmsImageMiddleware,
+  uploadCmsImage
+);
 router.get("/cms/:section", adminAuthGuard, requirePermission("manage_content"), getCmsSection);
 router.put("/cms/:section", adminAuthGuard, requirePermission("manage_content"), upsertCmsSection);
 router.get("/reports", adminAuthGuard, requirePermission("view_reports"), getAdminReports);

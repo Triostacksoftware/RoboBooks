@@ -159,6 +159,11 @@ export default function AdminLayout({
             { name: "Testimonials", href: "/admin/cms/testimonials" },
           ],
         },
+        {
+          name: "Blog Page",
+          href: "/admin/cms/blog",
+          menuKey: "cms-blog-page",
+        },
       ],
     },
     { name: "Settings", href: "/admin/settings", icon: CogIcon },

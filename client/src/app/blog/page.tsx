@@ -1,32 +1,26 @@
-'use client'
-
-import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { CalendarDays, Clock3, Tag, ArrowRight } from 'lucide-react'
 import Navbar from '../homepage/components/Navbar'
 import Footer from '../homepage/components/Footer'
 import InnerPageHero from '../components/InnerPageHero'
-import { posts } from './posts'
+import { defaultBlogContent, fetchPublicCmsSection } from '@/services/cmsService'
 
-const BlogPage = () => {
+const BlogPage = async () => {
+  const content = await fetchPublicCmsSection('blog', defaultBlogContent)
+
   return (
     <>
       <Navbar />
       <InnerPageHero
-        eyebrow="Blog"
-        title="Insights for teams building a smarter accounting workflow"
-        description="Explore practical ideas around invoicing, bookkeeping, reporting, finance operations, and how modern SaaS tools can reduce accounting friction."
-        primaryAction={{ href: '#blog-posts', label: 'Read latest posts' }}
-        secondaryAction={{ href: '/register', label: 'Try RoboBooks' }}
+        eyebrow={content.eyebrow}
+        title={content.title}
+        description={content.description}
+        primaryAction={{ href: content.primaryButtonUrl, label: content.primaryButtonLabel }}
+        secondaryAction={{ href: content.secondaryButtonUrl, label: content.secondaryButtonLabel }}
         variant="banner"
         breadcrumbLabel="Blog"
-        stats={[
-          { value: '4+', label: 'Latest articles' },
-          { value: '100%', label: 'Practical insights' },
-          { value: 'Finance', label: 'Focused topics' },
-          { value: 'Weekly', label: 'Fresh ideas' },
-        ]}
+        stats={content.stats}
       />
 
       <section id="blog-posts" className="relative overflow-hidden bg-[#f8fbff] pb-16 pt-12 lg:pb-20 lg:pt-14">
@@ -36,15 +30,15 @@ const BlogPage = () => {
         <div className="relative mx-auto max-w-[1600px] px-4 md:px-8 lg:px-10">
           <div className="mb-12 text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
-              Latest Articles
+              {content.sectionEyebrow}
             </p>
             <h2 className="mt-4 text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
-              Practical accounting insights for smarter business decisions
+              {content.sectionTitle}
             </h2>
           </div>
 
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            {posts.map((post) => (
+            {content.posts.map((post) => (
               <Link
                 key={post.id}
                 href={`/blog/${post.id}`}

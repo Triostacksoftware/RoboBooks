@@ -10,7 +10,40 @@ import {
 } from 'lucide-react'
 import Navbar from '../../homepage/components/Navbar'
 import Footer from '../../homepage/components/Footer'
-import { posts } from '../posts'
+import { defaultBlogContent, fetchPublicCmsSection } from '@/services/cmsService'
+
+function normalizeRichText(value: string) {
+  const trimmed = value.trim()
+
+  if (!trimmed) {
+    return ''
+  }
+
+  const hasHtmlTag = /<\/?[a-z][\s\S]*>/i.test(trimmed)
+  if (hasHtmlTag) {
+    return trimmed
+  }
+
+  return trimmed
+    .split(/\n{2,}/)
+    .map((paragraph) => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`)
+    .join('')
+}
+
+function RichTextContent({
+  value,
+  className,
+}: {
+  value: string
+  className?: string
+}) {
+  return (
+    <div
+      className={className}
+      dangerouslySetInnerHTML={{ __html: normalizeRichText(value) }}
+    />
+  )
+}
 
 type BlogDetailPageProps = {
   params: Promise<{
@@ -20,6 +53,8 @@ type BlogDetailPageProps = {
 
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   const { id } = await params
+  const blogContent = await fetchPublicCmsSection('blog', defaultBlogContent)
+  const posts = blogContent.posts
   const post = posts.find((item) => item.id === id)
   const relatedPosts = posts.filter((item) => item.id !== id).slice(0, 3)
 
@@ -107,9 +142,9 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                   </p>
                 </div>
 
-                <div className="space-y-7 text-lg leading-9 text-slate-600">
+                <div className="space-y-7 text-lg leading-9 text-slate-600 [&_a]:font-semibold [&_a]:text-[#0088c5] [&_a]:underline-offset-4 hover:[&_a]:text-[#006b9c] [&_blockquote]:rounded-[24px] [&_blockquote]:border-l-4 [&_blockquote]:border-[#0aa6c9]/35 [&_blockquote]:bg-[#f8fbff] [&_blockquote]:px-5 [&_blockquote]:py-4 [&_blockquote]:italic [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:leading-tight [&_h2]:text-[#0f2344] [&_h3]:text-2xl [&_h3]:font-semibold [&_h3]:leading-tight [&_h3]:text-[#0f2344] [&_img]:my-6 [&_img]:max-h-[420px] [&_img]:w-auto [&_img]:max-w-full [&_img]:rounded-[24px] [&_li]:ml-6 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-2 [&_p]:leading-9 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-2 [&_video]:my-6 [&_video]:max-h-[420px] [&_video]:w-full [&_video]:rounded-[24px]">
                   {post.content.map((paragraph, index) => (
-                    <p key={index}>{paragraph}</p>
+                    <RichTextContent key={index} value={paragraph} />
                   ))}
                 </div>
 
@@ -117,11 +152,10 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                   <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[#7fe7ff]">
                     Accounting SaaS Takeaway
                   </p>
-                  <p className="mt-3 text-base leading-8 text-slate-200 sm:text-lg">
-                    The best finance systems do more than record activity. They
-                    connect invoicing, collections, reporting, and compliance so
-                    teams can act faster with cleaner data.
-                  </p>
+                  <RichTextContent
+                    value={post.takeaway}
+                    className="mt-3 text-base leading-8 text-slate-200 sm:text-lg [&_a]:font-semibold [&_a]:text-white [&_blockquote]:border-l-4 [&_blockquote]:border-white/30 [&_blockquote]:pl-4 [&_blockquote]:italic [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-white [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-white [&_img]:my-4 [&_img]:max-h-[320px] [&_img]:w-auto [&_img]:max-w-full [&_img]:rounded-[20px] [&_li]:ml-5 [&_ol]:list-decimal [&_ol]:pl-2 [&_ul]:list-disc [&_ul]:pl-2 [&_video]:my-4 [&_video]:w-full [&_video]:rounded-[20px]"
+                  />
                 </div>
               </article>
             </div>

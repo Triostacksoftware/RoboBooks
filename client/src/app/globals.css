@@ -586,8 +586,10 @@ div.main-content-scrollbar::-webkit-scrollbar-corner {
   background: transparent !important;
 }
 
+html,
 body {
   overflow-x: hidden !important;
+  overflow-y: auto !important;
 }
 
 /* Hide any potential bottom gradient strips or browser elements */
