@@ -28,6 +28,11 @@ export type HeroCmsContent = {
   primaryButtonUrl: string;
   secondaryButtonLabel: string;
   secondaryButtonUrl: string;
+  slideIntervalMs: number;
+  slides: Array<{
+    imageUrl: string;
+    alt: string;
+  }>;
 };
 
 export type AboutCmsContent = {
@@ -39,6 +44,42 @@ export type AboutCmsContent = {
   primaryButtonUrl: string;
   trustedLabel: string;
   trustedText: string;
+  mission: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    highlights: string[];
+  };
+  values: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    items: Array<{
+      title: string;
+      description: string;
+    }>;
+  };
+  stats: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    items: Array<{
+      number: string;
+      label: string;
+      description: string;
+    }>;
+  };
+  timeline: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    items: Array<{
+      year: string;
+      title: string;
+      description: string;
+      achievement: string;
+    }>;
+  };
 };
 
 export type LogoCmsContent = {
@@ -62,6 +103,13 @@ export type FooterCmsContent = {
   legalLinks: Array<{
     label: string;
     href: string;
+  }>;
+  extraGroups: Array<{
+    title: string;
+    links: Array<{
+      label: string;
+      href: string;
+    }>;
   }>;
   copyrightText: string;
   bottomText: string;
@@ -111,6 +159,17 @@ export type InvoiceThemesCmsContent = {
 };
 
 export type ServicesCmsContent = {
+  pageEyebrow: string;
+  pageTitle: string;
+  pageDescription: string;
+  pagePrimaryButtonLabel: string;
+  pagePrimaryButtonUrl: string;
+  pageSecondaryButtonLabel: string;
+  pageSecondaryButtonUrl: string;
+  pageStats: Array<{
+    value: string;
+    label: string;
+  }>;
   eyebrow: string;
   title: string;
   highlightTitle: string;
@@ -172,6 +231,17 @@ export type GstComplianceCmsContent = {
 };
 
 export type FeaturesCmsContent = {
+  pageEyebrow: string;
+  pageTitle: string;
+  pageDescription: string;
+  pagePrimaryButtonLabel: string;
+  pagePrimaryButtonUrl: string;
+  pageSecondaryButtonLabel: string;
+  pageSecondaryButtonUrl: string;
+  pageStats: Array<{
+    value: string;
+    label: string;
+  }>;
   eyebrow: string;
   title: string;
   description: string;
@@ -275,6 +345,44 @@ export type PreFooterCtaCmsContent = {
 };
 
 export type ContactSectionCmsContent = {
+  heroEyebrow: string;
+  heroTitle: string;
+  heroDescription: string;
+  heroPrimaryButtonLabel: string;
+  heroPrimaryButtonUrl: string;
+  heroSecondaryButtonLabel: string;
+  heroSecondaryButtonUrl: string;
+  heroStats: Array<{
+    value: string;
+    label: string;
+  }>;
+  detailsEyebrow: string;
+  detailsTitle: string;
+  detailsDescription: string;
+  supportButtonLabel: string;
+  supportButtonEmail: string;
+  whatsappButtonLabel: string;
+  addressTitle: string;
+  addressLines: string[];
+  phones: Array<{
+    label: string;
+    number: string;
+  }>;
+  emails: Array<{
+    label: string;
+    address: string;
+  }>;
+  mapEyebrow: string;
+  mapTitle: string;
+  mapButtonLabel: string;
+  showMap: boolean;
+  placeQuery: string;
+  whatsAppNumber: string;
+  mapTags: string[];
+  fallbackStats: Array<{
+    value: string;
+    label: string;
+  }>;
   leftEyebrow: string;
   leftTitle: string;
   leftDescription: string;
@@ -370,6 +478,14 @@ export const defaultHeroContent: HeroCmsContent = {
   primaryButtonUrl: "/register",
   secondaryButtonLabel: "Book Free Demo",
   secondaryButtonUrl: "/contact",
+  slideIntervalMs: 3000,
+  slides: [
+    { imageUrl: "/images/homehero.png", alt: "Accounting software dashboard hero" },
+    { imageUrl: "/images/dashboard.png", alt: "RoboBooks dashboard overview" },
+    { imageUrl: "/images/usability.png", alt: "RoboBooks usability showcase" },
+    { imageUrl: "/images/your-illustration.png", alt: "RoboBooks platform illustration" },
+    { imageUrl: "/images/businessbenifits.png", alt: "RoboBooks business benefits" },
+  ],
 };
 
 export const defaultAboutContent: AboutCmsContent = {
@@ -387,6 +503,138 @@ export const defaultAboutContent: AboutCmsContent = {
   primaryButtonUrl: "/about",
   trustedLabel: "Trusted for",
   trustedText: "billing, books, tax, and team operations",
+  mission: {
+    eyebrow: "Our Mission",
+    title: "Build accounting software that keeps business teams in control",
+    description:
+      "RoboBooks exists to simplify the daily finance work that slows companies down. We bring invoicing, bookkeeping, reporting, and compliance into one experience so business owners and teams can act from clean numbers instead of scattered tools.",
+    highlights: [
+      "Make accounting accessible for small and growing businesses",
+      "Reduce repetitive finance admin with guided automation",
+      "Keep compliance, reporting, and books connected in one system",
+      "Design finance software that teams actually enjoy using",
+    ],
+  },
+  values: {
+    eyebrow: "Our Values",
+    title: "Principles that shape every product decision",
+    description:
+      "The RoboBooks team is driven by product clarity, customer trust, and a strong belief that finance software can be both powerful and easy to use.",
+    items: [
+      {
+        title: "Innovation with purpose",
+        description:
+          "We build features that solve real finance bottlenecks, not just flashy product ideas.",
+      },
+      {
+        title: "Simple by design",
+        description:
+          "Even complex accounting flows should feel clear, guided, and easy to act on.",
+      },
+      {
+        title: "Security first",
+        description:
+          "Customer trust depends on strong data protection, role controls, and reliable infrastructure.",
+      },
+      {
+        title: "Operational reliability",
+        description:
+          "Businesses depend on us for everyday finance work, so stability matters in every release.",
+      },
+      {
+        title: "Customer empathy",
+        description:
+          "We listen closely to teams using RoboBooks and shape the product around their real workflows.",
+      },
+      {
+        title: "Execution excellence",
+        description:
+          "We value clarity, speed, and quality in the way we build and support the platform.",
+      },
+    ],
+  },
+  stats: {
+    eyebrow: "Our Impact",
+    title: "Numbers that reflect product trust and business adoption",
+    description:
+      "These metrics represent more than scale. They show how many teams rely on RoboBooks to manage billing, books, compliance workflows, and finance visibility every single day.",
+    items: [
+      {
+        number: "10,000+",
+        label: "Businesses served",
+        description:
+          "Teams trust RoboBooks for daily accounting workflows and reporting clarity.",
+      },
+      {
+        number: "Rs. 500Cr+",
+        label: "Transactions handled",
+        description:
+          "A growing volume of business activity moves through the product with confidence.",
+      },
+      {
+        number: "99.9%",
+        label: "Platform uptime",
+        description:
+          "Reliability matters when businesses depend on finance software every day.",
+      },
+      {
+        number: "50+",
+        label: "Team members",
+        description:
+          "Product, engineering, support, and operations work together to improve the platform.",
+      },
+    ],
+  },
+  timeline: {
+    eyebrow: "Our Journey",
+    title: "How RoboBooks has grown into a finance-first SaaS platform",
+    description:
+      "A cleaner look at the milestones that shaped our product, our team, and the businesses we support today.",
+    items: [
+      {
+        year: "2020",
+        title: "RoboBooks was founded",
+        description:
+          "We started with one goal: make accounting easier for modern Indian businesses.",
+        achievement: "Early finance workflow prototype launched",
+      },
+      {
+        year: "2021",
+        title: "First customer growth milestone",
+        description:
+          "The product began gaining traction with businesses looking for simpler GST-ready workflows.",
+        achievement: "Reached first 1,000 users",
+      },
+      {
+        year: "2022",
+        title: "Platform expansion",
+        description:
+          "We expanded the product into a more complete accounting workspace for daily business operations.",
+        achievement: "More reporting and bookkeeping depth added",
+      },
+      {
+        year: "2023",
+        title: "Operational scale",
+        description:
+          "More businesses adopted RoboBooks for day-to-day billing, bookkeeping, and visibility needs.",
+        achievement: "Crossed 10,000+ customers",
+      },
+      {
+        year: "2024",
+        title: "Automation focus",
+        description:
+          "We introduced smarter workflows to help teams spend less time on repetitive accounting work.",
+        achievement: "Handled Rs. 500Cr+ in transactions",
+      },
+      {
+        year: "2025",
+        title: "Looking ahead",
+        description:
+          "Our roadmap stays focused on giving businesses a faster and more connected finance experience.",
+        achievement: "Investing in product quality and scale",
+      },
+    ],
+  },
 };
 
 export const defaultLogoContent: LogoCmsContent = {
@@ -422,9 +670,28 @@ export const defaultFooterContent: FooterCmsContent = {
     { label: "Privacy", href: "/footer/privacy" },
     { label: "Cookies", href: "/footer/cookies" },
   ],
+  extraGroups: [],
   copyrightText: "RoboBooks. All rights reserved.",
   bottomText: "Built for modern accounting workflows and growing businesses.",
 };
+
+export function getFooterGroups(content: FooterCmsContent) {
+  return [
+    {
+      title: content.productTitle,
+      links: content.productLinks,
+    },
+    {
+      title: content.companyTitle,
+      links: content.companyLinks,
+    },
+    {
+      title: content.legalTitle,
+      links: content.legalLinks,
+    },
+    ...(content.extraGroups || []),
+  ].filter((group) => group.title?.trim() || group.links?.length);
+}
 
 export function getDefaultFooterPageCmsContent(
   slug: string
@@ -468,6 +735,20 @@ export const defaultInvoiceThemesContent: InvoiceThemesCmsContent = {
 };
 
 export const defaultServicesContent: ServicesCmsContent = {
+  pageEyebrow: "Services",
+  pageTitle: "Accounting modules that feel connected across every business workflow",
+  pageDescription:
+    "From GST invoicing to books, reporting, reconciliations, and operational finance visibility, RoboBooks is designed to help teams move faster with less friction.",
+  pagePrimaryButtonLabel: "Start free trial",
+  pagePrimaryButtonUrl: "/register",
+  pageSecondaryButtonLabel: "Schedule demo",
+  pageSecondaryButtonUrl: "/contact",
+  pageStats: [
+    { value: "6+", label: "Core modules" },
+    { value: "500+", label: "Active teams" },
+    { value: "99.9%", label: "Reliability" },
+    { value: "24/7", label: "Support" },
+  ],
   eyebrow: "Core Services",
   title: "One accounting workspace for every daily finance workflow",
   highlightTitle: "Built for accounting-heavy teams",
@@ -591,6 +872,20 @@ export const defaultGstComplianceContent: GstComplianceCmsContent = {
 };
 
 export const defaultFeaturesContent: FeaturesCmsContent = {
+  pageEyebrow: "Features",
+  pageTitle: "Product features that make finance work cleaner, faster, and easier to trust",
+  pageDescription:
+    "RoboBooks brings billing, bookkeeping, reconciliation, analytics, and collaboration into one interface so finance work feels connected instead of fragmented.",
+  pagePrimaryButtonLabel: "Explore features",
+  pagePrimaryButtonUrl: "#feature-grid",
+  pageSecondaryButtonLabel: "Book a walkthrough",
+  pageSecondaryButtonUrl: "/contact",
+  pageStats: [
+    { value: "8+", label: "Core capabilities" },
+    { value: "1", label: "Unified workspace" },
+    { value: "100%", label: "Cloud access" },
+    { value: "24/7", label: "Support" },
+  ],
   eyebrow: "Product Features",
   title: "Purpose-built features for modern accounting operations",
   description:
@@ -836,6 +1131,49 @@ export const defaultPreFooterCtaContent: PreFooterCtaCmsContent = {
 };
 
 export const defaultContactSectionContent: ContactSectionCmsContent = {
+  heroEyebrow: "Contact",
+  heroTitle: "Talk to the RoboBooks team about support, demos, or your accounting setup",
+  heroDescription:
+    "Whether you need product guidance, help with onboarding, or answers about plans and workflows, our team is ready to respond with clarity and speed.",
+  heroPrimaryButtonLabel: "Get in touch",
+  heroPrimaryButtonUrl: "#contact-form",
+  heroSecondaryButtonLabel: "View contact details",
+  heroSecondaryButtonUrl: "#contact-details",
+  heroStats: [
+    { value: "24/7", label: "Support desk" },
+    { value: "1h", label: "Fast response" },
+    { value: "3", label: "Ways to connect" },
+    { value: "100%", label: "Cloud support" },
+  ],
+  detailsEyebrow: "Contact Details",
+  detailsTitle: "Reach RoboBooks through the channel that works best for you",
+  detailsDescription:
+    "Visit the office, call the team, or send a message. We have redesigned the section to feel cleaner, sharper, and more aligned with the homepage experience.",
+  supportButtonLabel: "Email Support",
+  supportButtonEmail: "support@robobooks.com",
+  whatsappButtonLabel: "Chat on WhatsApp",
+  addressTitle: "Robo Books HQ",
+  addressLines: ["123 Business Park, Tech Hub", "Mumbai, Maharashtra 400001"],
+  phones: [
+    { label: "Mobile", number: "+91 98765 43210" },
+    { label: "Support", number: "+91 1800 1102" },
+  ],
+  emails: [
+    { label: "Info", address: "hello@robobooks.com" },
+    { label: "Support", address: "support@robobooks.com" },
+  ],
+  mapEyebrow: "Location Map",
+  mapTitle: "Find us on the map",
+  mapButtonLabel: "Open in Maps",
+  showMap: true,
+  placeQuery: "Robo Books HQ Mumbai",
+  whatsAppNumber: "+91 98765 43210",
+  mapTags: ["Wheelchair friendly", "Visitor parking", "Public transit 3 min"],
+  fallbackStats: [
+    { value: "1h", label: "Avg. response" },
+    { value: "98%", label: "Satisfaction" },
+    { value: "24k+", label: "Issues solved" },
+  ],
   leftEyebrow: "Contact Us",
   leftTitle: "Talk to RoboBooks after exploring the mobile experience",
   leftDescription:

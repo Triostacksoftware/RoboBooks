@@ -8,6 +8,7 @@ import {
   defaultFooterContent,
   defaultLogoContent,
   fetchPublicCmsSection,
+  getFooterGroups,
   resolveCmsAssetUrl,
   type FooterCmsContent,
   type LogoCmsContent,
@@ -28,6 +29,8 @@ export default function Footer() {
     );
   }, []);
 
+  const footerGroups = getFooterGroups(footerContent);
+
   return (
     <footer className="relative overflow-hidden bg-[#08182e] text-white">
       <div className="absolute inset-0">
@@ -36,7 +39,15 @@ export default function Footer() {
       </div>
 
       <div className="relative mx-auto max-w-[1380px] px-4 py-16 md:px-8 lg:px-12">
-        <div className="grid gap-12 lg:grid-cols-[1.2fr_0.9fr_0.9fr_0.9fr]">
+        <div
+          className="grid gap-12"
+          style={{
+            gridTemplateColumns:
+              footerGroups.length > 0
+                ? `minmax(0,1.2fr) repeat(${footerGroups.length}, minmax(0,0.9fr))`
+                : 'minmax(0,1fr)',
+          }}
+        >
           <div>
             <Link href="/" className="inline-flex items-center">
               <Image
@@ -63,56 +74,24 @@ export default function Footer() {
             </div>
           </div>
 
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-cyan-200">
-              {footerContent.productTitle}
-            </h3>
-            <div className="mt-6 space-y-4">
-              {footerContent.productLinks.map((link) => (
-                <Link
-                  key={`${link.label}-${link.href}`}
-                  href={link.href}
-                  className="block text-base text-slate-300 transition hover:text-white"
-                >
-                  {link.label}
-                </Link>
-              ))}
+          {footerGroups.map((group, index) => (
+            <div key={`${group.title}-${index}`}>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-cyan-200">
+                {group.title}
+              </h3>
+              <div className="mt-6 space-y-4">
+                {group.links.map((link) => (
+                  <Link
+                    key={`${link.label}-${link.href}`}
+                    href={link.href}
+                    className="block text-base text-slate-300 transition hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-cyan-200">
-              {footerContent.companyTitle}
-            </h3>
-            <div className="mt-6 space-y-4">
-              {footerContent.companyLinks.map((link) => (
-                <Link
-                  key={`${link.label}-${link.href}`}
-                  href={link.href}
-                  className="block text-base text-slate-300 transition hover:text-white"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-cyan-200">
-              {footerContent.legalTitle}
-            </h3>
-            <div className="mt-6 space-y-4">
-              {footerContent.legalLinks.map((link) => (
-                <Link
-                  key={`${link.label}-${link.href}`}
-                  href={link.href}
-                  className="block text-base text-slate-300 transition hover:text-white"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
 
         <div className="mt-14 flex flex-col gap-5 border-t border-white/10 pt-6 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">

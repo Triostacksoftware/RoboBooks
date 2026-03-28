@@ -72,6 +72,52 @@ export default function AdminCmsPricingPlansPage() {
     });
   };
 
+  const addPlan = () => {
+    setContent((current) => ({
+      ...current,
+      plans: [
+        ...current.plans,
+        {
+          name: "",
+          price: "",
+          duration: "",
+          imageUrl: "",
+          description: "",
+          features: [""],
+        },
+      ],
+    }));
+  };
+
+  const removePlan = (planIndex: number) => {
+    setContent((current) => ({
+      ...current,
+      plans: current.plans.filter((_, index) => index !== planIndex),
+    }));
+  };
+
+  const addFeature = (planIndex: number) => {
+    setContent((current) => {
+      const nextPlans = [...current.plans];
+      nextPlans[planIndex] = {
+        ...nextPlans[planIndex],
+        features: [...nextPlans[planIndex].features, ""],
+      };
+      return { ...current, plans: nextPlans };
+    });
+  };
+
+  const removeFeature = (planIndex: number, featureIndex: number) => {
+    setContent((current) => {
+      const nextPlans = [...current.plans];
+      nextPlans[planIndex] = {
+        ...nextPlans[planIndex],
+        features: nextPlans[planIndex].features.filter((_, index) => index !== featureIndex),
+      };
+      return { ...current, plans: nextPlans };
+    });
+  };
+
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -141,12 +187,33 @@ export default function AdminCmsPricingPlansPage() {
             />
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-[#0f2344]">Plan Cards</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-[#0f2344]">Plan Cards</h2>
+                <button
+                  type="button"
+                  onClick={addPlan}
+                  className="rounded-full border border-[#0aa6c9]/25 bg-[#eff8ff] px-4 py-2 text-sm font-semibold text-[#0088c5] transition hover:bg-[#dff4ff]"
+                >
+                  Add Plan
+                </button>
+              </div>
               {content.plans.map((plan, planIndex) => (
                 <div
                   key={planIndex}
                   className="space-y-4 rounded-[24px] border border-[#d8e7f1] bg-[#fbfdff] p-4"
                 >
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-[#0f2344]">
+                      Plan {planIndex + 1}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => removePlan(planIndex)}
+                      className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                    >
+                      Delete Plan
+                    </button>
+                  </div>
                   <div className="grid gap-4 md:grid-cols-3">
                     <Field
                       label={`Plan ${planIndex + 1} Name`}
@@ -185,16 +252,38 @@ export default function AdminCmsPricingPlansPage() {
                   />
 
                   <div className="space-y-3">
-                    <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#4d5f7c]">
-                      Features
-                    </h3>
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#4d5f7c]">
+                        Features
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => addFeature(planIndex)}
+                        className="rounded-full border border-[#d8e7f1] bg-white px-3 py-1.5 text-xs font-semibold text-[#0f2344] transition hover:border-[#0aa6c9]/35 hover:text-[#0088c5]"
+                      >
+                        Add Feature
+                      </button>
+                    </div>
                     {plan.features.map((feature, featureIndex) => (
-                      <Field
+                      <div
                         key={featureIndex}
-                        label={`Feature ${featureIndex + 1}`}
-                        value={feature}
-                        onChange={(value) => updateFeature(planIndex, featureIndex, value)}
-                      />
+                        className="grid gap-3 md:grid-cols-[1fr_auto]"
+                      >
+                        <Field
+                          label={`Feature ${featureIndex + 1}`}
+                          value={feature}
+                          onChange={(value) => updateFeature(planIndex, featureIndex, value)}
+                        />
+                        <div className="flex items-end">
+                          <button
+                            type="button"
+                            onClick={() => removeFeature(planIndex, featureIndex)}
+                            className="rounded-full border border-[#ffd0d0] bg-white px-4 py-3 text-sm font-semibold text-[#ff4d4f] transition hover:bg-[#fff5f5]"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>

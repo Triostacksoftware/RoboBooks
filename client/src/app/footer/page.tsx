@@ -3,12 +3,12 @@ import { ArrowRight } from "lucide-react";
 import {
   defaultFooterContent,
   fetchPublicCmsSection,
+  getFooterGroups,
   type FooterCmsContent,
 } from "@/services/cmsService";
 import Navbar from "../homepage/components/Navbar";
 import Footer from "../homepage/components/Footer";
 import InnerPageHero from "../components/InnerPageHero";
-import { footerCategories } from "./footerData";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -18,12 +18,8 @@ export default async function FooterHubPage() {
     "footer",
     defaultFooterContent
   );
-
-  const linksByCategory = {
-    product: footerContent.productLinks,
-    company: footerContent.companyLinks,
-    legal: footerContent.legalLinks,
-  } as const;
+  const footerGroups = getFooterGroups(footerContent);
+  const totalLinks = footerGroups.reduce((sum, group) => sum + group.links.length, 0);
 
   return (
     <>
@@ -37,8 +33,8 @@ export default async function FooterHubPage() {
         variant="banner"
         breadcrumbLabel="Footer"
         stats={[
-          { value: "13", label: "Footer links" },
-          { value: "3", label: "Link groups" },
+          { value: String(totalLinks), label: "Footer links" },
+          { value: String(footerGroups.length), label: "Link groups" },
           { value: "1", label: "Shared config" },
           { value: "100%", label: "Dynamic pages" },
         ]}
@@ -46,12 +42,10 @@ export default async function FooterHubPage() {
 
       <main className="bg-[#f7fbff] px-4 pb-16 pt-10 md:px-8 lg:px-12">
         <section className="mx-auto max-w-7xl space-y-10">
-          {footerCategories.map((category) => {
-            const links = linksByCategory[category.id];
-
+          {footerGroups.map((group, index) => {
             return (
               <div
-                key={category.id}
+                key={`${group.title}-${index}`}
                 className="rounded-[28px] border border-[#d8e7f3] bg-white p-6 shadow-[0_20px_60px_rgba(15,35,68,0.08)] md:p-8"
               >
                 <div className="flex flex-col gap-3 border-b border-[#e4eef6] pb-5 md:flex-row md:items-end md:justify-between">
@@ -60,7 +54,7 @@ export default async function FooterHubPage() {
                       Footer Group
                     </p>
                     <h2 className="mt-2 text-3xl font-bold text-[#0f2344]">
-                      {category.label}
+                      {group.title}
                     </h2>
                   </div>
                   <p className="max-w-2xl text-sm leading-7 text-slate-500">
@@ -69,7 +63,7 @@ export default async function FooterHubPage() {
                 </div>
 
                 <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                  {links.map((link) => (
+                  {group.links.map((link) => (
                     <Link
                       key={`${link.label}-${link.href}`}
                       href={link.href}

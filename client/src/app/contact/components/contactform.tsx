@@ -3,6 +3,11 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  defaultContactSectionContent,
+  fetchPublicCmsSection,
+  type ContactSectionCmsContent,
+} from "@/services/cmsService";
 
 type Props = {
   /** Default hero image if gallery is empty */
@@ -22,9 +27,17 @@ export default function ContactForm({
   onSubmit,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [content, setContent] = useState<ContactSectionCmsContent>(defaultContactSectionContent);
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [hoverXY, setHoverXY] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    fetchPublicCmsSection<ContactSectionCmsContent>(
+      "contactSection",
+      defaultContactSectionContent
+    ).then(setContent);
+  }, []);
 
   /** Create & cleanup object URLs for previews */
   useEffect(() => {
@@ -215,30 +228,30 @@ export default function ContactForm({
         {/* RIGHT: Form */}
         <div className="relative">
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.25em] text-blue-600">
-            Say Hello!
+            {content.formEyebrow}
           </p>
           <h2 className="text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl md:text-5xl">
-            We’d love to hear from you
+            {content.formTitle}
           </h2>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              <Field label="Your Name *">
-                <Input name="name" type="text" placeholder="e.g. Roe Smith" required />
+              <Field label={`${content.fullNameLabel} *`}>
+                <Input name="name" type="text" placeholder={content.fullNamePlaceholder} required />
               </Field>
-              <Field label="Email Address *">
-                <Input name="email" type="email" placeholder="e.g. example@mail.com" required />
+              <Field label={`${content.emailFieldLabel} *`}>
+                <Input name="email" type="email" placeholder={content.emailFieldPlaceholder} required />
               </Field>
-              <Field label="Phone Number">
-                <Input name="phone" type="tel" placeholder="e.g. +55 695 6965" />
+              <Field label={content.phoneFieldLabel}>
+                <Input name="phone" type="tel" placeholder={content.phoneFieldPlaceholder} />
               </Field>
-              <Field label="Website">
-                <Input name="website" type="url" placeholder="e.g. website.com" />
+              <Field label={content.companyFieldLabel}>
+                <Input name="website" type="url" placeholder={content.companyFieldPlaceholder} />
               </Field>
             </div>
 
-            <Field label="Message *">
-              <Textarea name="message" placeholder="Type your message" required />
+            <Field label={`${content.requirementLabel} *`}>
+              <Textarea name="message" placeholder={content.requirementPlaceholder} required />
             </Field>
 
             <div className="pt-2">
@@ -246,7 +259,7 @@ export default function ContactForm({
                 type="submit"
                 className="group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500 to-blue-600 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-emerald-500/20 transition duration-300 hover:shadow-blue-500/25 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300 sm:w-auto"
               >
-                <span className="relative z-10">Submit Message</span>
+                <span className="relative z-10">{content.submitButtonLabel}</span>
                 <span className="pointer-events-none absolute inset-0 -translate-x-full bg-[linear-gradient(100deg,transparent,rgba(255,255,255,0.35),transparent)] transition duration-500 group-hover:translate-x-full" />
                 <ArrowRight className="relative z-10 h-5 w-5 -translate-x-0.5 transition-transform duration-300 group-hover:translate-x-1" />
               </button>

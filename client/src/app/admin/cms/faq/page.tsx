@@ -31,6 +31,20 @@ export default function AdminCmsFaqPage() {
     });
   };
 
+  const addFaq = () => {
+    setContent((current) => ({
+      ...current,
+      items: [...current.items, { question: "", answer: "" }],
+    }));
+  };
+
+  const removeFaq = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      items: current.items.filter((_, itemIndex) => itemIndex !== index),
+    }));
+  };
+
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -79,12 +93,33 @@ export default function AdminCmsFaqPage() {
             />
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-[#0f2344]">FAQ Items</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-[#0f2344]">FAQ Items</h2>
+                <button
+                  type="button"
+                  onClick={addFaq}
+                  className="rounded-full border border-[#0aa6c9]/25 bg-[#eff8ff] px-4 py-2 text-sm font-semibold text-[#0088c5] transition hover:bg-[#dff4ff]"
+                >
+                  Add FAQ
+                </button>
+              </div>
               {content.items.map((item, index) => (
                 <div
                   key={index}
                   className="space-y-4 rounded-[24px] border border-[#d8e7f1] bg-[#fbfdff] p-4"
                 >
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-[#0f2344]">
+                      FAQ {index + 1}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => removeFaq(index)}
+                      className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                    >
+                      Delete FAQ
+                    </button>
+                  </div>
                   <Field
                     label={`Question ${index + 1}`}
                     value={item.question}

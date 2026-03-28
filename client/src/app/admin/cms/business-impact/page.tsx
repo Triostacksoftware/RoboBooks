@@ -43,6 +43,20 @@ export default function AdminCmsBusinessImpactPage() {
     });
   };
 
+  const addBenefit = () => {
+    setContent((current) => ({
+      ...current,
+      benefits: [...current.benefits, { title: "", description: "", iconUrl: "" }],
+    }));
+  };
+
+  const removeBenefit = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      benefits: current.benefits.filter((_, benefitIndex) => benefitIndex !== index),
+    }));
+  };
+
   const uploadImage = async (
     key: string,
     file: File,
@@ -143,12 +157,33 @@ export default function AdminCmsBusinessImpactPage() {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-[#0f2344]">Benefit Cards</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-[#0f2344]">Benefit Cards</h2>
+                <button
+                  type="button"
+                  onClick={addBenefit}
+                  className="rounded-full border border-[#0aa6c9]/25 bg-[#eff8ff] px-4 py-2 text-sm font-semibold text-[#0088c5] transition hover:bg-[#dff4ff]"
+                >
+                  Add Benefit Card
+                </button>
+              </div>
               {content.benefits.map((benefit, index) => (
                 <div
                   key={index}
                   className="space-y-4 rounded-[24px] border border-[#d8e7f1] bg-[#fbfdff] p-4"
                 >
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-[#0f2344]">
+                      Benefit Card {index + 1}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => removeBenefit(index)}
+                      className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                    >
+                      Delete Card
+                    </button>
+                  </div>
                   <ImageUploader
                     label={`Benefit ${index + 1} Icon`}
                     imageUrl={benefit.iconUrl}

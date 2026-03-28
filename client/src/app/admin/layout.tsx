@@ -164,6 +164,26 @@ export default function AdminLayout({
           href: "/admin/cms/blog",
           menuKey: "cms-blog-page",
         },
+        {
+          name: "About Us Page",
+          href: "/admin/cms/about",
+          menuKey: "cms-about-page",
+        },
+        {
+          name: "Service Page",
+          href: "/admin/cms/services",
+          menuKey: "cms-service-page",
+        },
+        {
+          name: "Features Page",
+          href: "/admin/cms/features",
+          menuKey: "cms-features-page",
+        },
+        {
+          name: "Contact Page",
+          href: "/admin/cms/contact-section",
+          menuKey: "cms-contact-page",
+        },
       ],
     },
     { name: "Settings", href: "/admin/settings", icon: CogIcon },

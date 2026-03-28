@@ -30,7 +30,11 @@ export default function AdminCmsIndustriesPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const updateItem = (index: number, key: "title" | "iconUrl", value: string) => {
+  const updateItem = (
+    index: number,
+    key: "slug" | "title" | "span" | "iconUrl",
+    value: string
+  ) => {
     setContent((current) => {
       const nextItems = [...current.items];
       nextItems[index] = {
@@ -39,6 +43,28 @@ export default function AdminCmsIndustriesPage() {
       };
       return { ...current, items: nextItems };
     });
+  };
+
+  const addItem = () => {
+    setContent((current) => ({
+      ...current,
+      items: [
+        ...current.items,
+        {
+          slug: "",
+          title: "",
+          span: "xl:col-span-1",
+          iconUrl: "",
+        },
+      ],
+    }));
+  };
+
+  const removeItem = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      items: current.items.filter((_, itemIndex) => itemIndex !== index),
+    }));
   };
 
   const uploadImage = async (
@@ -107,27 +133,51 @@ export default function AdminCmsIndustriesPage() {
             />
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-[#0f2344]">Industry Tiles</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-[#0f2344]">Industry Tiles</h2>
+                <button
+                  type="button"
+                  onClick={addItem}
+                  className="rounded-full border border-[#0aa6c9]/25 bg-[#eff8ff] px-4 py-2 text-sm font-semibold text-[#0088c5] transition hover:bg-[#dff4ff]"
+                >
+                  Add Industry Tile
+                </button>
+              </div>
               {content.items.map((item, index) => (
                 <div
-                  key={item.slug}
+                  key={`${item.slug || "industry"}-${index}`}
                   className="space-y-4 rounded-[24px] border border-[#d8e7f1] bg-[#fbfdff] p-4"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <p className="text-base font-semibold text-[#0f2344]">{item.title}</p>
-                      <p className="text-sm text-[#5d708f]">Slug: {item.slug}</p>
+                      <p className="text-base font-semibold text-[#0f2344]">
+                        {item.title || `Industry ${index + 1}`}
+                      </p>
+                      <p className="text-sm text-[#5d708f]">Slug: {item.slug || "not set"}</p>
                     </div>
-                    <Link
-                      href={`/admin/cms/industries/${item.slug}`}
-                      className="rounded-full border border-[#d8e7f1] bg-white px-4 py-2 text-sm font-semibold text-[#0f2344] transition hover:border-[#0aa6c9]/35 hover:text-[#0088c5]"
-                    >
-                      Edit Page
-                    </Link>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {item.slug && industries.some((industry) => industry.slug === item.slug) ? (
+                        <Link
+                          href={`/admin/cms/industries/${item.slug}`}
+                          className="rounded-full border border-[#d8e7f1] bg-white px-4 py-2 text-sm font-semibold text-[#0f2344] transition hover:border-[#0aa6c9]/35 hover:text-[#0088c5]"
+                        >
+                          Edit Page
+                        </Link>
+                      ) : (
+                        <span className="text-sm text-[#5d708f]">Homepage tile only</span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removeItem(index)}
+                        className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                      >
+                        Delete Tile
+                      </button>
+                    </div>
                   </div>
 
                   <ImageUploader
-                    label={`${item.title} Icon`}
+                    label={`${item.title || `Industry ${index + 1}`} Icon`}
                     imageUrl={item.iconUrl}
                     uploading={uploadingKey === `industry-icon-${item.slug}`}
                     onUpload={(file) =>
@@ -138,10 +188,22 @@ export default function AdminCmsIndustriesPage() {
                     onRemove={() => updateItem(index, "iconUrl", "")}
                   />
 
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Field
+                      label={`Industry ${index + 1} Slug`}
+                      value={item.slug}
+                      onChange={(value) => updateItem(index, "slug", value)}
+                    />
+                    <Field
+                      label={`Industry ${index + 1} Label`}
+                      value={item.title}
+                      onChange={(value) => updateItem(index, "title", value)}
+                    />
+                  </div>
                   <Field
-                    label={`${item.title} Label`}
-                    value={item.title}
-                    onChange={(value) => updateItem(index, "title", value)}
+                    label={`Industry ${index + 1} Span Class`}
+                    value={item.span}
+                    onChange={(value) => updateItem(index, "span", value)}
                   />
                 </div>
               ))}

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import {
   defaultFooterContent,
   fetchAdminCmsSection,
+  getFooterGroups,
   updateAdminCmsSection,
   type FooterCmsContent,
 } from "@/services/cmsService";
@@ -13,6 +14,11 @@ import { footerLinks } from "@/app/footer/footerData";
 type FooterLink = {
   label: string;
   href: string;
+};
+
+type FooterGroup = {
+  title: string;
+  links: FooterLink[];
 };
 
 export default function AdminCmsFooterPage() {
@@ -76,6 +82,35 @@ export default function AdminCmsFooterPage() {
       key,
       content[key].filter((_, currentIndex) => currentIndex !== index)
     );
+  };
+
+  const updateExtraGroup = (index: number, nextGroup: FooterGroup) => {
+    setContent((current) => ({
+      ...current,
+      extraGroups: current.extraGroups.map((group, groupIndex) =>
+        groupIndex === index ? nextGroup : group
+      ),
+    }));
+  };
+
+  const addExtraGroup = () => {
+    setContent((current) => ({
+      ...current,
+      extraGroups: [
+        ...(current.extraGroups || []),
+        {
+          title: "New Group",
+          links: [{ label: "New Page", href: "/footer/new-page" }],
+        },
+      ],
+    }));
+  };
+
+  const removeExtraGroup = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      extraGroups: current.extraGroups.filter((_, groupIndex) => groupIndex !== index),
+    }));
   };
 
   return (
@@ -158,6 +193,56 @@ export default function AdminCmsFooterPage() {
               onRemove={(index) => removeLink("legalLinks", index)}
             />
 
+            <div className="space-y-4 rounded-[24px] border border-[#d8e7f1] bg-[#fbfdff] p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-[#0f2344]">Extra Footer Groups</h2>
+                  <p className="text-sm text-[#5d708f]">
+                    Features, Company, Legal ke alawa aur headings yahan add kar sakte ho.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={addExtraGroup}
+                  className="rounded-full border border-[#d8e7f1] bg-white px-4 py-2 text-sm font-semibold text-[#0f2344] transition hover:border-[#0aa6c9]/35 hover:text-[#0088c5]"
+                >
+                  Add Footer Title
+                </button>
+              </div>
+
+              {(content.extraGroups || []).map((group, groupIndex) => (
+                <DynamicLinkGroupEditor
+                  key={`${group.title}-${groupIndex}`}
+                  title={group.title}
+                  links={group.links}
+                  onTitleChange={(value) =>
+                    updateExtraGroup(groupIndex, { ...group, title: value })
+                  }
+                  onAdd={() =>
+                    updateExtraGroup(groupIndex, {
+                      ...group,
+                      links: [...group.links, { label: "New Page", href: "/footer/new-page" }],
+                    })
+                  }
+                  onChange={(index, field, value) =>
+                    updateExtraGroup(groupIndex, {
+                      ...group,
+                      links: group.links.map((link, linkIndex) =>
+                        linkIndex === index ? { ...link, [field]: value } : link
+                      ),
+                    })
+                  }
+                  onRemove={(index) =>
+                    updateExtraGroup(groupIndex, {
+                      ...group,
+                      links: group.links.filter((_, linkIndex) => linkIndex !== index),
+                    })
+                  }
+                  onDeleteGroup={() => removeExtraGroup(groupIndex)}
+                />
+              ))}
+            </div>
+
             <div className="rounded-[24px] border border-[#d8e7f1] p-4">
               <h2 className="text-lg font-semibold text-[#0f2344]">Footer Detail Editors</h2>
               <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -169,6 +254,25 @@ export default function AdminCmsFooterPage() {
                   >
                     {link.label}
                   </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[24px] border border-[#d8e7f1] p-4">
+              <h2 className="text-lg font-semibold text-[#0f2344]">Footer Preview Groups</h2>
+              <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                {getFooterGroups(content).map((group, index) => (
+                  <div
+                    key={`${group.title}-${index}`}
+                    className="rounded-[20px] border border-[#d8e7f1] bg-[#fbfdff] px-4 py-3"
+                  >
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#0aa6c9]">
+                      {group.title}
+                    </p>
+                    <p className="mt-2 text-sm text-[#5d708f]">
+                      {group.links.length} links
+                    </p>
+                  </div>
                 ))}
               </div>
             </div>
@@ -207,6 +311,75 @@ export default function AdminCmsFooterPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function DynamicLinkGroupEditor({
+  title,
+  links,
+  onTitleChange,
+  onAdd,
+  onChange,
+  onRemove,
+  onDeleteGroup,
+}: {
+  title: string;
+  links: FooterLink[];
+  onTitleChange: (value: string) => void;
+  onAdd: () => void;
+  onChange: (index: number, field: keyof FooterLink, value: string) => void;
+  onRemove: (index: number) => void;
+  onDeleteGroup: () => void;
+}) {
+  return (
+    <div className="space-y-4 rounded-[24px] border border-[#d8e7f1] bg-white p-4">
+      <div className="flex items-center justify-between gap-4">
+        <Field label="Group Title" value={title} onChange={onTitleChange} />
+        <div className="flex items-end gap-2">
+          <button
+            type="button"
+            onClick={onAdd}
+            className="rounded-full border border-[#d8e7f1] bg-white px-4 py-3 text-sm font-semibold text-[#0f2344] transition hover:border-[#0aa6c9]/35 hover:text-[#0088c5]"
+          >
+            Add Link
+          </button>
+          <button
+            type="button"
+            onClick={onDeleteGroup}
+            className="rounded-full border border-[#ffd0d0] bg-white px-4 py-3 text-sm font-semibold text-[#ff4d4f] transition hover:bg-[#fff5f5]"
+          >
+            Delete Title
+          </button>
+        </div>
+      </div>
+
+      {links.map((link, index) => (
+        <div
+          key={`${title}-${index}`}
+          className="grid gap-4 rounded-[20px] border border-[#d8e7f1] bg-[#fbfdff] p-4 md:grid-cols-[1fr_1.2fr_auto]"
+        >
+          <Field
+            label="Label"
+            value={link.label}
+            onChange={(value) => onChange(index, "label", value)}
+          />
+          <Field
+            label="URL"
+            value={link.href}
+            onChange={(value) => onChange(index, "href", value)}
+          />
+          <div className="flex items-end">
+            <button
+              type="button"
+              onClick={() => onRemove(index)}
+              className="rounded-full border border-[#ffd0d0] bg-white px-4 py-3 text-sm font-semibold text-[#ff4d4f] transition hover:bg-[#fff5f5]"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

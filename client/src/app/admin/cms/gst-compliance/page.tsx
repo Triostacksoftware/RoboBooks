@@ -28,7 +28,14 @@ export default function AdminCmsGstCompliancePage() {
 
   const updateTool = (
     index: number,
-    key: "label" | "badge" | "description" | "iconUrl" | "previewImageUrl",
+    key:
+      | "key"
+      | "slug"
+      | "label"
+      | "badge"
+      | "description"
+      | "iconUrl"
+      | "previewImageUrl",
     value: string
   ) => {
     setContent((current) => {
@@ -39,6 +46,31 @@ export default function AdminCmsGstCompliancePage() {
       };
       return { ...current, tools: nextTools };
     });
+  };
+
+  const addTool = () => {
+    setContent((current) => ({
+      ...current,
+      tools: [
+        ...current.tools,
+        {
+          key: "",
+          slug: "",
+          label: "",
+          badge: "",
+          description: "",
+          iconUrl: "",
+          previewImageUrl: "",
+        },
+      ],
+    }));
+  };
+
+  const removeTool = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      tools: current.tools.filter((_, toolIndex) => toolIndex !== index),
+    }));
   };
 
   const uploadImage = async (
@@ -108,14 +140,37 @@ export default function AdminCmsGstCompliancePage() {
             />
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">GST Tabs</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-gray-900">GST Tabs</h2>
+                <button
+                  type="button"
+                  onClick={addTool}
+                  className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+                >
+                  Add GST Tab
+                </button>
+              </div>
               {content.tools.map((tool, index) => (
-                <div key={tool.key} className="space-y-4 rounded-2xl border border-gray-200 p-4">
-                  <div>
-                    <p className="text-base font-semibold text-gray-900">{tool.label}</p>
-                    <p className="text-sm text-gray-500">
-                      Key: {tool.key} | Slug: {tool.slug}
-                    </p>
+                <div
+                  key={`${tool.key || "gst-tool"}-${index}`}
+                  className="space-y-4 rounded-2xl border border-gray-200 p-4"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-base font-semibold text-gray-900">
+                        {tool.label || `GST Tab ${index + 1}`}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Key: {tool.key || "not set"} | Slug: {tool.slug || "not set"}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeTool(index)}
+                      className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                    >
+                      Delete Tab
+                    </button>
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
@@ -145,19 +200,32 @@ export default function AdminCmsGstCompliancePage() {
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <Field
-                      label={`${tool.label} Tab Label`}
+                      label={`GST Tab ${index + 1} Key`}
+                      value={tool.key}
+                      onChange={(value) => updateTool(index, "key", value)}
+                    />
+                    <Field
+                      label={`GST Tab ${index + 1} Slug`}
+                      value={tool.slug}
+                      onChange={(value) => updateTool(index, "slug", value)}
+                    />
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Field
+                      label={`${tool.label || `GST Tab ${index + 1}`} Label`}
                       value={tool.label}
                       onChange={(value) => updateTool(index, "label", value)}
                     />
                     <Field
-                      label={`${tool.label} Badge`}
+                      label={`${tool.label || `GST Tab ${index + 1}`} Badge`}
                       value={tool.badge}
                       onChange={(value) => updateTool(index, "badge", value)}
                     />
                   </div>
 
                   <TextArea
-                    label={`${tool.label} Description`}
+                    label={`${tool.label || `GST Tab ${index + 1}`} Description`}
                     value={tool.description}
                     onChange={(value) => updateTool(index, "description", value)}
                     rows={3}
