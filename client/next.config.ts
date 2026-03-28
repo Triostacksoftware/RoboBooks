@@ -1,5 +1,27 @@
 import type { NextConfig } from "next";
 
+const backendImageRemotePatterns = (() => {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  if (!backendUrl) {
+    return [];
+  }
+
+  try {
+    const parsedUrl = new URL(backendUrl);
+    return [
+      {
+        protocol: parsedUrl.protocol.replace(":", "") as "http" | "https",
+        hostname: parsedUrl.hostname,
+        port: parsedUrl.port || "",
+        pathname: "/uploads/**",
+      },
+    ];
+  } catch {
+    return [];
+  }
+})();
+
 const nextConfig: NextConfig = {
   // Performance Configuration:
   // - Set DISABLE_SOURCE_MAPS=true in .env.local to disable source maps if you experience performance issues
@@ -48,6 +70,7 @@ const nextConfig: NextConfig = {
     unoptimized: process.env.NODE_ENV === 'development',
     // Optimize image formats
     formats: ['image/webp', 'image/avif'],
+    remotePatterns: backendImageRemotePatterns,
   },
 
   // Transpile packages for better compatibility

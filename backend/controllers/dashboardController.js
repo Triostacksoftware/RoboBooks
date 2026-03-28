@@ -8,10 +8,13 @@ import { getReportStats } from '../services/reportService.js';
 import { getOrderStats } from '../services/salesOrderService.js';
 import jwt from 'jsonwebtoken';
 
+const getDashboardOrganizationId = (user) => user?.organizationId || user?.organization;
+
 // Get comprehensive dashboard statistics
 const getDashboardStats = async (req, res) => {
   try {
     console.log('Fetching dashboard stats...');
+    const organizationId = getDashboardOrganizationId(req.user);
     
     // Fetch all statistics in parallel
     const [
@@ -28,7 +31,7 @@ const getDashboardStats = async (req, res) => {
       getItemStats(),
       bankingService.getBankingStats(),
       getInvoiceStats(),
-      getBillStats(),
+      getBillStats({ organizationId }),
       getAllProjectStats(req.user?.uid),
       getReportStats(),
       getOrderStats()
@@ -66,6 +69,7 @@ const getDashboardStats = async (req, res) => {
 const getDashboardStatsData = async (req) => {
   try {
     console.log('Fetching dashboard stats data...');
+    const organizationId = getDashboardOrganizationId(req.user);
     
     // Fetch all statistics in parallel
     const [
@@ -82,7 +86,7 @@ const getDashboardStatsData = async (req) => {
       getItemStats(),
       bankingService.getBankingStats(),
       getInvoiceStats(),
-      getBillStats(),
+      getBillStats({ organizationId }),
       getAllProjectStats(req.user?.uid),
       getReportStats(),
       getOrderStats()
@@ -139,6 +143,7 @@ const getDashboardEvents = async (req, res) => {
       uid: decoded.uid || decoded.id,
       role: decoded.role || 'user',
       email: decoded.email,
+      organizationId: decoded.organization || decoded.company || decoded.uid || decoded.id,
       organization: decoded.organization,
       iat: decoded.iat,
       exp: decoded.exp
@@ -216,5 +221,4 @@ export default {
   getDashboardStatsData,
   getDashboardEvents
 };
-
 
