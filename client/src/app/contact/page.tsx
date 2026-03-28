@@ -1,49 +1,60 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../homepage/components/Navbar'
 import Footer from '../homepage/components/Footer'
 import InnerPageHero from '../components/InnerPageHero'
 import ContactForm from './components/contactform'
 import ContactDetails from './components/contact-details'
+import {
+  defaultContactSectionContent,
+  fetchPublicCmsSection,
+  type ContactSectionCmsContent,
+} from '@/services/cmsService'
 
 const ContactPage = () => {
+  const [content, setContent] = useState<ContactSectionCmsContent>(defaultContactSectionContent)
+
+  useEffect(() => {
+    fetchPublicCmsSection<ContactSectionCmsContent>(
+      'contactSection',
+      defaultContactSectionContent
+    ).then(setContent)
+  }, [])
+
   return (
     <>
       <Navbar />
       <InnerPageHero
-        eyebrow="Contact"
-        title="Talk to the RoboBooks team about support, demos, or your accounting setup"
-        description="Whether you need product guidance, help with onboarding, or answers about plans and workflows, our team is ready to respond with clarity and speed."
-        primaryAction={{ href: '#contact-form', label: 'Get in touch' }}
-        secondaryAction={{ href: '#contact-details', label: 'View contact details' }}
+        eyebrow={content.heroEyebrow}
+        title={content.heroTitle}
+        description={content.heroDescription}
+        primaryAction={{ href: content.heroPrimaryButtonUrl, label: content.heroPrimaryButtonLabel }}
+        secondaryAction={{ href: content.heroSecondaryButtonUrl, label: content.heroSecondaryButtonLabel }}
         variant="banner"
         breadcrumbLabel="Contact"
-        stats={[
-          { value: '24/7', label: 'Support desk' },
-          { value: '1h', label: 'Fast response' },
-          { value: '3', label: 'Ways to connect' },
-          { value: '100%', label: 'Cloud support' },
-        ]}
+        stats={content.heroStats}
       />
       <ContactForm />
       <ContactDetails
-        hqTitle="Robo Books HQ"
-        addressLines={[
-          '123 Business Park, Tech Hub',
-          'Mumbai, Maharashtra 400001',
-        ]}
-        phones={[
-          { label: 'Mobile', number: '+91 98765 43210' },
-          { label: 'Support', number: '+91 1800 1102' },
-        ]}
-        emails={[
-          { label: 'Info', address: 'hello@robobooks.com' },
-          { label: 'Support', address: 'support@robobooks.com' },
-        ]}
-        showMap={true}
-        placeQuery="Robo Books HQ Mumbai"
-        whatsAppNumber="+91 98765 43210"
+        hqTitle={content.addressTitle}
+        addressLines={content.addressLines}
+        phones={content.phones}
+        emails={content.emails}
+        showMap={content.showMap}
+        placeQuery={content.placeQuery}
+        whatsAppNumber={content.whatsAppNumber}
+        detailsEyebrow={content.detailsEyebrow}
+        detailsTitle={content.detailsTitle}
+        detailsDescription={content.detailsDescription}
+        whatsappButtonLabel={content.whatsappButtonLabel}
+        supportButtonLabel={content.supportButtonLabel}
+        supportButtonEmail={content.supportButtonEmail}
+        mapEyebrow={content.mapEyebrow}
+        mapTitle={content.mapTitle}
+        mapButtonLabel={content.mapButtonLabel}
+        mapTags={content.mapTags}
+        fallbackStats={content.fallbackStats}
       />
       <Footer />
     </>

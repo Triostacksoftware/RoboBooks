@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import {
   defaultHeroContent,
   fetchAdminCmsSection,
+  resolveCmsAssetUrl,
+  uploadAdminCmsImage,
   updateAdminCmsSection,
   type HeroCmsContent,
 } from "@/services/cmsService";
@@ -12,6 +14,7 @@ export default function AdminCmsHeroPage() {
   const [content, setContent] = useState<HeroCmsContent>(defaultHeroContent);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingKey, setUploadingKey] = useState<string | null>(null);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -31,6 +34,67 @@ export default function AdminCmsHeroPage() {
       nextFeatures[index] = value;
       return { ...current, features: nextFeatures };
     });
+  };
+
+  const addFeature = () => {
+    setContent((current) => ({
+      ...current,
+      features: [...current.features, ""],
+    }));
+  };
+
+  const removeFeature = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      features: current.features.filter((_, featureIndex) => featureIndex !== index),
+    }));
+  };
+
+  const updateSlide = (
+    index: number,
+    key: "imageUrl" | "alt",
+    value: string
+  ) => {
+    setContent((current) => {
+      const slides = [...current.slides];
+      slides[index] = {
+        ...slides[index],
+        [key]: value,
+      };
+      return { ...current, slides };
+    });
+  };
+
+  const addSlide = () => {
+    setContent((current) => ({
+      ...current,
+      slides: [...current.slides, { imageUrl: "", alt: "" }],
+    }));
+  };
+
+  const removeSlide = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      slides: current.slides.filter((_, slideIndex) => slideIndex !== index),
+    }));
+  };
+
+  const uploadImage = async (
+    key: string,
+    file: File,
+    onSuccess: (uploadedUrl: string) => void
+  ) => {
+    try {
+      setUploadingKey(key);
+      setMessage("");
+      const response = await uploadAdminCmsImage(file);
+      onSuccess(response.url);
+      setMessage("Image uploaded successfully.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Failed to upload image.");
+    } finally {
+      setUploadingKey(null);
+    }
   };
 
   const handleSave = async () => {
@@ -114,18 +178,95 @@ export default function AdminCmsHeroPage() {
                   setContent((current) => ({ ...current, secondaryButtonUrl: value }))
                 }
               />
+              <Field
+                label="Slide Change Time (ms)"
+                value={String(content.slideIntervalMs)}
+                onChange={(value) =>
+                  setContent((current) => ({
+                    ...current,
+                    slideIntervalMs: Number(value) || 3000,
+                  }))
+                }
+              />
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">Hero Bullet Points</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-gray-900">Hero Background Slides</h2>
+                <button
+                  type="button"
+                  onClick={addSlide}
+                  className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+                >
+                  Add Slide
+                </button>
+              </div>
+              {content.slides.map((slide, index) => (
+                <div key={index} className="space-y-4 rounded-2xl border border-gray-200 p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-gray-900">Slide {index + 1}</p>
+                    <button
+                      type="button"
+                      onClick={() => removeSlide(index)}
+                      className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                    >
+                      Delete Slide
+                    </button>
+                  </div>
+
+                  <ImageUploader
+                    label={`Slide ${index + 1} Image`}
+                    imageUrl={slide.imageUrl}
+                    uploading={uploadingKey === `hero-slide-${index}`}
+                    onUpload={(file) =>
+                      uploadImage(`hero-slide-${index}`, file, (uploadedUrl) =>
+                        updateSlide(index, "imageUrl", uploadedUrl)
+                      )
+                    }
+                    onRemove={() => updateSlide(index, "imageUrl", "")}
+                  />
+
+                  <Field
+                    label={`Slide ${index + 1} Alt Text`}
+                    value={slide.alt}
+                    onChange={(value) => updateSlide(index, "alt", value)}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-gray-900">Hero Bullet Points</h2>
+                <button
+                  type="button"
+                  onClick={addFeature}
+                  className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+                >
+                  Add Bullet Point
+                </button>
+              </div>
               {content.features.map((feature, index) => (
-                <TextArea
-                  key={index}
-                  label={`Feature ${index + 1}`}
-                  value={feature}
-                  onChange={(value) => updateFeature(index, value)}
-                  rows={2}
-                />
+                <div key={index} className="space-y-3 rounded-2xl border border-gray-200 p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-gray-900">
+                      Bullet Point {index + 1}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => removeFeature(index)}
+                      className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                  <TextArea
+                    label={`Feature ${index + 1}`}
+                    value={feature}
+                    onChange={(value) => updateFeature(index, value)}
+                    rows={2}
+                  />
+                </div>
               ))}
             </div>
 
@@ -146,6 +287,68 @@ export default function AdminCmsHeroPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function ImageUploader({
+  label,
+  imageUrl,
+  uploading,
+  onUpload,
+  onRemove,
+}: {
+  label: string;
+  imageUrl: string;
+  uploading: boolean;
+  onUpload: (file: File) => void;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm font-medium text-gray-700">{label}</p>
+        {imageUrl ? (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="text-sm font-medium text-red-600 transition hover:text-red-700"
+          >
+            Remove image
+          </button>
+        ) : null}
+      </div>
+
+      {imageUrl ? (
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-3">
+          <img
+            src={resolveCmsAssetUrl(imageUrl)}
+            alt={label}
+            className="max-h-40 w-full rounded-lg object-cover"
+          />
+        </div>
+      ) : (
+        <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-8 text-sm text-gray-500">
+          No image uploaded yet.
+        </div>
+      )}
+
+      <label className="flex w-full cursor-pointer items-center justify-center rounded-xl border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-purple-400 hover:text-purple-700">
+        {uploading ? "Uploading..." : "Choose Image"}
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          disabled={uploading}
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) {
+              onUpload(file);
+            }
+            event.currentTarget.value = "";
+          }}
+        />
+      </label>
     </div>
   );
 }

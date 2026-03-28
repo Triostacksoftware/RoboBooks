@@ -56,6 +56,28 @@ export default function AdminCmsTrustedPartnerPage() {
     });
   };
 
+  const addRowItem = (rowKey: "topRow" | "bottomRow") => {
+    setContent((current) => ({
+      ...current,
+      [rowKey]: [
+        ...current[rowKey],
+        {
+          label: "",
+          iconKey: iconOptions[0].value,
+          iconUrl: "",
+          sublabel: "",
+        },
+      ],
+    }));
+  };
+
+  const removeRowItem = (rowKey: "topRow" | "bottomRow", index: number) => {
+    setContent((current) => ({
+      ...current,
+      [rowKey]: current[rowKey].filter((_, itemIndex) => itemIndex !== index),
+    }));
+  };
+
   const uploadImage = async (
     key: string,
     file: File,
@@ -127,6 +149,8 @@ export default function AdminCmsTrustedPartnerPage() {
               title="Top Row"
               items={content.topRow}
               uploadingKey={uploadingKey}
+              onAdd={() => addRowItem("topRow")}
+              onRemove={(index) => removeRowItem("topRow", index)}
               onChange={(index, field, value) => updateRowItem("topRow", index, field, value)}
               onUpload={(index, file) =>
                 uploadImage(`top-row-${index}`, file, (uploadedUrl) =>
@@ -139,6 +163,8 @@ export default function AdminCmsTrustedPartnerPage() {
               title="Bottom Row"
               items={content.bottomRow}
               uploadingKey={uploadingKey}
+              onAdd={() => addRowItem("bottomRow")}
+              onRemove={(index) => removeRowItem("bottomRow", index)}
               onChange={(index, field, value) =>
                 updateRowItem("bottomRow", index, field, value)
               }
@@ -174,12 +200,16 @@ function RowEditor({
   title,
   items,
   uploadingKey,
+  onAdd,
+  onRemove,
   onChange,
   onUpload,
 }: {
   title: string;
   items: TrustedMarqueeCmsContent["topRow"];
   uploadingKey: string | null;
+  onAdd: () => void;
+  onRemove: (index: number) => void;
   onChange: (
     index: number,
     field: "label" | "iconKey" | "iconUrl" | "sublabel",
@@ -189,12 +219,33 @@ function RowEditor({
 }) {
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-[#0f2344]">{title}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold text-[#0f2344]">{title}</h2>
+        <button
+          type="button"
+          onClick={onAdd}
+          className="rounded-full border border-[#0aa6c9]/25 bg-[#eff8ff] px-4 py-2 text-sm font-semibold text-[#0088c5] transition hover:bg-[#dff4ff]"
+        >
+          Add Item
+        </button>
+      </div>
       {items.map((item, index) => (
         <div
           key={`${title}-${index}`}
           className="space-y-4 rounded-[24px] border border-[#d8e7f1] bg-[#fbfdff] p-4"
         >
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm font-semibold text-[#0f2344]">
+              Item {index + 1}
+            </p>
+            <button
+              type="button"
+              onClick={() => onRemove(index)}
+              className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+            >
+              Delete Item
+            </button>
+          </div>
           <Field
             label={`Item ${index + 1} Label`}
             value={item.label}

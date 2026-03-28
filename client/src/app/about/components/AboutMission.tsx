@@ -1,15 +1,16 @@
 'use client';
 
 import Image from 'next/image';
-
-const missionPoints = [
-  'Make accounting accessible for small and growing businesses',
-  'Reduce repetitive finance admin with guided automation',
-  'Keep compliance, reporting, and books connected in one system',
-  'Design finance software that teams actually enjoy using',
-];
+import { useEffect, useState } from 'react';
+import { defaultAboutContent, fetchPublicCmsSection, type AboutCmsContent } from '@/services/cmsService';
 
 export default function AboutMission() {
+  const [content, setContent] = useState<AboutCmsContent>(defaultAboutContent);
+
+  useEffect(() => {
+    fetchPublicCmsSection<AboutCmsContent>('about', defaultAboutContent).then(setContent);
+  }, []);
+
   return (
     <section
       id="mission"
@@ -22,23 +23,20 @@ export default function AboutMission() {
         <div className="space-y-7">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
-              Our Mission
+              {content.mission.eyebrow}
             </p>
             <h2 className="mt-4 text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
-              Build accounting software that keeps business teams in control
+              {content.mission.title}
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-              RoboBooks exists to simplify the daily finance work that slows
-              companies down. We bring invoicing, bookkeeping, reporting, and
-              compliance into one experience so business owners and teams can act
-              from clean numbers instead of scattered tools.
+              {content.mission.description}
             </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {missionPoints.map((point) => (
+            {content.mission.highlights.map((point, index) => (
               <div
-                key={point}
+                key={`${point}-${index}`}
                 className="rounded-[24px] border border-[#d8e7f1] bg-[#fbfdff] px-5 py-5 shadow-[0_14px_35px_rgba(15,35,68,0.05)]"
               >
                 <div className="flex items-start gap-3">

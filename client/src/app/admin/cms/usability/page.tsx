@@ -41,6 +41,20 @@ export default function AdminCmsUsabilityPage() {
     });
   };
 
+  const addCard = () => {
+    setContent((current) => ({
+      ...current,
+      cards: [...current.cards, { title: "", description: "", iconUrl: "" }],
+    }));
+  };
+
+  const removeCard = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      cards: current.cards.filter((_, cardIndex) => cardIndex !== index),
+    }));
+  };
+
   const uploadImage = async (
     key: string,
     file: File,
@@ -107,9 +121,30 @@ export default function AdminCmsUsabilityPage() {
             />
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">Usability Cards</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-gray-900">Usability Cards</h2>
+                <button
+                  type="button"
+                  onClick={addCard}
+                  className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+                >
+                  Add Card
+                </button>
+              </div>
               {content.cards.map((card, index) => (
                 <div key={index} className="space-y-4 rounded-2xl border border-gray-200 p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-base font-semibold text-gray-900">
+                      Card {index + 1}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => removeCard(index)}
+                      className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                    >
+                      Delete Card
+                    </button>
+                  </div>
                   <ImageUploader
                     label={`Card ${index + 1} Icon`}
                     imageUrl={card.iconUrl}

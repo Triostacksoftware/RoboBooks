@@ -75,6 +75,26 @@ function AdminFooterCmsPage({ params }: AdminFooterPageProps) {
     });
   };
 
+  const addHighlight = () => {
+    setContent((current) => {
+      if (!current) return current;
+      return {
+        ...current,
+        highlights: [...current.highlights, ""],
+      };
+    });
+  };
+
+  const removeHighlight = (index: number) => {
+    setContent((current) => {
+      if (!current) return current;
+      return {
+        ...current,
+        highlights: current.highlights.filter((_, itemIndex) => itemIndex !== index),
+      };
+    });
+  };
+
   const handleSave = async () => {
     if (!slug || !content) return;
 
@@ -192,15 +212,34 @@ function AdminFooterCmsPage({ params }: AdminFooterPageProps) {
             />
 
             <div className="space-y-4 rounded-[24px] border border-[#d8e7f1] p-4">
-              <h2 className="text-lg font-semibold text-[#0f2344]">Highlights</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-[#0f2344]">Highlights</h2>
+                <button
+                  type="button"
+                  onClick={addHighlight}
+                  className="rounded-full border border-[#0aa6c9]/25 bg-[#eff8ff] px-4 py-2 text-sm font-semibold text-[#0088c5] transition hover:bg-[#dff4ff]"
+                >
+                  Add Highlight
+                </button>
+              </div>
               {content.highlights.map((highlight, index) => (
-                <TextArea
-                  key={index}
-                  label={`Highlight ${index + 1}`}
-                  value={highlight}
-                  onChange={(value) => updateHighlight(index, value)}
-                  rows={3}
-                />
+                <div key={index} className="grid gap-3 md:grid-cols-[1fr_auto]">
+                  <TextArea
+                    label={`Highlight ${index + 1}`}
+                    value={highlight}
+                    onChange={(value) => updateHighlight(index, value)}
+                    rows={3}
+                  />
+                  <div className="flex items-end">
+                    <button
+                      type="button"
+                      onClick={() => removeHighlight(index)}
+                      className="rounded-full border border-[#ffd0d0] bg-white px-4 py-3 text-sm font-semibold text-[#ff4d4f] transition hover:bg-[#fff5f5]"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
               ))}
             </div>
 

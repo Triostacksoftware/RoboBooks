@@ -14,15 +14,12 @@ import {
   BriefcaseBusiness,
   X,
 } from "lucide-react";
-import { defaultHeroContent, fetchPublicCmsSection, type HeroCmsContent } from "@/services/cmsService";
-
-const heroSlides = [
-  "/images/homehero.png",
-  "/images/dashboard.png",
-  "/images/usability.png",
-  "/images/your-illustration.png",
-  "/images/businessbenifits.png",
-];
+import {
+  defaultHeroContent,
+  fetchPublicCmsSection,
+  resolveCmsAssetUrl,
+  type HeroCmsContent,
+} from "@/services/cmsService";
 
 const Hero: React.FC = () => {
   const [content, setContent] = useState<HeroCmsContent>(defaultHeroContent);
@@ -36,13 +33,20 @@ const Hero: React.FC = () => {
     [phoneValue]
   );
 
+  const heroSlides = content.slides.length > 0 ? content.slides : defaultHeroContent.slides;
+
   useEffect(() => {
+    if (heroSlides.length <= 1) {
+      setActiveSlide(0);
+      return;
+    }
+
     const interval = window.setInterval(() => {
       setActiveSlide((current) => (current + 1) % heroSlides.length);
-    }, 3000);
+    }, Math.max(1000, Number(content.slideIntervalMs) || 3000));
 
     return () => window.clearInterval(interval);
-  }, []);
+  }, [content.slideIntervalMs, heroSlides.length]);
 
   useEffect(() => {
     fetchPublicCmsSection("hero", defaultHeroContent).then(setContent);
@@ -64,14 +68,14 @@ const Hero: React.FC = () => {
       <div className="absolute inset-0">
         {heroSlides.map((slide, index) => (
           <div
-            key={slide}
+            key={`${slide.imageUrl}-${index}`}
             className={`absolute inset-0 transition-opacity duration-1000 ${
               activeSlide === index ? "opacity-100" : "opacity-0"
             }`}
           >
             <Image
-              src={slide}
-              alt="Accounting software background"
+              src={resolveCmsAssetUrl(slide.imageUrl)}
+              alt={slide.alt || "Accounting software background"}
               fill
               priority={index === 0}
               className="object-cover object-center"

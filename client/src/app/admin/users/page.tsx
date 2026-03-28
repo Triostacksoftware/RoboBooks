@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import Swal from "sweetalert2";
 import {
@@ -18,6 +19,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 export default function AdminUsers() {
+  const searchParams = useSearchParams();
   interface AdminUser {
     id: string;
     companyName: string;
@@ -41,6 +43,15 @@ export default function AdminUsers() {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    const status = searchParams.get("status");
+    if (status === "active" || status === "inactive") {
+      setFilterStatus(status);
+      return;
+    }
+    setFilterStatus("all");
+  }, [searchParams]);
 
   const fetchUsers = async () => {
     try {

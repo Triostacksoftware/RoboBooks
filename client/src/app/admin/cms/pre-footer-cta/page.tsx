@@ -36,6 +36,20 @@ export default function AdminCmsPreFooterCtaPage() {
     });
   };
 
+  const addBenefit = () => {
+    setContent((current) => ({
+      ...current,
+      benefits: [...current.benefits, ""],
+    }));
+  };
+
+  const removeBenefit = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      benefits: current.benefits.filter((_, benefitIndex) => benefitIndex !== index),
+    }));
+  };
+
   const handleUpload = async (
     key: string,
     file: File,
@@ -131,14 +145,33 @@ export default function AdminCmsPreFooterCtaPage() {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-[#0f2344]">Benefits</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-[#0f2344]">Benefits</h2>
+                <button
+                  type="button"
+                  onClick={addBenefit}
+                  className="rounded-full border border-[#0aa6c9]/25 bg-[#eff8ff] px-4 py-2 text-sm font-semibold text-[#0088c5] transition hover:bg-[#dff4ff]"
+                >
+                  Add Benefit
+                </button>
+              </div>
               {content.benefits.map((item, index) => (
-                <Field
-                  key={index}
-                  label={`Benefit ${index + 1}`}
-                  value={item}
-                  onChange={(value) => updateBenefit(index, value)}
-                />
+                <div key={index} className="grid gap-3 md:grid-cols-[1fr_auto]">
+                  <Field
+                    label={`Benefit ${index + 1}`}
+                    value={item}
+                    onChange={(value) => updateBenefit(index, value)}
+                  />
+                  <div className="flex items-end">
+                    <button
+                      type="button"
+                      onClick={() => removeBenefit(index)}
+                      className="rounded-full border border-[#ffd0d0] bg-white px-4 py-3 text-sm font-semibold text-[#ff4d4f] transition hover:bg-[#fff5f5]"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
               ))}
             </div>
 

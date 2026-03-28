@@ -9,11 +9,51 @@ export default function AdminCmsPage() {
         </p>
         <h1 className="mt-2 text-3xl font-bold text-gray-900">Content Management</h1>
         <p className="mt-2 text-gray-600">
-          Choose which homepage section you want to edit from the admin panel.
+          Choose which website page or homepage section you want to edit from the admin panel.
         </p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
+        <Link
+          href="/admin/cms/about"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">About Us Page</h2>
+          <p className="mt-3 text-gray-600">
+            Open the About section editor used for About Us content and page storytelling blocks.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/cms/services"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Service Page</h2>
+          <p className="mt-3 text-gray-600">
+            Open the Services editor to manage service highlights, cards, and CTA content.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/cms/features"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Features Page</h2>
+          <p className="mt-3 text-gray-600">
+            Open the Features editor to manage feature cards, supporting copy, and call-to-action content.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/cms/contact-section"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Contact Page</h2>
+          <p className="mt-3 text-gray-600">
+            Open the Contact editor to manage the contact block, callback form text, and page action copy.
+          </p>
+        </Link>
+
         <Link
           href="/admin/cms/logo"
           className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"

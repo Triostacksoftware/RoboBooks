@@ -41,6 +41,56 @@ export default function AdminCmsFeaturesPage() {
     });
   };
 
+  const updatePageStat = (
+    index: number,
+    key: "value" | "label",
+    value: string
+  ) => {
+    setContent((current) => {
+      const nextStats = [...current.pageStats];
+      nextStats[index] = {
+        ...nextStats[index],
+        [key]: value,
+      };
+      return { ...current, pageStats: nextStats };
+    });
+  };
+
+  const addPageStat = () => {
+    setContent((current) => ({
+      ...current,
+      pageStats: [...current.pageStats, { value: "", label: "" }],
+    }));
+  };
+
+  const removePageStat = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      pageStats: current.pageStats.filter((_, statIndex) => statIndex !== index),
+    }));
+  };
+
+  const addCard = () => {
+    setContent((current) => ({
+      ...current,
+      cards: [
+        ...current.cards,
+        {
+          title: "",
+          description: "",
+          iconUrl: "",
+        },
+      ],
+    }));
+  };
+
+  const removeCard = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      cards: current.cards.filter((_, cardIndex) => cardIndex !== index),
+    }));
+  };
+
   const uploadImage = async (
     key: string,
     file: File,
@@ -89,6 +139,94 @@ export default function AdminCmsFeaturesPage() {
           <p className="text-gray-600">Loading features content...</p>
         ) : (
           <div className="space-y-5">
+            <div className="space-y-4 rounded-2xl border border-gray-200 p-4">
+              <h2 className="text-lg font-semibold text-gray-900">Features Page Hero</h2>
+              <Field
+                label="Page Eyebrow"
+                value={content.pageEyebrow}
+                onChange={(value) => setContent((current) => ({ ...current, pageEyebrow: value }))}
+              />
+              <Field
+                label="Page Title"
+                value={content.pageTitle}
+                onChange={(value) => setContent((current) => ({ ...current, pageTitle: value }))}
+              />
+              <TextArea
+                label="Page Description"
+                value={content.pageDescription}
+                onChange={(value) =>
+                  setContent((current) => ({ ...current, pageDescription: value }))
+                }
+                rows={3}
+              />
+              <div className="grid gap-4 md:grid-cols-2">
+                <Field
+                  label="Primary Button Label"
+                  value={content.pagePrimaryButtonLabel}
+                  onChange={(value) =>
+                    setContent((current) => ({ ...current, pagePrimaryButtonLabel: value }))
+                  }
+                />
+                <Field
+                  label="Primary Button URL"
+                  value={content.pagePrimaryButtonUrl}
+                  onChange={(value) =>
+                    setContent((current) => ({ ...current, pagePrimaryButtonUrl: value }))
+                  }
+                />
+                <Field
+                  label="Secondary Button Label"
+                  value={content.pageSecondaryButtonLabel}
+                  onChange={(value) =>
+                    setContent((current) => ({ ...current, pageSecondaryButtonLabel: value }))
+                  }
+                />
+                <Field
+                  label="Secondary Button URL"
+                  value={content.pageSecondaryButtonUrl}
+                  onChange={(value) =>
+                    setContent((current) => ({ ...current, pageSecondaryButtonUrl: value }))
+                  }
+                />
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <h3 className="text-base font-semibold text-gray-900">Hero Stats</h3>
+                  <button
+                    type="button"
+                    onClick={addPageStat}
+                    className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+                  >
+                    Add Stat
+                  </button>
+                </div>
+                {content.pageStats.map((stat, index) => (
+                  <div key={index} className="grid gap-4 rounded-2xl border border-gray-200 p-4 md:grid-cols-[1fr_1fr_auto]">
+                    <Field
+                      label={`Stat ${index + 1} Value`}
+                      value={stat.value}
+                      onChange={(value) => updatePageStat(index, "value", value)}
+                    />
+                    <Field
+                      label={`Stat ${index + 1} Label`}
+                      value={stat.label}
+                      onChange={(value) => updatePageStat(index, "label", value)}
+                    />
+                    <div className="flex items-end">
+                      <button
+                        type="button"
+                        onClick={() => removePageStat(index)}
+                        className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                      >
+                        Delete Stat
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <Field
               label="Eyebrow"
               value={content.eyebrow}
@@ -119,9 +257,30 @@ export default function AdminCmsFeaturesPage() {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">Feature Cards</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-gray-900">Feature Cards</h2>
+                <button
+                  type="button"
+                  onClick={addCard}
+                  className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+                >
+                  Add Feature Card
+                </button>
+              </div>
               {content.cards.map((card, index) => (
                 <div key={index} className="space-y-4 rounded-2xl border border-gray-200 p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-base font-semibold text-gray-900">
+                      Feature Card {index + 1}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => removeCard(index)}
+                      className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                    >
+                      Delete Card
+                    </button>
+                  </div>
                   <ImageUploader
                     label={`Card ${index + 1} Icon`}
                     imageUrl={card.iconUrl}

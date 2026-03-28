@@ -39,12 +39,40 @@ export default function AdminCmsInvoiceThemesPage() {
     });
   };
 
+  const addInfoCard = () => {
+    setContent((current) => ({
+      ...current,
+      infoCards: [...current.infoCards, { title: "", body: "" }],
+    }));
+  };
+
+  const removeInfoCard = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      infoCards: current.infoCards.filter((_, cardIndex) => cardIndex !== index),
+    }));
+  };
+
   const updateTabLabel = (index: number, value: string) => {
     setContent((current) => {
       const nextTabs = [...current.tabLabels];
       nextTabs[index] = value;
       return { ...current, tabLabels: nextTabs };
     });
+  };
+
+  const addTabLabel = () => {
+    setContent((current) => ({
+      ...current,
+      tabLabels: [...current.tabLabels, ""],
+    }));
+  };
+
+  const removeTabLabel = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      tabLabels: current.tabLabels.filter((_, tabIndex) => tabIndex !== index),
+    }));
   };
 
   const updateThermalImage = (
@@ -62,6 +90,23 @@ export default function AdminCmsInvoiceThemesPage() {
     });
   };
 
+  const addThermalImage = () => {
+    setContent((current) => ({
+      ...current,
+      thermalImages: [
+        ...current.thermalImages,
+        { imageUrl: "", alt: "", widthLabel: "" },
+      ],
+    }));
+  };
+
+  const removeThermalImage = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      thermalImages: current.thermalImages.filter((_, imageIndex) => imageIndex !== index),
+    }));
+  };
+
   const updateA4Image = (index: number, key: "imageUrl" | "alt", value: string) => {
     setContent((current) => {
       const nextImages = [...current.a4Images];
@@ -73,6 +118,20 @@ export default function AdminCmsInvoiceThemesPage() {
     });
   };
 
+  const addA4Image = () => {
+    setContent((current) => ({
+      ...current,
+      a4Images: [...current.a4Images, { imageUrl: "", alt: "" }],
+    }));
+  };
+
+  const removeA4Image = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      a4Images: current.a4Images.filter((_, imageIndex) => imageIndex !== index),
+    }));
+  };
+
   const updateA5Image = (index: number, key: "imageUrl" | "alt", value: string) => {
     setContent((current) => {
       const nextImages = [...current.a5Images];
@@ -82,6 +141,20 @@ export default function AdminCmsInvoiceThemesPage() {
       };
       return { ...current, a5Images: nextImages };
     });
+  };
+
+  const addA5Image = () => {
+    setContent((current) => ({
+      ...current,
+      a5Images: [...current.a5Images, { imageUrl: "", alt: "" }],
+    }));
+  };
+
+  const removeA5Image = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      a5Images: current.a5Images.filter((_, imageIndex) => imageIndex !== index),
+    }));
   };
 
   const uploadImage = async (
@@ -152,9 +225,30 @@ export default function AdminCmsInvoiceThemesPage() {
             />
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">Feature Cards</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-gray-900">Feature Cards</h2>
+                <button
+                  type="button"
+                  onClick={addInfoCard}
+                  className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+                >
+                  Add Feature Card
+                </button>
+              </div>
               {content.infoCards.map((card, index) => (
                 <div key={index} className="grid gap-4 rounded-2xl border border-gray-200 p-4 md:grid-cols-2">
+                  <div className="md:col-span-2 flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-gray-900">
+                      Feature Card {index + 1}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => removeInfoCard(index)}
+                      className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                    >
+                      Delete Card
+                    </button>
+                  </div>
                   <Field
                     label={`Card ${index + 1} Title`}
                     value={card.title}
@@ -171,15 +265,34 @@ export default function AdminCmsInvoiceThemesPage() {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">Tab Labels</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-gray-900">Tab Labels</h2>
+                <button
+                  type="button"
+                  onClick={addTabLabel}
+                  className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+                >
+                  Add Tab
+                </button>
+              </div>
               <div className="grid gap-4 md:grid-cols-3">
                 {content.tabLabels.map((label, index) => (
-                  <Field
-                    key={index}
-                    label={`Tab ${index + 1}`}
-                    value={label}
-                    onChange={(value) => updateTabLabel(index, value)}
-                  />
+                  <div key={index} className="grid gap-3 md:grid-cols-[1fr_auto]">
+                    <Field
+                      label={`Tab ${index + 1}`}
+                      value={label}
+                      onChange={(value) => updateTabLabel(index, value)}
+                    />
+                    <div className="flex items-end">
+                      <button
+                        type="button"
+                        onClick={() => removeTabLabel(index)}
+                        className="rounded-xl border border-[#ffd0d0] bg-white px-4 py-3 text-sm font-semibold text-[#ff4d4f] transition hover:bg-[#fff5f5]"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
@@ -212,9 +325,30 @@ export default function AdminCmsInvoiceThemesPage() {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">Thermal Preview Images</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-gray-900">Thermal Preview Images</h2>
+                <button
+                  type="button"
+                  onClick={addThermalImage}
+                  className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+                >
+                  Add Thermal Image
+                </button>
+              </div>
               {content.thermalImages.map((image, index) => (
                 <div key={index} className="space-y-4 rounded-2xl border border-gray-200 p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-gray-900">
+                      Thermal Image {index + 1}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => removeThermalImage(index)}
+                      className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                    >
+                      Delete Image
+                    </button>
+                  </div>
                   <ImageUploader
                     label={`Thermal Image ${index + 1}`}
                     imageUrl={image.imageUrl}
@@ -243,9 +377,30 @@ export default function AdminCmsInvoiceThemesPage() {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">A4 Preview Images</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-gray-900">A4 Preview Images</h2>
+                <button
+                  type="button"
+                  onClick={addA4Image}
+                  className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+                >
+                  Add A4 Image
+                </button>
+              </div>
               {content.a4Images.map((image, index) => (
                 <div key={index} className="space-y-4 rounded-2xl border border-gray-200 p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-gray-900">
+                      A4 Image {index + 1}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => removeA4Image(index)}
+                      className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                    >
+                      Delete Image
+                    </button>
+                  </div>
                   <ImageUploader
                     label={`A4 Image ${index + 1}`}
                     imageUrl={image.imageUrl}
@@ -267,9 +422,30 @@ export default function AdminCmsInvoiceThemesPage() {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">A5 Preview Images</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-gray-900">A5 Preview Images</h2>
+                <button
+                  type="button"
+                  onClick={addA5Image}
+                  className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+                >
+                  Add A5 Image
+                </button>
+              </div>
               {content.a5Images.map((image, index) => (
                 <div key={index} className="space-y-4 rounded-2xl border border-gray-200 p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-gray-900">
+                      A5 Image {index + 1}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => removeA5Image(index)}
+                      className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                    >
+                      Delete Image
+                    </button>
+                  </div>
                   <ImageUploader
                     label={`A5 Image ${index + 1}`}
                     imageUrl={image.imageUrl}

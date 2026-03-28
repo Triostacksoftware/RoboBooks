@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState, type ComponentType, type ReactNode } from "react";
+import Link from "next/link";
 import { api } from "@/lib/api";
 import { formatCurrency } from "@/utils/currency";
 import {
@@ -235,6 +236,7 @@ export default function AdminDashboard() {
     changeType,
     color,
     subtitle,
+    href,
   }: {
     title: string;
     value: string | number;
@@ -243,8 +245,17 @@ export default function AdminDashboard() {
     changeType?: "increase" | "decrease";
     color: string;
     subtitle?: string;
+    href?: string;
   }) => (
-    <div className="rounded-[28px] border border-[#d8e7f1] bg-white p-6 shadow-[0_16px_40px_rgba(15,35,68,0.06)]">
+    <Link
+      href={href ?? "#"}
+      aria-label={href ? `Open ${title}` : title}
+      className={`block rounded-[28px] border border-[#d8e7f1] bg-white p-6 shadow-[0_16px_40px_rgba(15,35,68,0.06)] transition ${
+        href
+          ? "cursor-pointer hover:-translate-y-0.5 hover:border-[#0aa6c9]/30 hover:bg-[#f4fbff]"
+          : "cursor-default"
+      }`}
+    >
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#0aa6c9]">
@@ -284,7 +295,7 @@ export default function AdminDashboard() {
           <Icon className="h-6 w-6 text-white" />
         </div>
       </div>
-    </div>
+    </Link>
   );
 
   const Panel = ({
@@ -333,6 +344,7 @@ export default function AdminDashboard() {
           changeType="increase"
           color="bg-[linear-gradient(135deg,#0aa6c9_0%,#0088c5_100%)]"
           subtitle="Registered accounts"
+          href="/admin/users"
         />
         <StatCard
           title="Active Users"
@@ -342,6 +354,7 @@ export default function AdminDashboard() {
           changeType="increase"
           color="bg-[linear-gradient(135deg,#22c55e_0%,#16a34a_100%)]"
           subtitle="Currently active"
+          href="/admin/users?status=active"
         />
         <StatCard
           title="Total Revenue"
@@ -351,6 +364,7 @@ export default function AdminDashboard() {
           changeType="increase"
           color="bg-[linear-gradient(135deg,#0f2344_0%,#1d4f91_100%)]"
           subtitle="From paid invoices"
+          href="/admin/billing?tab=invoices"
         />
         <StatCard
           title="Monthly Growth"
@@ -360,10 +374,12 @@ export default function AdminDashboard() {
           changeType="decrease"
           color="bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_100%)]"
           subtitle="User growth rate"
+          href="/admin/reports"
         />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div id="pending-approvals">
         <Panel title="Pending User Approvals">
           <div className="mb-4 flex items-center justify-end">
             <span className="rounded-full bg-[#fff6d8] px-3 py-1 text-xs font-semibold text-[#b7791f]">
@@ -418,29 +434,41 @@ export default function AdminDashboard() {
             </div>
           )}
         </Panel>
+        </div>
 
+        <div id="approval-statistics">
         <Panel title="User Approval Statistics">
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center">
+            <Link
+              href="/admin/dashboard#pending-approvals"
+              className="rounded-[22px] px-4 py-5 text-center transition hover:bg-[#f4fbff]"
+            >
               <div className="text-3xl font-bold text-[#d49b11]">
                 {approvalStats.pendingApprovals}
               </div>
               <div className="text-sm text-[#5d708f]">Pending</div>
-            </div>
-            <div className="text-center">
+            </Link>
+            <Link
+              href="/admin/users?status=active"
+              className="rounded-[22px] px-4 py-5 text-center transition hover:bg-[#f4fbff]"
+            >
               <div className="text-3xl font-bold text-emerald-600">
                 {approvalStats.approvedUsers}
               </div>
               <div className="text-sm text-[#5d708f]">Approved</div>
-            </div>
-            <div className="text-center">
+            </Link>
+            <Link
+              href="/admin/users?status=inactive"
+              className="rounded-[22px] px-4 py-5 text-center transition hover:bg-[#f4fbff]"
+            >
               <div className="text-3xl font-bold text-rose-600">
                 {approvalStats.rejectedUsers}
               </div>
               <div className="text-sm text-[#5d708f]">Rejected</div>
-            </div>
+            </Link>
           </div>
         </Panel>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -450,6 +478,7 @@ export default function AdminDashboard() {
           icon={FolderIcon}
           color="bg-[linear-gradient(135deg,#6366f1_0%,#4f46e5_100%)]"
           subtitle="Created projects"
+          href="/admin/reports"
         />
         <StatCard
           title="Active Projects"
@@ -457,6 +486,7 @@ export default function AdminDashboard() {
           icon={CalendarIcon}
           color="bg-[linear-gradient(135deg,#14b8a6_0%,#0f766e_100%)]"
           subtitle="Currently running"
+          href="/admin/reports"
         />
         <StatCard
           title="Total Hours"
@@ -464,6 +494,7 @@ export default function AdminDashboard() {
           icon={ClockIcon}
           color="bg-[linear-gradient(135deg,#ec4899_0%,#db2777_100%)]"
           subtitle="Logged time"
+          href="/admin/reports"
         />
       </div>
 

@@ -1,7 +1,10 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { ArrowUpRight, Copy, Mail, MapPin, Phone, MessageCircle } from 'lucide-react';
+import {
+  defaultContactSectionContent,
+} from '@/services/cmsService';
 
 type PhoneItem = { label: string; number: string };
 type EmailItem = { label: string; address: string };
@@ -15,6 +18,17 @@ type Props = {
   showMap?: boolean;
   placeQuery?: string;
   whatsAppNumber?: string;
+  detailsEyebrow?: string;
+  detailsTitle?: string;
+  detailsDescription?: string;
+  whatsappButtonLabel?: string;
+  supportButtonLabel?: string;
+  supportButtonEmail?: string;
+  mapEyebrow?: string;
+  mapTitle?: string;
+  mapButtonLabel?: string;
+  mapTags?: string[];
+  fallbackStats?: Array<{ value: string; label: string }>;
 };
 
 export default function ContactDetails({
@@ -32,6 +46,17 @@ export default function ContactDetails({
   showMap = true,
   placeQuery = 'Robo Books HQ New York',
   whatsAppNumber,
+  detailsEyebrow = defaultContactSectionContent.detailsEyebrow,
+  detailsTitle = defaultContactSectionContent.detailsTitle,
+  detailsDescription = defaultContactSectionContent.detailsDescription,
+  whatsappButtonLabel = defaultContactSectionContent.whatsappButtonLabel,
+  supportButtonLabel = defaultContactSectionContent.supportButtonLabel,
+  supportButtonEmail = defaultContactSectionContent.supportButtonEmail,
+  mapEyebrow = defaultContactSectionContent.mapEyebrow,
+  mapTitle = defaultContactSectionContent.mapTitle,
+  mapButtonLabel = defaultContactSectionContent.mapButtonLabel,
+  mapTags = defaultContactSectionContent.mapTags,
+  fallbackStats = defaultContactSectionContent.fallbackStats,
 }: Props) {
   const waLink = useMemo(() => {
     if (!whatsAppNumber) return '';
@@ -55,13 +80,13 @@ export default function ContactDetails({
         <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
-              Contact Details
+              {detailsEyebrow}
             </p>
             <h2 className="mt-4 text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
-              Reach RoboBooks through the channel that works best for you
+              {detailsTitle}
             </h2>
             <p className="mt-5 text-lg leading-8 text-slate-600">
-              Visit the office, call the team, or send a message. We have redesigned the section to feel cleaner, sharper, and more aligned with the homepage experience.
+              {detailsDescription}
             </p>
           </div>
 
@@ -74,15 +99,15 @@ export default function ContactDetails({
                 className="inline-flex items-center gap-2 rounded-full bg-[#0aa6c9] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0088c5]"
               >
                 <MessageCircle size={16} />
-                Chat on WhatsApp
+                {whatsappButtonLabel}
               </a>
             )}
             <a
-              href={`mailto:${emails[1]?.address ?? emails[0]?.address ?? 'support@robobooks.com'}`}
+              href={`mailto:${supportButtonEmail || emails[1]?.address || emails[0]?.address || 'support@robobooks.com'}`}
               className="inline-flex items-center gap-2 rounded-full border border-[#d8e7f1] bg-white px-6 py-3 text-sm font-semibold text-[#0f2344] transition hover:border-[#0aa6c9] hover:text-[#0aa6c9]"
             >
               <Mail size={16} />
-              Email Support
+              {supportButtonLabel}
             </a>
           </div>
         </div>
@@ -140,10 +165,10 @@ export default function ContactDetails({
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0aa6c9]">
-                  Location Map
+                  {mapEyebrow}
                 </p>
                 <h3 className="mt-2 text-2xl font-semibold text-[#0f2344]">
-                  Find us on the map
+                  {mapTitle}
                 </h3>
               </div>
               <a
@@ -152,7 +177,7 @@ export default function ContactDetails({
                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeQuery)}`}
                 className="inline-flex items-center gap-2 rounded-full bg-[#0f2344] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#112c53]"
               >
-                Open in Maps
+                {mapButtonLabel}
                 <ArrowUpRight size={16} />
               </a>
             </div>
@@ -161,16 +186,16 @@ export default function ContactDetails({
               <MapEmbed placeQuery={placeQuery} />
             ) : (
               <div className="grid gap-4 sm:grid-cols-3">
-                <MiniStat value="1h" label="Avg. response" />
-                <MiniStat value="98%" label="Satisfaction" />
-                <MiniStat value="24k+" label="Issues solved" />
+                {fallbackStats.map((item, index) => (
+                  <MiniStat key={`${item.label}-${index}`} value={item.value} label={item.label} />
+                ))}
               </div>
             )}
 
             <div className="mt-5 flex flex-wrap gap-3">
-              <Tag>Wheelchair friendly</Tag>
-              <Tag>Visitor parking</Tag>
-              <Tag>Public transit 3 min</Tag>
+              {mapTags.map((tag, index) => (
+                <Tag key={`${tag}-${index}`}>{tag}</Tag>
+              ))}
             </div>
           </div>
         </div>
@@ -184,9 +209,9 @@ function InfoBlock({
   title,
   content,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
-  content: React.ReactNode;
+  content: ReactNode;
 }) {
   return (
     <div className="border-b border-[#d8e7f1] pb-8 last:border-b-0 last:pb-0">
@@ -265,7 +290,7 @@ function MapEmbed({ placeQuery }: { placeQuery: string }) {
   );
 }
 
-function Tag({ children }: { children: React.ReactNode }) {
+function Tag({ children }: { children: ReactNode }) {
   return (
     <span className="inline-flex rounded-full border border-[#d8e7f1] bg-[#f8fbff] px-4 py-2 text-sm font-medium text-slate-600">
       {children}

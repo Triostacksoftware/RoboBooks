@@ -68,6 +68,29 @@ function AdminIndustryCmsPage({ params }: AdminIndustryPageProps) {
     });
   };
 
+  const addListItem = (key: "accountingFocus" | "workflows" | "reports") => {
+    setContent((current) => {
+      if (!current) return current;
+      return {
+        ...current,
+        [key]: [...current[key], ""],
+      };
+    });
+  };
+
+  const removeListItem = (
+    key: "accountingFocus" | "workflows" | "reports",
+    index: number
+  ) => {
+    setContent((current) => {
+      if (!current) return current;
+      return {
+        ...current,
+        [key]: current[key].filter((_, itemIndex) => itemIndex !== index),
+      };
+    });
+  };
+
   const handleSave = async () => {
     if (!slug || !content) return;
 
@@ -168,16 +191,22 @@ function AdminIndustryCmsPage({ params }: AdminIndustryPageProps) {
             <ListEditor
               title="Accounting Focus"
               items={content.accountingFocus}
+              onAdd={() => addListItem("accountingFocus")}
+              onRemove={(index) => removeListItem("accountingFocus", index)}
               onChange={(index, value) => updateList("accountingFocus", index, value)}
             />
             <ListEditor
               title="Operational Workflows"
               items={content.workflows}
+              onAdd={() => addListItem("workflows")}
+              onRemove={(index) => removeListItem("workflows", index)}
               onChange={(index, value) => updateList("workflows", index, value)}
             />
             <ListEditor
               title="Reports & Controls"
               items={content.reports}
+              onAdd={() => addListItem("reports")}
+              onRemove={(index) => removeListItem("reports", index)}
               onChange={(index, value) => updateList("reports", index, value)}
             />
 
@@ -220,23 +249,46 @@ function AdminIndustryCmsPage({ params }: AdminIndustryPageProps) {
 function ListEditor({
   title,
   items,
+  onAdd,
+  onRemove,
   onChange,
 }: {
   title: string;
   items: string[];
+  onAdd: () => void;
+  onRemove: (index: number) => void;
   onChange: (index: number, value: string) => void;
 }) {
   return (
     <div className="space-y-4 rounded-2xl border border-gray-200 p-4">
-      <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+        <button
+          type="button"
+          onClick={onAdd}
+          className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+        >
+          Add Item
+        </button>
+      </div>
       {items.map((item, index) => (
-        <TextArea
-          key={index}
-          label={`${title} ${index + 1}`}
-          value={item}
-          onChange={(value) => onChange(index, value)}
-          rows={3}
-        />
+        <div key={index} className="grid gap-3 md:grid-cols-[1fr_auto]">
+          <TextArea
+            label={`${title} ${index + 1}`}
+            value={item}
+            onChange={(value) => onChange(index, value)}
+            rows={3}
+          />
+          <div className="flex items-end">
+            <button
+              type="button"
+              onClick={() => onRemove(index)}
+              className="rounded-xl border border-[#ffd0d0] bg-white px-4 py-3 text-sm font-semibold text-[#ff4d4f] transition hover:bg-[#fff5f5]"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
       ))}
     </div>
   );

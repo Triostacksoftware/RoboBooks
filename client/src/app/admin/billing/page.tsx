@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import {
   ArrowPathIcon,
@@ -160,6 +161,7 @@ const emptyData: BillingData = {
 };
 
 export default function AdminBillingPage() {
+  const searchParams = useSearchParams();
   const [billingData, setBillingData] = useState<BillingData>(emptyData);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -182,6 +184,18 @@ export default function AdminBillingPage() {
   useEffect(() => {
     void fetchBillingData();
   }, []);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (
+      tab === "recurringBills" ||
+      tab === "bills" ||
+      tab === "invoices" ||
+      tab === "payments"
+    ) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   const fetchBillingData = async (isRefresh = false) => {
     try {

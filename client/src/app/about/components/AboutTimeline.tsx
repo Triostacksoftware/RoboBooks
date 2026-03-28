@@ -1,45 +1,14 @@
 'use client';
-
-const timeline = [
-  {
-    year: '2020',
-    title: 'RoboBooks was founded',
-    description: 'We started with one goal: make accounting easier for modern Indian businesses.',
-    achievement: 'Early finance workflow prototype launched',
-  },
-  {
-    year: '2021',
-    title: 'First customer growth milestone',
-    description: 'The product began gaining traction with businesses looking for simpler GST-ready workflows.',
-    achievement: 'Reached first 1,000 users',
-  },
-  {
-    year: '2022',
-    title: 'Platform expansion',
-    description: 'We expanded the product into a more complete accounting workspace for daily business operations.',
-    achievement: 'More reporting and bookkeeping depth added',
-  },
-  {
-    year: '2023',
-    title: 'Operational scale',
-    description: 'More businesses adopted RoboBooks for day-to-day billing, bookkeeping, and visibility needs.',
-    achievement: 'Crossed 10,000+ customers',
-  },
-  {
-    year: '2024',
-    title: 'Automation focus',
-    description: 'We introduced smarter workflows to help teams spend less time on repetitive accounting work.',
-    achievement: 'Handled Rs. 500Cr+ in transactions',
-  },
-  {
-    year: '2025',
-    title: 'Looking ahead',
-    description: 'Our roadmap stays focused on giving businesses a faster and more connected finance experience.',
-    achievement: 'Investing in product quality and scale',
-  },
-];
+import { useEffect, useState } from 'react';
+import { defaultAboutContent, fetchPublicCmsSection, type AboutCmsContent } from '@/services/cmsService';
 
 export default function AboutTimeline() {
+  const [content, setContent] = useState<AboutCmsContent>(defaultAboutContent);
+
+  useEffect(() => {
+    fetchPublicCmsSection<AboutCmsContent>('about', defaultAboutContent).then(setContent);
+  }, []);
+
   return (
     <section className="relative overflow-hidden bg-[#f8fbff] py-16 scroll-mt-24 lg:py-20">
       <div className="absolute left-[-8rem] top-10 h-72 w-72 rounded-full bg-[#0aa6c9]/10 blur-3xl" />
@@ -48,14 +17,13 @@ export default function AboutTimeline() {
       <div className="relative mx-auto max-w-[1600px] px-4 md:px-8 lg:px-10">
         <div className="mb-12 text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
-            Our Journey
+            {content.timeline.eyebrow}
           </p>
           <h2 className="mx-auto mt-4 max-w-4xl text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
-            How RoboBooks has grown into a finance-first SaaS platform
+            {content.timeline.title}
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-slate-600">
-            A cleaner look at the milestones that shaped our product, our team,
-            and the businesses we support today.
+            {content.timeline.description}
           </p>
         </div>
 
@@ -63,12 +31,12 @@ export default function AboutTimeline() {
           <div className="absolute left-5 top-0 h-full w-px bg-gradient-to-b from-[#0aa6c9] via-[#8fd9ea] to-transparent md:left-1/2 md:-translate-x-1/2" />
 
           <div className="space-y-1">
-            {timeline.map((item, index) => {
+            {content.timeline.items.map((item, index) => {
               const isLeft = index % 2 === 0;
 
               return (
                 <div
-                  key={item.year}
+                  key={`${item.year}-${index}`}
                   className="relative grid items-start gap-2 md:grid-cols-2 md:gap-4"
                 >
                   <div
