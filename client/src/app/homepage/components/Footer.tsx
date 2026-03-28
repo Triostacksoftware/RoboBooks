@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
+import { normalizeFooterLinkGroups } from '@/app/footer/footerData';
 import {
   defaultFooterContent,
   defaultLogoContent,
@@ -24,7 +25,7 @@ export default function Footer() {
       setLogo
     );
     fetchPublicCmsSection<FooterCmsContent>('footer', defaultFooterContent).then(
-      setFooterContent
+      (content) => setFooterContent(normalizeFooterLinkGroups(content))
     );
   }, []);
 

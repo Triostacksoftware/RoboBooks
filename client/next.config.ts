@@ -186,6 +186,24 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
+  async rewrites() {
+    return [
+      { source: '/about-robobooks', destination: '/footer/about-robobooks' },
+      { source: '/book-a-demo', destination: '/footer/book-a-demo' },
+      { source: '/start-free-trial', destination: '/footer/start-free-trial' },
+      { source: '/gstr-filing', destination: '/footer/gstr-filing' },
+      { source: '/e-invoicing', destination: '/footer/e-invoicing' },
+      { source: '/delivery-challan', destination: '/footer/delivery-challan' },
+      { source: '/data-export-to-sale', destination: '/footer/data-export-to-sale' },
+      { source: '/bank-reconciliation', destination: '/footer/bank-reconciliation' },
+      { source: '/import-export-of-data', destination: '/footer/import-export-of-data' },
+      { source: '/multiple-financial-reporting', destination: '/footer/multiple-financial-reporting' },
+      { source: '/terms', destination: '/footer/terms' },
+      { source: '/privacy', destination: '/footer/privacy' },
+      { source: '/cookies', destination: '/footer/cookies' },
+    ];
+  },
 };
 
 export default nextConfig;

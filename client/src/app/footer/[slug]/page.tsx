@@ -12,6 +12,8 @@ import {
 } from "@/services/cmsService";
 import {
   footerLinks,
+  getPublicFooterHrefBySlug,
+  normalizeFooterLinkGroups,
 } from "../footerData";
 
 export const dynamic = "force-dynamic";
@@ -53,17 +55,20 @@ export default async function FooterDetailPage({
     highlights: response.highlights?.length ? response.highlights : fallback.highlights,
   };
 
-  const footerContent = await fetchPublicCmsSection<FooterCmsContent>(
-    "footer",
-    defaultFooterContent
+  const footerContent = normalizeFooterLinkGroups(
+    await fetchPublicCmsSection<FooterCmsContent>(
+      "footer",
+      defaultFooterContent
+    )
   );
+  const currentPublicHref = getPublicFooterHrefBySlug(page.slug);
   const categoryLinks =
     page.category === "product"
       ? footerContent.productLinks
       : page.category === "company"
         ? footerContent.companyLinks
         : footerContent.legalLinks;
-  const siblingLinks = categoryLinks.filter((link) => link.href !== `/footer/${page.slug}`);
+  const siblingLinks = categoryLinks.filter((link) => link.href !== currentPublicHref);
 
   return (
     <>

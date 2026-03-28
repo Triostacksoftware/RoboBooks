@@ -1,7 +1,10 @@
 import { api } from "@/lib/api";
 import { industries } from "../app/industries/industryData";
 import { posts } from "../app/blog/posts";
-import { getDefaultFooterPageContent } from "../app/footer/footerData";
+import {
+  getDefaultFooterPageContent,
+  getPublicFooterHrefBySlug,
+} from "../app/footer/footerData";
 import { gstTools } from "../app/gst-tools/toolData";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
@@ -409,26 +412,26 @@ export const defaultFooterContent: FooterCmsContent = {
   companyTitle: "Company",
   legalTitle: "Legal",
   productLinks: [
-    { label: "About RoboBooks", href: "/footer/about-robobooks" },
-    { label: "Book a demo", href: "/footer/book-a-demo" },
-    { label: "Start free trial", href: "/footer/start-free-trial" },
-    { label: "GSTR Filing", href: "/footer/gstr-filing" },
-    { label: "E-Invoicing", href: "/footer/e-invoicing" },
-    { label: "Delivery Challan", href: "/footer/delivery-challan" },
-    { label: "Data Export to Sale", href: "/footer/data-export-to-sale" },
-    { label: "Bank Reconciliation", href: "/footer/bank-reconciliation" },
-    { label: "Import Export of Data", href: "/footer/import-export-of-data" },
-    { label: "Multiple Financial Reporting", href: "/footer/multiple-financial-reporting" },
+    { label: "About RoboBooks", href: getPublicFooterHrefBySlug("about-robobooks") },
+    { label: "Book a demo", href: getPublicFooterHrefBySlug("book-a-demo") },
+    { label: "Start free trial", href: getPublicFooterHrefBySlug("start-free-trial") },
+    { label: "GSTR Filing", href: getPublicFooterHrefBySlug("gstr-filing") },
+    { label: "E-Invoicing", href: getPublicFooterHrefBySlug("e-invoicing") },
+    { label: "Delivery Challan", href: getPublicFooterHrefBySlug("delivery-challan") },
+    { label: "Data Export to Sale", href: getPublicFooterHrefBySlug("data-export-to-sale") },
+    { label: "Bank Reconciliation", href: getPublicFooterHrefBySlug("bank-reconciliation") },
+    { label: "Import Export of Data", href: getPublicFooterHrefBySlug("import-export-of-data") },
+    { label: "Multiple Financial Reporting", href: getPublicFooterHrefBySlug("multiple-financial-reporting") },
   ],
   companyLinks: [
-    { label: "Company", href: "/footer/company" },
-    { label: "Contact", href: "/footer/contact" },
-    { label: "FAQ", href: "/footer/faq" },
+    { label: "Company", href: getPublicFooterHrefBySlug("company") },
+    { label: "Contact", href: getPublicFooterHrefBySlug("contact") },
+    { label: "FAQ", href: getPublicFooterHrefBySlug("faq") },
   ],
   legalLinks: [
-    { label: "Terms", href: "/footer/terms" },
-    { label: "Privacy", href: "/footer/privacy" },
-    { label: "Cookies", href: "/footer/cookies" },
+    { label: "Terms", href: getPublicFooterHrefBySlug("terms") },
+    { label: "Privacy", href: getPublicFooterHrefBySlug("privacy") },
+    { label: "Cookies", href: getPublicFooterHrefBySlug("cookies") },
   ],
   copyrightText: "RoboBooks. All rights reserved.",
   bottomText: "Built for modern accounting workflows and growing businesses.",

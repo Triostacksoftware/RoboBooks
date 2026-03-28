@@ -15,6 +15,17 @@ export type FooterLinkItem = {
   };
 };
 
+type FooterNavLink = {
+  label: string;
+  href: string;
+};
+
+type FooterLinkGroups = {
+  productLinks: FooterNavLink[];
+  companyLinks: FooterNavLink[];
+  legalLinks: FooterNavLink[];
+};
+
 export const footerLinks: FooterLinkItem[] = [
   {
     slug: "about-robobooks",
@@ -354,4 +365,51 @@ export function getFooterLinkBySlug(slug: string) {
 
 export function getDefaultFooterPageContent(slug: string) {
   return getFooterLinkBySlug(slug) || null;
+}
+
+export function getPublicFooterHrefBySlug(slug: string) {
+  return `/${slug}`;
+}
+
+export function normalizeFooterHref(href: string) {
+  if (!href) {
+    return href;
+  }
+
+  if (href.startsWith("/footer/")) {
+    const slug = href.replace(/^\/footer\//, "").replace(/\/$/, "");
+    return getPublicFooterHrefBySlug(slug);
+  }
+
+  if (href === "/legal/terms") {
+    return "/terms";
+  }
+
+  if (href === "/legal/privacy") {
+    return "/privacy";
+  }
+
+  if (href === "/legal/cookies") {
+    return "/cookies";
+  }
+
+  return href;
+}
+
+export function normalizeFooterLinkGroups<T extends FooterLinkGroups>(content: T): T {
+  return {
+    ...content,
+    productLinks: content.productLinks.map((link) => ({
+      ...link,
+      href: normalizeFooterHref(link.href),
+    })),
+    companyLinks: content.companyLinks.map((link) => ({
+      ...link,
+      href: normalizeFooterHref(link.href),
+    })),
+    legalLinks: content.legalLinks.map((link) => ({
+      ...link,
+      href: normalizeFooterHref(link.href),
+    })),
+  } as T;
 }
