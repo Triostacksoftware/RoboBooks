@@ -7,13 +7,15 @@ import ServicesSection from '../homepage/components/ServicesSection'
 import BusinessBenefits from '../homepage/components/BusinessBenefits'
 import PricingPlans from '../homepage/components/PricingPlans'
 import InnerPageHero from '../components/InnerPageHero'
-import { defaultServicesContent, fetchPublicCmsSection, type ServicesCmsContent } from '@/services/cmsService'
+import { defaultServicesContent, fetchPublicCmsSection, normalizeServicesContent, type ServicesCmsContent } from '@/services/cmsService'
 
 const ServicesPage = () => {
   const [content, setContent] = useState<ServicesCmsContent>(defaultServicesContent)
 
   useEffect(() => {
-    fetchPublicCmsSection<ServicesCmsContent>('services', defaultServicesContent).then(setContent)
+    fetchPublicCmsSection<ServicesCmsContent>('services', defaultServicesContent).then((response) =>
+      setContent(normalizeServicesContent(response))
+    )
   }, [])
 
   return (

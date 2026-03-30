@@ -15,6 +15,7 @@ import {
 import {
   defaultServicesContent,
   fetchPublicCmsSection,
+  normalizeServicesContent,
   resolveCmsAssetUrl,
   type ServicesCmsContent,
 } from '@/services/cmsService';
@@ -58,7 +59,7 @@ export default function ServicesSection() {
   useEffect(() => {
     fetchPublicCmsSection<ServicesCmsContent>('services', defaultServicesContent).then(
       (response) => {
-        setContent(response);
+        setContent(normalizeServicesContent(response));
       }
     );
   }, []);

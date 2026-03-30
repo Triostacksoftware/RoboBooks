@@ -1009,15 +1009,15 @@ export function normalizeServiceCard(
   card: Partial<ServiceCardCmsContent> | undefined
 ): ServiceCardCmsContent {
   return {
-    slug: card?.slug || "",
-    title: card?.title || "",
-    description: card?.description || "",
-    ctaLabel: card?.ctaLabel || "Available in RoboBooks",
-    iconUrl: card?.iconUrl || "",
-    eyebrow: card?.eyebrow || "",
-    detailTitle: card?.detailTitle || card?.title || "",
-    detail: card?.detail || card?.description || "",
-    detailExtended: card?.detailExtended || "",
+    slug: card?.slug?.trim() || "",
+    title: card?.title?.trim() || "",
+    description: card?.description?.trim() || "",
+    ctaLabel: card?.ctaLabel?.trim() || "Available in RoboBooks",
+    iconUrl: card?.iconUrl?.trim() || "",
+    eyebrow: card?.eyebrow?.trim() || "",
+    detailTitle: card?.detailTitle?.trim() || card?.title?.trim() || "",
+    detail: card?.detail?.trim() || card?.description?.trim() || "",
+    detailExtended: card?.detailExtended?.trim() || "",
     heroImageUrl: card?.heroImageUrl || "",
     points: Array.isArray(card?.points) ? card.points : [],
     highlights: Array.isArray(card?.highlights) ? card.highlights : [],
@@ -1025,12 +1025,20 @@ export function normalizeServiceCard(
   };
 }
 
+function isRenderableServiceCard(card: ServiceCardCmsContent) {
+  return Boolean(card.slug && card.title && card.description);
+}
+
 export function normalizeServicesContent(content: ServicesCmsContent): ServicesCmsContent {
   return {
     ...content,
     cards: Array.isArray(content.cards)
-      ? content.cards.map((card) => normalizeServiceCard(card))
-      : defaultServicesContent.cards.map((card) => normalizeServiceCard(card)),
+      ? content.cards
+          .map((card) => normalizeServiceCard(card))
+          .filter((card) => isRenderableServiceCard(card))
+      : defaultServicesContent.cards
+          .map((card) => normalizeServiceCard(card))
+          .filter((card) => isRenderableServiceCard(card)),
   };
 }
 
