@@ -202,7 +202,7 @@ const AddAccountModal = ({
 
             <div className="col-span-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Account Number
+                {form.accountType === "credit_card" ? "Card Number" : "Account Number"}
               </label>
               <input
                 type="text"
@@ -214,14 +214,18 @@ const AddAccountModal = ({
                   }))
                 }
                 className="w-full border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                placeholder="e.g., 1234567890"
+                placeholder={
+                  form.accountType === "credit_card"
+                    ? "e.g., 4111 1111 1111 1111"
+                    : "e.g., 1234567890"
+                }
                 autoComplete="off"
               />
             </div>
 
             <div className="col-span-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Bank Name
+                {form.accountType === "credit_card" ? "Card Issuer" : "Bank Name"}
               </label>
               <input
                 type="text"
@@ -230,26 +234,32 @@ const AddAccountModal = ({
                   setForm((prev) => ({ ...prev, bankName: e.target.value }))
                 }
                 className="w-full border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                placeholder="e.g., Chase Bank"
+                placeholder={
+                  form.accountType === "credit_card"
+                    ? "e.g., HDFC Bank, SBI Card, Amex"
+                    : "e.g., Chase Bank"
+                }
                 autoComplete="off"
               />
             </div>
 
-            <div className="col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                IFSC
-              </label>
-              <input
-                type="text"
-                value={form.ifsc}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, ifsc: e.target.value }))
-                }
-                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                placeholder="e.g., CHAS0000123"
-                autoComplete="off"
-              />
-            </div>
+            {form.accountType === "bank" && (
+              <div className="col-span-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  IFSC
+                </label>
+                <input
+                  type="text"
+                  value={form.ifsc}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, ifsc: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  placeholder="e.g., CHAS0000123"
+                  autoComplete="off"
+                />
+              </div>
+            )}
           </div>
 
           <div className="mt-4">
@@ -488,42 +498,52 @@ const EditAccountModal = ({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Account Number
+              {form.accountType === "credit_card" ? "Card Number" : "Account Number"}
             </label>
             <input
               type="text"
               value={form.accountNumber}
               onChange={(e) => setForm({ ...form, accountNumber: e.target.value })}
-              placeholder="e.g., 1234567890"
+              placeholder={
+                form.accountType === "credit_card"
+                  ? "e.g., 4111 1111 1111 1111"
+                  : "e.g., 1234567890"
+              }
               className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Bank Name
+              {form.accountType === "credit_card" ? "Card Issuer" : "Bank Name"}
             </label>
             <input
               type="text"
               value={form.bankName}
               onChange={(e) => setForm({ ...form, bankName: e.target.value })}
-              placeholder="e.g., Chase Bank"
+              placeholder={
+                form.accountType === "credit_card"
+                  ? "e.g., HDFC Bank, SBI Card, Amex"
+                  : "e.g., Chase Bank"
+              }
               className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              IFSC
-            </label>
-            <input
-              type="text"
-              value={form.ifsc}
-              onChange={(e) => setForm({ ...form, ifsc: e.target.value })}
-              placeholder="e.g., CHAS0000123"
-              className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            />
-          </div>
+          {form.accountType === "bank" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                IFSC
+              </label>
+              <input
+                type="text"
+                value={form.ifsc}
+                onChange={(e) => setForm({ ...form, ifsc: e.target.value })}
+                placeholder="e.g., CHAS0000123"
+                className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              />
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">

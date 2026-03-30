@@ -33,6 +33,11 @@ export default function GraphicalView() {
   const [refreshing, setRefreshing] = useState(false);
   const [lastRefreshTime, setLastRefreshTime] = useState<Date | null>(null);
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchDashboardStats();
+  };
+
   // Fetch dashboard statistics
   const fetchDashboardStats = async () => {
     try {
@@ -189,7 +194,7 @@ export default function GraphicalView() {
           <p className="text-gray-600">Real-time financial data in visual format</p>
         </div>
         <button
-          onClick={fetchDashboardStats}
+          onClick={handleRefresh}
           disabled={refreshing}
           className="inline-flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-700 disabled:opacity-50"
         >
