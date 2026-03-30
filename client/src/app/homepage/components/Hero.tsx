@@ -20,6 +20,7 @@ import {
   resolveCmsAssetUrl,
   type HeroCmsContent,
 } from "@/services/cmsService";
+import { api } from "@/lib/api";
 
 const Hero: React.FC = () => {
   const [content, setContent] = useState<HeroCmsContent>(defaultHeroContent);
@@ -27,6 +28,16 @@ const Hero: React.FC = () => {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [hasTriggeredModal, setHasTriggeredModal] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [registerMessage, setRegisterMessage] = useState("");
+  const [registerError, setRegisterError] = useState("");
+  const [registerForm, setRegisterForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    designation: "",
+    organization: "",
+  });
 
   const normalizedPhone = useMemo(
     () => phoneValue.replace(/\D/g, "").slice(0, 10),
@@ -52,6 +63,13 @@ const Hero: React.FC = () => {
     fetchPublicCmsSection("hero", defaultHeroContent).then(setContent);
   }, []);
 
+  useEffect(() => {
+    setRegisterForm((prev) => ({
+      ...prev,
+      phone: normalizedPhone,
+    }));
+  }, [normalizedPhone]);
+
   const handlePhoneChange = (value: string) => {
     const cleaned = value.replace(/[^\d+\s-]/g, "");
     setPhoneValue(cleaned);
@@ -60,6 +78,115 @@ const Hero: React.FC = () => {
     if (digits.length >= 10 && !hasTriggeredModal) {
       setIsRegisterModalOpen(true);
       setHasTriggeredModal(true);
+    }
+  };
+
+  const updateRegisterField =
+    (field: keyof typeof registerForm) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = field === "phone" ? e.target.value.replace(/\D/g, "").slice(0, 10) : e.target.value;
+      setRegisterForm((prev) => ({ ...prev, [field]: value }));
+    };
+
+  const resetRegisterModal = () => {
+    setRegisterMessage("");
+    setRegisterError("");
+    setRegisterForm({
+      name: "",
+      email: "",
+      phone: normalizedPhone,
+      designation: "",
+      organization: "",
+    });
+  };
+
+  const handleRegisterSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setRegisterError("");
+    setRegisterMessage("");
+
+    if (!registerForm.name.trim()) {
+      setRegisterError("Please enter your name.");
+      return;
+    }
+
+    if (!registerForm.email.trim() || !/^\S+@\S+\.\S+?$/.test(registerForm.email)) {
+      setRegisterError("Please enter a valid email address.");
+      return;
+    }
+
+    if (!registerForm.phone.trim() || registerForm.phone.trim().length < 10) {
+      setRegisterError("Please enter a valid 10 digit phone number.");
+      return;
+    }
+
+    if (!registerForm.organization.trim()) {
+      setRegisterError("Please enter your organization name.");
+      return;
+    }
+
+    try {
+      setRegisterLoading(true);
+      const payload = {
+        name: registerForm.name.trim(),
+        email: registerForm.email.trim(),
+        phoneNumber: registerForm.phone.trim(),
+        designation: registerForm.designation.trim(),
+        companyName: registerForm.organization.trim(),
+        phoneDialCode: "+91",
+        phoneIso2: "IN",
+        country: "India",
+        state: "Uttar Pradesh",
+      };
+
+      let response: { success: boolean; message?: string };
+
+      try {
+        response = await api<{ success: boolean; message?: string }>(
+          "/api/auth/quick-register",
+          {
+            method: "POST",
+            json: payload,
+          }
+        );
+      } catch (quickRegisterError) {
+        const fallbackPassword = `Rb@${registerForm.phone.trim().slice(-4)}${new Date()
+          .getFullYear()
+          .toString()
+          .slice(-2)}`;
+
+        response = await api<{ success: boolean; message?: string }>(
+          "/api/auth/register",
+          {
+            method: "POST",
+            json: {
+              ...payload,
+              password: fallbackPassword,
+            },
+          }
+        );
+      }
+
+      if (response.success) {
+        setRegisterMessage(
+          response.message ||
+            "Registration submitted successfully. Please wait for admin approval."
+        );
+        setHasTriggeredModal(false);
+        setPhoneValue("");
+        setTimeout(() => {
+          setIsRegisterModalOpen(false);
+          resetRegisterModal();
+        }, 1200);
+      }
+    } catch (error) {
+      setRegisterError(
+        error instanceof Error
+          ? error.message
+          : "Registration failed. Please try again."
+      );
+    } finally {
+      setRegisterLoading(false);
     }
   };
 
@@ -244,7 +371,10 @@ const Hero: React.FC = () => {
           <div className="relative w-full max-w-[560px] rounded-[28px] border border-white/10 bg-[#13294a] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.4)] sm:p-8">
             <button
               type="button"
-              onClick={() => setIsRegisterModalOpen(false)}
+              onClick={() => {
+                setIsRegisterModalOpen(false);
+                resetRegisterModal();
+              }}
               className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
               aria-label="Close registration modal"
             >
@@ -263,7 +393,7 @@ const Hero: React.FC = () => {
               </p>
             </div>
 
-            <form className="mt-8 grid gap-4 sm:grid-cols-2">
+            <form onSubmit={handleRegisterSubmit} className="mt-8 grid gap-4 sm:grid-cols-2">
               <label className="block text-sm text-slate-100/80">
                 <span className="mb-2 inline-flex items-center gap-2 font-semibold text-white">
                   <User size={16} />
@@ -271,6 +401,8 @@ const Hero: React.FC = () => {
                 </span>
                 <input
                   type="text"
+                  value={registerForm.name}
+                  onChange={updateRegisterField("name")}
                   placeholder="Enter your name"
                   className="w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder:text-white/45 focus:border-[#0aa6c9] focus:outline-none"
                 />
@@ -283,6 +415,8 @@ const Hero: React.FC = () => {
                 </span>
                 <input
                   type="email"
+                  value={registerForm.email}
+                  onChange={updateRegisterField("email")}
                   placeholder="you@company.com"
                   className="w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder:text-white/45 focus:border-[#0aa6c9] focus:outline-none"
                 />
@@ -295,7 +429,8 @@ const Hero: React.FC = () => {
                 </span>
                 <input
                   type="tel"
-                  defaultValue={normalizedPhone}
+                  value={registerForm.phone}
+                  onChange={updateRegisterField("phone")}
                   placeholder="Enter 10 digit phone"
                   className="w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder:text-white/45 focus:border-[#0aa6c9] focus:outline-none"
                 />
@@ -308,6 +443,8 @@ const Hero: React.FC = () => {
                 </span>
                 <input
                   type="text"
+                  value={registerForm.designation}
+                  onChange={updateRegisterField("designation")}
                   placeholder="Your designation"
                   className="w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder:text-white/45 focus:border-[#0aa6c9] focus:outline-none"
                 />
@@ -320,16 +457,31 @@ const Hero: React.FC = () => {
                 </span>
                 <input
                   type="text"
+                  value={registerForm.organization}
+                  onChange={updateRegisterField("organization")}
                   placeholder="Enter organization name"
                   className="w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder:text-white/45 focus:border-[#0aa6c9] focus:outline-none"
                 />
               </label>
 
+              {(registerError || registerMessage) && (
+                <div
+                  className={`rounded-2xl px-4 py-3 text-sm sm:col-span-2 ${
+                    registerError
+                      ? "border border-red-400/30 bg-red-500/10 text-red-200"
+                      : "border border-emerald-400/30 bg-emerald-500/10 text-emerald-200"
+                  }`}
+                >
+                  {registerError || registerMessage}
+                </div>
+              )}
+
               <button
                 type="submit"
+                disabled={registerLoading}
                 className="mt-2 inline-flex items-center justify-center rounded-2xl bg-[#0aa6c9] px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-[#0aa6c9]/25 transition hover:bg-[#0891b2] sm:col-span-2"
               >
-                Register
+                {registerLoading ? "Registering..." : "Register"}
               </button>
             </form>
           </div>

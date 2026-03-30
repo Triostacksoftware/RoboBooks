@@ -148,6 +148,115 @@ router.get("/status", authGuard, async (req, res) => {
 });
 
 // REGISTER
+router.post("/quick-register", async (req, res, next) => {
+  try {
+    const {
+      name,
+      companyName,
+      email,
+      phoneNumber,
+      designation,
+      phoneDialCode,
+      phoneIso2,
+      country,
+      state,
+    } = req.body;
+
+    if (!name?.trim()) {
+      return res.status(400).json({ message: "Name is required" });
+    }
+
+    if (!companyName?.trim()) {
+      return res.status(400).json({ message: "Organization name is required" });
+    }
+
+    if (!email?.trim()) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    if (!validateEmail(email)) {
+      return res
+        .status(400)
+        .json({ message: "Please enter a valid email address" });
+    }
+
+    if (!phoneNumber?.trim()) {
+      return res.status(400).json({ message: "Phone number is required" });
+    }
+
+    if (!validatePhone(phoneNumber)) {
+      return res
+        .status(400)
+        .json({ message: "Please enter a valid mobile number" });
+    }
+
+    const cleanPhoneNumber = phoneNumber.replace(/\D/g, "");
+
+    const existingUser = await User.findOne({
+      $or: [{ email: email.toLowerCase().trim() }, { phone: cleanPhoneNumber }],
+    });
+
+    const existingPendingUser = await PendingUser.findOne({
+      $or: [{ email: email.toLowerCase().trim() }, { phone: cleanPhoneNumber }],
+    });
+
+    if (existingUser || existingPendingUser) {
+      if (
+        existingUser?.email === email.toLowerCase().trim() ||
+        existingPendingUser?.email === email.toLowerCase().trim()
+      ) {
+        return res.status(409).json({ message: "Email already registered" });
+      }
+
+      return res.status(409).json({ message: "Phone number already registered" });
+    }
+
+    const passwordHash = await bcrypt.hash(
+      `quick-register:${email.toLowerCase().trim()}:${Date.now()}`,
+      12
+    );
+
+    const pendingUser = await PendingUser.create({
+      contactName: name.trim(),
+      companyName: companyName.trim(),
+      email: email.toLowerCase().trim(),
+      phone: cleanPhoneNumber,
+      designation: designation?.trim() || "",
+      phoneDialCode: phoneDialCode || "+91",
+      phoneIso2: phoneIso2 || "IN",
+      passwordHash,
+      country: country || "India",
+      state: state || "Uttar Pradesh",
+      status: "pending",
+    });
+
+    res.status(201).json({
+      success: true,
+      message:
+        "Registration submitted successfully. Your details are now pending admin approval.",
+      user: {
+        id: pendingUser._id,
+        name: pendingUser.contactName,
+        companyName: pendingUser.companyName,
+        email: pendingUser.email,
+        phone: pendingUser.phone,
+        designation: pendingUser.designation,
+      },
+    });
+  } catch (err) {
+    console.error("Quick registration error:", err);
+    if (err.code === 11000) {
+      const field = Object.keys(err.keyPattern)[0];
+      const message =
+        field === "email"
+          ? "Email already registered"
+          : "Phone number already registered";
+      return res.status(409).json({ message });
+    }
+    next(err);
+  }
+});
+
 router.post("/register", async (req, res, next) => {
   try {
     const {

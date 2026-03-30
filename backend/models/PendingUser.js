@@ -2,9 +2,11 @@ import { Schema, model } from "mongoose";
 
 const pendingUserSchema = new Schema(
   {
+    contactName: { type: String, trim: true },
     companyName: { type: String, required: true, trim: true },
     email: { type: String, required: true, lowercase: true, trim: true },
     phone: { type: String, required: true, trim: true },
+    designation: { type: String, trim: true },
     phoneDialCode: { type: String, default: "+91" },
     phoneIso2: { type: String, default: "IN" },
     passwordHash: { type: String, required: true },
