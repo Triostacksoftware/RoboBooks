@@ -43,6 +43,21 @@ export default function HomeTabs({ companyName, onTabChange }: HomeTabsProps) {
     router.push(route);
   };
 
+  const handleRefreshClick = async () => {
+    setRefreshing(true);
+    await fetchDashboardStats();
+  };
+
+  const handleNewDashboard = async () => {
+    setActiveTab("dashboard");
+    onTabChange?.("dashboard");
+    setLoading(true);
+    setRefreshing(true);
+    localStorage.removeItem("dashboardLastRefresh");
+    await fetchDashboardStats();
+    router.refresh();
+  };
+
   // Fetch dashboard statistics
   const fetchDashboardStats = async () => {
     try {
@@ -276,17 +291,21 @@ export default function HomeTabs({ companyName, onTabChange }: HomeTabsProps) {
                     Last updated: {lastRefreshTime.toLocaleTimeString()}
                   </span>
                 )}
-                <button
-                  onClick={fetchDashboardStats}
-                  disabled={refreshing}
-                  className="inline-flex items-center gap-1 text-blue-600 py-2 hover:text-blue-700 disabled:opacity-50"
-                >
+                 <button
+                   onClick={handleRefreshClick}
+                   disabled={refreshing}
+                   className="inline-flex items-center gap-1 text-blue-600 py-2 hover:text-blue-700 disabled:opacity-50"
+                 >
                   <ArrowPathIcon className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
                   {refreshing ? 'Refreshing...' : 'Refresh'}
                 </button>
               </div>
             )}
-            <button className="inline-flex items-center gap-1 text-blue-600 py-2">
+            <button
+              onClick={handleNewDashboard}
+              disabled={refreshing}
+              className="inline-flex items-center gap-1 text-blue-600 py-2 hover:text-blue-700 disabled:opacity-50"
+            >
               <PlusIcon className="h-5 w-5" /> New Dashboard
             </button>
           </div>
