@@ -99,13 +99,30 @@ export async function api<T = unknown>(
     console.log("⚠️ No token found in localStorage - relying on cookies");
   }
 
-  const res = await fetch(`${backendUrl}${path}`, {
-    credentials: "include", // include cookies for cross-origin
-    cache: "no-store", // avoid 304/etag cache confusing auth flows
-    headers,
-    body: init.body || (json ? JSON.stringify(json) : undefined),
-    ...rest,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${backendUrl}${path}`, {
+      credentials: "include", // include cookies for cross-origin
+      cache: "no-store", // avoid 304/etag cache confusing auth flows
+      headers,
+      body: init.body || (json ? JSON.stringify(json) : undefined),
+      ...rest,
+    });
+  } catch (error) {
+    console.error("🌐 Network error while calling API:", {
+      path,
+      backendUrl,
+      error,
+    });
+
+    const actionLabel = path.includes("/api/admin/login")
+      ? "Admin login is unavailable right now."
+      : "Backend connection failed.";
+
+    throw new Error(
+      `${actionLabel} Make sure the API server is running at ${backendUrl}.`
+    );
+  }
 
   console.log("🌐 Response status:", res.status);
   console.log(

@@ -51,6 +51,7 @@ export interface BillStats {
 
 export interface CreateBillData {
   vendorId: string;
+  vendorName?: string;
   billDate: string;
   dueDate: string;
   notes?: string;

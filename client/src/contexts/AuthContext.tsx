@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { api } from "@/lib/api";
 
 interface User {
@@ -36,10 +37,32 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const shouldSkipAuthCheck =
+    !pathname ||
+    pathname === "/signin" ||
+    pathname === "/register" ||
+    pathname === "/admin/login" ||
+    pathname === "/" ||
+    pathname.startsWith("/about") ||
+    pathname.startsWith("/services") ||
+    pathname.startsWith("/features") ||
+    pathname.startsWith("/blog") ||
+    pathname.startsWith("/contact") ||
+    pathname.startsWith("/faq") ||
+    pathname.startsWith("/industries") ||
+    pathname.startsWith("/footer") ||
+    pathname.startsWith("/legal");
+
   const checkAuth = async () => {
+    if (shouldSkipAuthCheck) {
+      setLoading(false);
+      return;
+    }
+
     try {
       // Check if we have a token in localStorage
       const token = localStorage.getItem("token");
@@ -125,7 +148,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [pathname]);
 
   const value: AuthContextType = {
     user,

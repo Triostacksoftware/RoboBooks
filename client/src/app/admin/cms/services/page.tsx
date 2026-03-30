@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   defaultServicesContent,
   fetchAdminCmsSection,
+  normalizeServicesContent,
   resolveCmsAssetUrl,
   uploadAdminCmsImage,
   updateAdminCmsSection,
@@ -11,6 +12,7 @@ import {
 } from "@/services/cmsService";
 
 export default function AdminCmsServicesPage() {
+  const newCardRef = useRef<HTMLDivElement | null>(null);
   const [content, setContent] = useState<ServicesCmsContent>(defaultServicesContent);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -20,7 +22,7 @@ export default function AdminCmsServicesPage() {
   useEffect(() => {
     fetchAdminCmsSection<ServicesCmsContent>("services")
       .then((response) => {
-        setContent(response.content);
+        setContent(normalizeServicesContent(response.content));
       })
       .catch(() => {
         setMessage("Using default services content because CMS data could not be loaded.");
@@ -30,7 +32,17 @@ export default function AdminCmsServicesPage() {
 
   const updateCard = (
     index: number,
-    key: "slug" | "title" | "description" | "ctaLabel" | "iconUrl",
+    key:
+      | "slug"
+      | "title"
+      | "description"
+      | "ctaLabel"
+      | "iconUrl"
+      | "eyebrow"
+      | "detailTitle"
+      | "detail"
+      | "detailExtended"
+      | "heroImageUrl",
     value: string
   ) => {
     setContent((current) => {
@@ -42,6 +54,31 @@ export default function AdminCmsServicesPage() {
       return { ...current, cards: nextCards };
     });
   };
+
+  const updateCardList = (
+    index: number,
+    key: "points" | "highlights" | "useCases",
+    value: string
+  ) => {
+    setContent((current) => {
+      const nextCards = [...current.cards];
+      nextCards[index] = {
+        ...nextCards[index],
+        [key]: value
+          .split("\n")
+          .map((item) => item.trim())
+          .filter(Boolean),
+      };
+      return { ...current, cards: nextCards };
+    });
+  };
+
+  const slugify = (value: string) =>
+    value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
 
   const updatePageStat = (
     index: number,
@@ -73,6 +110,7 @@ export default function AdminCmsServicesPage() {
   };
 
   const addCard = () => {
+    setMessage("New service card added below. Fill the details and save to publish it.");
     setContent((current) => ({
       ...current,
       cards: [
@@ -83,9 +121,26 @@ export default function AdminCmsServicesPage() {
           description: "",
           ctaLabel: "Available in RoboBooks",
           iconUrl: "",
+          eyebrow: "",
+          detailTitle: "",
+          detail: "",
+          detailExtended: "",
+          heroImageUrl: "",
+          points: [],
+          highlights: [],
+          useCases: [],
         },
       ],
     }));
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        newCardRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      });
+    });
   };
 
   const removeCard = (index: number) => {
@@ -286,7 +341,11 @@ export default function AdminCmsServicesPage() {
                 </button>
               </div>
               {content.cards.map((card, index) => (
-                <div key={index} className="space-y-4 rounded-2xl border border-gray-200 p-4">
+                <div
+                  key={index}
+                  ref={index === content.cards.length - 1 ? newCardRef : null}
+                  className="space-y-4 rounded-2xl border border-gray-200 p-4"
+                >
                   <div className="flex items-center justify-between gap-3">
                     <h3 className="text-base font-semibold text-gray-900">
                       Card {index + 1}
@@ -319,7 +378,12 @@ export default function AdminCmsServicesPage() {
                     <Field
                       label={`Card ${index + 1} Title`}
                       value={card.title}
-                      onChange={(value) => updateCard(index, "title", value)}
+                      onChange={(value) => {
+                        updateCard(index, "title", value);
+                        if (!card.slug.trim()) {
+                          updateCard(index, "slug", slugify(value));
+                        }
+                      }}
                     />
                   </div>
                   <TextArea
@@ -333,6 +397,65 @@ export default function AdminCmsServicesPage() {
                     value={card.ctaLabel}
                     onChange={(value) => updateCard(index, "ctaLabel", value)}
                   />
+                  <div className="space-y-4 rounded-2xl border border-gray-200 p-4">
+                    <h4 className="text-sm font-semibold text-gray-900">Detail Page Content</h4>
+                    <ImageUploader
+                      label={`Card ${index + 1} Detail Hero Image`}
+                      imageUrl={card.heroImageUrl}
+                      uploading={uploadingKey === `service-card-hero-${index}`}
+                      onUpload={(file) =>
+                        uploadImage(`service-card-hero-${index}`, file, (uploadedUrl) =>
+                          updateCard(index, "heroImageUrl", uploadedUrl)
+                        )
+                      }
+                      onRemove={() => updateCard(index, "heroImageUrl", "")}
+                    />
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Field
+                        label={`Card ${index + 1} Eyebrow`}
+                        value={card.eyebrow}
+                        onChange={(value) => updateCard(index, "eyebrow", value)}
+                      />
+                      <Field
+                        label={`Card ${index + 1} Detail Title`}
+                        value={card.detailTitle}
+                        onChange={(value) => updateCard(index, "detailTitle", value)}
+                      />
+                    </div>
+                    <TextArea
+                      label={`Card ${index + 1} Detail Intro`}
+                      value={card.detail}
+                      onChange={(value) => updateCard(index, "detail", value)}
+                      rows={3}
+                    />
+                    <TextArea
+                      label={`Card ${index + 1} Detail Extended`}
+                      value={card.detailExtended}
+                      onChange={(value) => updateCard(index, "detailExtended", value)}
+                      rows={4}
+                    />
+                    <TextArea
+                      label={`Card ${index + 1} Core Features`}
+                      value={card.points.join("\n")}
+                      onChange={(value) => updateCardList(index, "points", value)}
+                      rows={4}
+                    />
+                    <TextArea
+                      label={`Card ${index + 1} Key Benefits`}
+                      value={card.highlights.join("\n")}
+                      onChange={(value) => updateCardList(index, "highlights", value)}
+                      rows={4}
+                    />
+                    <TextArea
+                      label={`Card ${index + 1} Best For`}
+                      value={card.useCases.join("\n")}
+                      onChange={(value) => updateCardList(index, "useCases", value)}
+                      rows={4}
+                    />
+                    <p className="text-xs text-gray-500">
+                      List fields me har line ek alag bullet banegi.
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
