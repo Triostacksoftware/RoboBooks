@@ -44,7 +44,6 @@ export default function AdminLayout({
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const authCheckRef = useRef(false);
   const redirectAttemptsRef = useRef(0);
@@ -70,9 +69,6 @@ export default function AdminLayout({
       isSidebarCollapsed ? "true" : "false"
     );
 
-    if (isSidebarCollapsed) {
-      setIsProfileMenuOpen(false);
-    }
   }, [isSidebarCollapsed]);
 
   useEffect(() => {
@@ -518,39 +514,16 @@ export default function AdminLayout({
               </button>
             </div>
           ) : (
-            <div className="rounded-[20px] border border-[#d8e7f1] bg-[#f8fbff]">
-              <button
-                type="button"
-                onClick={() => setIsProfileMenuOpen((current) => !current)}
-                className="flex w-full items-center justify-between gap-3 p-3 text-left"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#0f2344] text-white shadow-[0_10px_20px_rgba(15,35,68,0.18)]">
-                    <UserCircleIcon className="h-7 w-7" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#0f2344]">{admin?.fullName || "Admin"}</p>
-                  </div>
-                </div>
-                <ChevronDownIcon
-                  className={`h-5 w-5 text-[#5d708f] transition-transform ${
-                    isProfileMenuOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-
-              {isProfileMenuOpen ? (
-                <div className="border-t border-[#d8e7f1] px-3 py-2">
-                  <button
-                    onClick={handleLogout}
-                    className="flex w-full items-center gap-x-2 rounded-xl px-3 py-2 text-sm text-[#0f2344] transition hover:bg-white hover:text-[#0088c5]"
-                  >
-                    <ArrowRightOnRectangleIcon className="h-5 w-5" />
-                    <span>Logout</span>
-                  </button>
-                </div>
-              ) : null}
-            </div>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex w-full items-center gap-3 rounded-[20px] border border-[#d8e7f1] bg-[#f8fbff] p-3 text-left text-[#0f2344] transition hover:border-[#0aa6c9]/40 hover:bg-white hover:text-[#0088c5]"
+            >
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#0f2344] text-white shadow-[0_10px_20px_rgba(15,35,68,0.18)]">
+                <ArrowRightOnRectangleIcon className="h-6 w-6" />
+              </div>
+              <span className="text-sm font-medium">Logout</span>
+            </button>
           )}
         </div>
       </div>
