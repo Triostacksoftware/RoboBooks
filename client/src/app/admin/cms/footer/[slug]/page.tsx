@@ -2,13 +2,16 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { footerLinks } from "@/app/footer/footerData";
 import {
+  createGenericFooterPageCmsContent,
+  defaultFooterContent,
   fetchAdminCmsSection,
+  type FooterCmsContent,
   getDefaultFooterPageCmsContent,
   updateAdminCmsSection,
   type FooterPageCmsContent,
 } from "@/services/cmsService";
+import { getFooterSlugFromHref, normalizeFooterLinkGroups } from "@/app/footer/footerData";
 
 type AdminFooterPageProps = {
   params: {
@@ -31,34 +34,73 @@ function AdminFooterCmsPage({ params }: AdminFooterPageProps) {
 
   useEffect(() => {
     const resolvedSlug = params.slug;
-    const fallback = getDefaultFooterPageCmsContent(resolvedSlug);
-
-    if (!fallback) {
-      setSlug(null);
-      setContent(null);
-      setLoading(false);
-      return;
-    }
-
     setSlug(resolvedSlug);
-    fetchAdminCmsSection<FooterPageCmsContent>(`footer-page-${resolvedSlug}`)
-      .then((response) => {
+
+    Promise.all([
+      fetchAdminCmsSection<FooterCmsContent>("footer"),
+      fetchAdminCmsSection<FooterPageCmsContent>(`footer-page-${resolvedSlug}`),
+    ])
+      .then(([footerResponse, pageResponse]) => {
+        const footerContent = normalizeFooterLinkGroups(
+          footerResponse.content || defaultFooterContent
+        );
+        const matchedLink =
+          footerContent.productLinks
+            .map((link) => ({ ...link, category: "product" as const }))
+            .concat(
+              footerContent.companyLinks.map((link) => ({
+                ...link,
+                category: "company" as const,
+              })),
+              footerContent.legalLinks.map((link) => ({
+                ...link,
+                category: "legal" as const,
+              })),
+              ...(footerContent.extraGroups || []).flatMap((group) =>
+                group.links.map((link) => ({
+                  ...link,
+                  category: "product" as const,
+                }))
+              )
+            )
+            .find((link) => getFooterSlugFromHref(link.href) === resolvedSlug) || null;
+
+        const fallback =
+          getDefaultFooterPageCmsContent(resolvedSlug) ||
+          (matchedLink
+            ? createGenericFooterPageCmsContent({
+                slug: resolvedSlug,
+                label: matchedLink.label,
+                category: matchedLink.category,
+                href: matchedLink.href,
+              })
+            : null);
+
+        if (!fallback) {
+          setSlug(null);
+          setContent(null);
+          return;
+        }
+
         setContent({
           ...fallback,
-          ...response.content,
+          ...pageResponse.content,
           cta: {
             ...fallback.cta,
-            ...(response.content?.cta || {}),
+            ...(pageResponse.content?.cta || {}),
           },
           highlights:
-            response.content?.highlights?.length > 0
-              ? response.content.highlights
+            pageResponse.content?.highlights?.length > 0
+              ? pageResponse.content.highlights
               : fallback.highlights,
         });
       })
       .catch(() => {
+        const fallback = getDefaultFooterPageCmsContent(resolvedSlug);
         setContent(fallback);
-        setMessage("Using default footer page content because CMS data could not be loaded.");
+        setMessage(
+          "Using default footer page content because CMS data could not be loaded."
+        );
       })
       .finally(() => setLoading(false));
   }, [params.slug]);
@@ -275,15 +317,12 @@ function AdminFooterCmsPage({ params }: AdminFooterPageProps) {
             <div className="rounded-[24px] border border-[#d8e7f1] p-4">
               <h2 className="text-lg font-semibold text-[#0f2344]">Quick Jump</h2>
               <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                {footerLinks.map((link) => (
-                  <Link
-                    key={link.slug}
-                    href={`/admin/cms/footer/${link.slug}`}
-                    className="rounded-[20px] border border-[#d8e7f1] bg-[#fbfdff] px-4 py-3 text-sm font-medium text-[#0f2344] transition hover:border-[#0aa6c9]/30 hover:bg-[#f4fbff] hover:text-[#0088c5]"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                <Link
+                  href="/admin/cms/footer"
+                  className="rounded-[20px] border border-[#d8e7f1] bg-[#fbfdff] px-4 py-3 text-sm font-medium text-[#0f2344] transition hover:border-[#0aa6c9]/30 hover:bg-[#f4fbff] hover:text-[#0088c5]"
+                >
+                  Back to footer links
+                </Link>
               </div>
             </div>
 

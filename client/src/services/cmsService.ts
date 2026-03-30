@@ -720,6 +720,43 @@ export function getDefaultFooterPageCmsContent(
   return getDefaultFooterPageContent(slug);
 }
 
+export function createGenericFooterPageCmsContent({
+  slug,
+  label,
+  category,
+  href,
+}: {
+  slug: string;
+  label: string;
+  category: FooterPageCmsContent["category"];
+  href: string;
+}): FooterPageCmsContent {
+  const eyebrowMap: Record<FooterPageCmsContent["category"], string> = {
+    product: "Product",
+    company: "Company",
+    legal: "Legal",
+  };
+
+  return {
+    slug,
+    label,
+    category,
+    eyebrow: eyebrowMap[category],
+    title: `${label} with RoboBooks`,
+    description: `Use this page to explore ${label.toLowerCase()} related information managed from the footer CMS.`,
+    summary: `This page was generated from the footer section so every internal footer link can open its own managed content page without extra hardcoding.`,
+    highlights: [
+      `${label} content can be managed directly from the footer CMS`,
+      `This route stays linked to the ${category} footer group`,
+      `You can replace this placeholder copy with your final content anytime`,
+    ],
+    cta: {
+      href: href || "/contact",
+      label: `Open ${label}`,
+    },
+  };
+}
+
 export const defaultInvoiceThemesContent: InvoiceThemesCmsContent = {
   eyebrow: "Invoice Themes",
   title: "Your bill, your brand and more with RoboBooks",

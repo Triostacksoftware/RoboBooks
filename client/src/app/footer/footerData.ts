@@ -368,7 +368,36 @@ export function getDefaultFooterPageContent(slug: string) {
 }
 
 export function getPublicFooterHrefBySlug(slug: string) {
-  return `/${slug}`;
+  return `/footer/${slug}`;
+}
+
+export function getFooterSlugFromHref(href: string) {
+  if (!href || /^https?:\/\//i.test(href) || href.startsWith("#")) {
+    return null;
+  }
+
+  if (href.startsWith("/footer/")) {
+    return href.replace(/^\/footer\//, "").replace(/\/$/, "") || null;
+  }
+
+  if (href.startsWith("/legal/terms")) {
+    return "terms";
+  }
+
+  if (href.startsWith("/legal/privacy")) {
+    return "privacy";
+  }
+
+  if (href.startsWith("/legal/cookies")) {
+    return "cookies";
+  }
+
+  if (href.startsWith("/")) {
+    const normalized = href.slice(1).replace(/\/$/, "");
+    return normalized && !normalized.includes("/") ? normalized : null;
+  }
+
+  return null;
 }
 
 export function normalizeFooterHref(href: string) {
@@ -382,15 +411,22 @@ export function normalizeFooterHref(href: string) {
   }
 
   if (href === "/legal/terms") {
-    return "/terms";
+    return getPublicFooterHrefBySlug("terms");
   }
 
   if (href === "/legal/privacy") {
-    return "/privacy";
+    return getPublicFooterHrefBySlug("privacy");
   }
 
   if (href === "/legal/cookies") {
-    return "/cookies";
+    return getPublicFooterHrefBySlug("cookies");
+  }
+
+  if (href.startsWith("/")) {
+    const slug = href.slice(1).replace(/\/$/, "");
+    if (slug && getFooterLinkBySlug(slug)) {
+      return getPublicFooterHrefBySlug(slug);
+    }
   }
 
   return href;

@@ -8,8 +8,9 @@ import {
   getFooterGroups,
   updateAdminCmsSection,
   type FooterCmsContent,
+  type FooterPageCmsContent,
 } from "@/services/cmsService";
-import { footerLinks } from "@/app/footer/footerData";
+import { getFooterSlugFromHref } from "@/app/footer/footerData";
 
 type FooterLink = {
   label: string;
@@ -112,6 +113,49 @@ export default function AdminCmsFooterPage() {
       extraGroups: current.extraGroups.filter((_, groupIndex) => groupIndex !== index),
     }));
   };
+
+  const footerEditorLinks: Array<{
+    slug: string;
+    label: string;
+    category: FooterPageCmsContent["category"];
+    href: string;
+  }> = [
+    ...content.productLinks.map((link) => ({
+      slug: getFooterSlugFromHref(link.href),
+      label: link.label,
+      category: "product" as const,
+      href: link.href,
+    })),
+    ...content.companyLinks.map((link) => ({
+      slug: getFooterSlugFromHref(link.href),
+      label: link.label,
+      category: "company" as const,
+      href: link.href,
+    })),
+    ...content.legalLinks.map((link) => ({
+      slug: getFooterSlugFromHref(link.href),
+      label: link.label,
+      category: "legal" as const,
+      href: link.href,
+    })),
+    ...(content.extraGroups || []).flatMap((group) =>
+      group.links.map((link) => ({
+        slug: getFooterSlugFromHref(link.href),
+        label: link.label,
+        category: "product" as const,
+        href: link.href,
+      }))
+    ),
+  ].filter(
+    (
+      item
+    ): item is {
+      slug: string;
+      label: string;
+      category: FooterPageCmsContent["category"];
+      href: string;
+    } => Boolean(item.slug)
+  );
 
   return (
     <div className="space-y-6">
@@ -246,7 +290,7 @@ export default function AdminCmsFooterPage() {
             <div className="rounded-[24px] border border-[#d8e7f1] p-4">
               <h2 className="text-lg font-semibold text-[#0f2344]">Footer Detail Editors</h2>
               <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                {footerLinks.map((link) => (
+                {footerEditorLinks.map((link) => (
                   <Link
                     key={link.slug}
                     href={`/admin/cms/footer/${link.slug}`}
@@ -369,7 +413,15 @@ function DynamicLinkGroupEditor({
             value={link.href}
             onChange={(value) => onChange(index, "href", value)}
           />
-          <div className="flex items-end">
+          <div className="flex items-end gap-2">
+            {getFooterSlugFromHref(link.href) ? (
+              <Link
+                href={`/admin/cms/footer/${getFooterSlugFromHref(link.href)}`}
+                className="rounded-full border border-[#d8e7f1] bg-white px-4 py-3 text-sm font-semibold text-[#0f2344] transition hover:border-[#0aa6c9]/35 hover:text-[#0088c5]"
+              >
+                Edit Page
+              </Link>
+            ) : null}
             <button
               type="button"
               onClick={() => onRemove(index)}
@@ -414,9 +466,7 @@ function LinkGroupEditor({
       </div>
 
       {links.map((link, index) => {
-        const derivedSlug = link.href.startsWith("/footer/")
-          ? link.href.replace("/footer/", "")
-          : null;
+        const derivedSlug = getFooterSlugFromHref(link.href);
 
         return (
           <div
@@ -428,7 +478,7 @@ function LinkGroupEditor({
                 <p className="text-base font-semibold text-[#0f2344]">{link.label}</p>
                 <p className="text-sm text-[#5d708f]">URL: {link.href}</p>
               </div>
-              {derivedSlug && footerLinks.some((item) => item.slug === derivedSlug) ? (
+              {derivedSlug ? (
                 <Link
                   href={`/admin/cms/footer/${derivedSlug}`}
                   className="rounded-full border border-[#d8e7f1] bg-white px-4 py-2 text-sm font-semibold text-[#0f2344] transition hover:border-[#0aa6c9]/35 hover:text-[#0088c5]"
