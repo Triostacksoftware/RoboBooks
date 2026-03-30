@@ -4,14 +4,12 @@ let autoTable;
 
 // Initialize jsPDF dynamically
 const initPDF = async () => {
-  if (typeof window !== 'undefined') {
-    // Browser environment
+  if (typeof window !== "undefined") {
     const jsPDFModule = await import("jspdf");
     const autoTableModule = await import("jspdf-autotable");
     jsPDF = jsPDFModule.default;
     autoTable = autoTableModule.default;
   } else {
-    // Node.js environment
     const jsPDFModule = await import("jspdf");
     const autoTableModule = await import("jspdf-autotable");
     jsPDF = jsPDFModule.default.default || jsPDFModule.default;
@@ -19,363 +17,455 @@ const initPDF = async () => {
   }
 };
 
-// Client-side PDF generation - no server dependencies!
+const SELLER_STATE_CODE = "29";
+
+const formatCurrency = (amount) => {
+  const value = Number(amount || 0);
+  return `Rs ${value.toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+};
+
+const formatDate = (dateString) =>
+  new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+const getStateFromAddress = (address) => {
+  if (!address) return "09";
+  if (address.includes("Uttar Pradesh")) return "09";
+  if (address.includes("West Bengal")) return "19";
+  if (address.includes("Maharashtra")) return "27";
+  if (address.includes("Tamil Nadu")) return "33";
+  if (address.includes("Gujarat")) return "24";
+  if (address.includes("Rajasthan")) return "08";
+  if (address.includes("Punjab")) return "03";
+  if (address.includes("Haryana")) return "06";
+  if (address.includes("Delhi")) return "07";
+  if (address.includes("Karnataka")) return "29";
+  return "09";
+};
+
+const getStateLabel = (address) => {
+  if (address?.includes("Uttar Pradesh")) return "09-Uttar Pradesh";
+  if (address?.includes("West Bengal")) return "19-West Bengal";
+  if (address?.includes("Maharashtra")) return "27-Maharashtra";
+  if (address?.includes("Tamil Nadu")) return "33-Tamil Nadu";
+  if (address?.includes("Gujarat")) return "24-Gujarat";
+  if (address?.includes("Rajasthan")) return "08-Rajasthan";
+  if (address?.includes("Punjab")) return "03-Punjab";
+  if (address?.includes("Haryana")) return "06-Haryana";
+  if (address?.includes("Delhi")) return "07-Delhi";
+  if (address?.includes("Karnataka")) return "29-Karnataka";
+  return "09-Uttar Pradesh";
+};
+
+const numberToWords = (num) => {
+  if (Number.isNaN(num) || num === null || num === undefined) {
+    return "Zero Rupees only";
+  }
+
+  const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+  const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+  const teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+
+  const convertLessThanOneThousand = (value) => {
+    if (value === 0) return "";
+    if (value < 10) return ones[value];
+    if (value < 20) return teens[value - 10];
+    if (value < 100) {
+      return tens[Math.floor(value / 10)] + (value % 10 !== 0 ? ` ${ones[value % 10]}` : "");
+    }
+    return (
+      ones[Math.floor(value / 100)] +
+      " Hundred" +
+      (value % 100 !== 0 ? ` ${convertLessThanOneThousand(value % 100)}` : "")
+    );
+  };
+
+  const convert = (value) => {
+    if (value === 0) return "Zero";
+    if (value < 1000) return convertLessThanOneThousand(value);
+    if (value < 100000) {
+      return (
+        convertLessThanOneThousand(Math.floor(value / 1000)) +
+        " Thousand" +
+        (value % 1000 !== 0 ? ` ${convertLessThanOneThousand(value % 1000)}` : "")
+      );
+    }
+    if (value < 10000000) {
+      return (
+        convertLessThanOneThousand(Math.floor(value / 100000)) +
+        " Lakh" +
+        (value % 100000 !== 0 ? ` ${convert(value % 100000)}` : "")
+      );
+    }
+    return (
+      convertLessThanOneThousand(Math.floor(value / 10000000)) +
+      " Crore" +
+      (value % 10000000 !== 0 ? ` ${convert(value % 10000000)}` : "")
+    );
+  };
+
+  const rupees = Math.floor(Number(num));
+  const paise = Math.round((Number(num) - rupees) * 100);
+  let result = `${convert(rupees)} Rupees`;
+  if (paise > 0) {
+    result += ` and ${convert(paise)} Paise`;
+  }
+  return `${result} only`;
+};
+
+// Client-side PDF generation
 export const generateClientPDF = async (invoice) => {
-  // Initialize jsPDF if not already done
   if (!jsPDF) {
     await initPDF();
   }
-  
-  const doc = new jsPDF();
+
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
   const centerX = pageWidth / 2;
+  const margin = 14;
+  const contentWidth = pageWidth - margin * 2;
+  const rightEdge = pageWidth - margin;
+  const leftColumnWidth = 96;
+  const summaryWidth = 72;
 
-  // Helper function to format currency
-  const formatCurrency = (amount) => {
-    return `Rs ${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
+  const splitLines = (text, width) =>
+    text ? doc.splitTextToSize(String(text), width).filter(Boolean) : [];
 
-  // Helper function to format date
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  // Helper function to get state code from address
-  const getStateFromAddress = (address) => {
-    if (!address) return "09";
-    if (address.includes("Uttar Pradesh")) return "09";
-    if (address.includes("West Bengal")) return "19";
-    if (address.includes("Maharashtra")) return "27";
-    if (address.includes("Tamil Nadu")) return "33";
-    if (address.includes("Gujarat")) return "24";
-    if (address.includes("Rajasthan")) return "08";
-    if (address.includes("Punjab")) return "03";
-    if (address.includes("Haryana")) return "06";
-    if (address.includes("Delhi")) return "07";
-    if (address.includes("Karnataka")) return "29";
-    return "09";
-  };
-
-  // Helper function to check if transaction is inter-state
   const isInterState = () => {
-    const sellerState = "29"; // Karnataka
     const buyerState = getStateFromAddress(invoice.buyerAddress || invoice.customerAddress || "");
-    return sellerState !== buyerState;
+    return SELLER_STATE_CODE !== buyerState;
   };
 
-  // Helper function to convert number to words
-  const numberToWords = (num) => {
-    // Ensure num is a valid number
-    if (isNaN(num) || num === null || num === undefined) {
-      return "Zero Rupees only";
-    }
-    
-    const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
-    const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
-    const teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
-
-    const convertLessThanOneThousand = (num) => {
-      if (num === 0) return "";
-      if (num < 10) return ones[num];
-      if (num < 20) return teens[num - 10];
-      if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? " " + ones[num % 10] : "");
-      return ones[Math.floor(num / 100)] + " Hundred" + (num % 100 !== 0 ? " and " + convertLessThanOneThousand(num % 100) : "");
-    };
-
-    const convert = (num) => {
-      if (num === 0) return "Zero";
-      if (num < 1000) return convertLessThanOneThousand(num);
-      if (num < 100000) return convertLessThanOneThousand(Math.floor(num / 1000)) + " Thousand" + (num % 1000 !== 0 ? " " + convertLessThanOneThousand(num % 1000) : "");
-      if (num < 10000000) return convertLessThanOneThousand(Math.floor(num / 100000)) + " Lakh" + (num % 100000 !== 0 ? " " + convert(Math.floor(num / 1000) % 100) + " Thousand" + (num % 1000 !== 0 ? " " + convertLessThanOneThousand(num % 1000) : "") : "");
-      return convertLessThanOneThousand(Math.floor(num / 10000000)) + " Crore" + (num % 10000000 !== 0 ? " " + convert(num % 10000000) : "");
-    };
-
-    const rupees = Math.floor(num);
-    const paise = Math.round((num - rupees) * 100);
-    let result = convert(rupees) + " Rupees";
-    if (paise > 0) {
-      result += " and " + convert(paise) + " Paise";
-    }
-    return result + " only";
+  const drawLabelValueRow = (label, value, x, y, valueX) => {
+    doc.setFont(undefined, "normal");
+    doc.text(label, x, y);
+    doc.text(value, valueX, y, { align: "right" });
   };
 
-  // Company Header - Match Print Output Exactly
-  doc.setFontSize(24);
-  doc.setFont(undefined, 'bold');
-  doc.text(invoice.sellerName || "ROBOBOOKS SOLUTIONS", centerX, 25, { align: "center" });
-
-  doc.setFontSize(11);
-  doc.setFont(undefined, 'normal');
-  doc.text(invoice.sellerAddress || "123 Business Street, Tech Park, Bangalore - 560001", centerX, 35, { align: "center" });
-  
-  doc.text(`${invoice.sellerPhone || "+91 9876543210"} | ${invoice.sellerEmail || "info@robobooks.com"}`, centerX, 42, { align: "center" });
-  
-  doc.text(`GSTIN: ${invoice.sellerGstin || "29ABCDE1234F1Z5"} | Origin of Supply: 29-Karnataka`, centerX, 49, { align: "center" });
-
-  // Invoice details (single line with bullet points)
-  doc.setFontSize(8);
-  const invoiceDetails = `• Invoice No: ${invoice.invoiceNumber} • Date: ${formatDate(invoice.invoiceDate)} • Due Date: ${formatDate(invoice.dueDate)}${invoice.orderNumber ? ` • Order No: ${invoice.orderNumber}` : ''}`;
-  doc.text(invoiceDetails, centerX, 55, { align: "center" });
-
-  // Professional horizontal line
-  doc.setLineWidth(0.5);
-  doc.line(20, 62, pageWidth - 20, 62);
-
-  // Billing and Shipping Address (side by side)
-  let yPos = 75;
-  
-  // Billing Address (left side)
-  doc.setFontSize(12);
-  doc.setFont(undefined, 'bold');
-  doc.text("Billing Address:", 20, yPos);
-  doc.setFont(undefined, 'normal');
-  
-  yPos += 8;
-  doc.text(invoice.buyerName || invoice.customerName, 20, yPos);
-  
-  if (invoice.buyerAddress || invoice.customerAddress) {
-    yPos += 6;
-    doc.text(invoice.buyerAddress || invoice.customerAddress, 20, yPos);
-  }
-  
-  if (invoice.buyerPhone || invoice.customerPhone) {
-    yPos += 6;
-    doc.text(`Phone: ${invoice.buyerPhone || invoice.customerPhone}`, 20, yPos);
-  }
-  
-  if (invoice.buyerEmail || invoice.customerEmail) {
-    yPos += 6;
-    doc.text(`Email: ${invoice.buyerEmail || invoice.customerEmail}`, 20, yPos);
-  }
-  
-  if (invoice.buyerGstin) {
-    yPos += 6;
-    doc.text(`GSTIN: ${invoice.buyerGstin}`, 20, yPos);
-  }
-  
-  yPos += 6;
-  const buyerState = getStateFromAddress(invoice.buyerAddress || invoice.customerAddress || "");
-  const stateName = invoice.buyerAddress?.includes("Uttar Pradesh") ? "09-Uttar Pradesh" :
-                   invoice.buyerAddress?.includes("West Bengal") ? "19-West Bengal" :
-                   invoice.buyerAddress?.includes("Maharashtra") ? "27-Maharashtra" :
-                   invoice.buyerAddress?.includes("Tamil Nadu") ? "33-Tamil Nadu" :
-                   invoice.buyerAddress?.includes("Gujarat") ? "24-Gujarat" :
-                   invoice.buyerAddress?.includes("Rajasthan") ? "08-Rajasthan" :
-                   invoice.buyerAddress?.includes("Punjab") ? "03-Punjab" :
-                   invoice.buyerAddress?.includes("Haryana") ? "06-Haryana" :
-                   invoice.buyerAddress?.includes("Delhi") ? "07-Delhi" :
-                   invoice.buyerAddress?.includes("Karnataka") ? "29-Karnataka" :
-                   "09-Uttar Pradesh";
-  doc.text(`State: ${stateName}`, 20, yPos);
-
-  // Shipping Address (right side)
-  yPos = 75;
-  doc.setFont(undefined, 'bold');
-  doc.text("Shipping Address:", 110, yPos);
-  doc.setFont(undefined, 'normal');
-  
-  yPos += 8;
-  doc.text(invoice.buyerName || invoice.customerName, 110, yPos);
-  
-  if (invoice.buyerAddress || invoice.customerAddress) {
-    yPos += 6;
-    doc.text(invoice.buyerAddress || invoice.customerAddress, 110, yPos);
-  }
-  
-  yPos += 6;
-  const placeOfSupply = invoice.placeOfSupplyState ? 
-    `${getStateFromAddress(invoice.placeOfSupplyState)}-${invoice.placeOfSupplyState}` :
-    `${buyerState}-Delivery Location`;
-  doc.text(`Place of Supply: ${placeOfSupply}`, 110, yPos);
-  
-  if (invoice.terms) {
-    yPos += 6;
-    doc.text(`Terms: ${invoice.terms}`, 110, yPos);
-  }
-  
-  if (invoice.salesperson) {
-    yPos += 6;
-    doc.text(`Salesperson: ${invoice.salesperson}`, 110, yPos);
-  }
-
-  // Items table - Match Print Output Exactly
-  let tableY = 125;
-  doc.setFontSize(10);
-  
-  // Table header with borders
-  doc.setFont(undefined, 'bold');
-  const colPositions = [20, 35, 85, 110, 130, 160, 185];
-  
-  // Draw table header background
-  doc.setFillColor(240, 240, 240);
-  doc.rect(20, tableY - 5, pageWidth - 40, 8, 'F');
-  
-  // Header text
-  doc.text("#", colPositions[0], tableY);
-  doc.text("Item name", colPositions[1], tableY);
-  doc.text("HSN/SAC", colPositions[2], tableY);
-  doc.text("Quantity", colPositions[3], tableY);
-  doc.text("Price/unit", colPositions[4], tableY);
-  doc.text("GST", colPositions[5], tableY);
-  doc.text("Amount", colPositions[6], tableY);
-  
-  // Draw borders for header
-  doc.setLineWidth(0.1);
-  for (let i = 0; i <= colPositions.length; i++) {
-    const x = i === 0 ? 20 : colPositions[i - 1];
-    doc.line(x, tableY - 5, x, tableY + 3);
-  }
-  doc.line(20, tableY - 5, pageWidth - 20, tableY - 5);
-  doc.line(20, tableY + 3, pageWidth - 20, tableY + 3);
-  
-  // Table rows
-  doc.setFont(undefined, 'normal');
-  invoice.items.forEach((item, index) => {
-    tableY += 8;
-    doc.text((index + 1).toString(), colPositions[0], tableY);
-    doc.text(item.details, colPositions[1], tableY);
-    doc.text("8704", colPositions[2], tableY);
-    doc.text(item.quantity.toString(), colPositions[3], tableY);
-    doc.text(formatCurrency(item.rate), colPositions[4], tableY);
-    
-    // Fix tax rate display - ensure it's a valid number
-    const taxRate = item.taxRate || 18;
-    doc.text(`${formatCurrency(item.taxAmount)} (${taxRate}%)`, colPositions[5], tableY);
-    doc.text(formatCurrency(item.amount), colPositions[6], tableY);
-    
-    // Draw row borders
-    for (let i = 0; i <= colPositions.length; i++) {
-      const x = i === 0 ? 20 : colPositions[i - 1];
-      doc.line(x, tableY - 4, x, tableY + 4);
-    }
-    doc.line(20, tableY - 4, pageWidth - 20, tableY - 4);
-    doc.line(20, tableY + 4, pageWidth - 20, tableY + 4);
+  let cursorY = 20;
+  doc.setTextColor(17, 24, 39);
+  doc.setFont(undefined, "bold");
+  doc.setFontSize(20);
+  doc.text(invoice.sellerName || "ROBOBOOKS SOLUTIONS", centerX, cursorY, {
+    align: "center",
   });
-  
-  // Total row
-  tableY += 8;
-  doc.setFont(undefined, 'bold');
-  doc.text("Total", colPositions[0], tableY);
-  doc.text("", colPositions[1], tableY);
-  doc.text("", colPositions[2], tableY);
-  doc.text(invoice.items.reduce((sum, item) => sum + item.quantity, 0).toString(), colPositions[3], tableY);
-  doc.text("", colPositions[4], tableY);
-  doc.text(formatCurrency(invoice.taxAmount), colPositions[5], tableY);
-  doc.text(formatCurrency(invoice.total), colPositions[6], tableY);
-  
-  // Draw total row borders
-  for (let i = 0; i <= colPositions.length; i++) {
-    const x = i === 0 ? 20 : colPositions[i - 1];
-    doc.line(x, tableY - 4, x, tableY + 4);
-  }
-  doc.line(20, tableY - 4, pageWidth - 20, tableY - 4);
-  doc.line(20, tableY + 4, pageWidth - 20, tableY + 4);
 
-  // Summary and Terms Section - Match Print Output
-  tableY += 20;
-  
-  // Left side - Amount in Words and Terms
-  doc.setFontSize(10);
-  doc.setFont(undefined, 'bold');
-  doc.text("Invoice Amount In Words:", 20, tableY);
-  doc.setFont(undefined, 'normal');
-  doc.setFontSize(9);
-  
-  // Split long text into multiple lines to prevent overlapping
-  const amountInWords = numberToWords(invoice.total);
-  const wordsPerLine = 8; // Adjust based on available space
-  const words = amountInWords.split(' ');
-  let currentLine = '';
-  let lineY = tableY + 6;
-  
-  for (let i = 0; i < words.length; i++) {
-    const testLine = currentLine + (currentLine ? ' ' : '') + words[i];
-    if (testLine.length > wordsPerLine && currentLine) {
-      doc.text(currentLine, 20, lineY);
-      currentLine = words[i];
-      lineY += 4;
-    } else {
-      currentLine = testLine;
-    }
-  }
-  if (currentLine) {
-    doc.text(currentLine, 20, lineY);
-  }
-  
-  doc.setFontSize(10);
-  doc.setFont(undefined, 'bold');
-  doc.text("Terms And Conditions:", 20, lineY + 15);
-  doc.setFont(undefined, 'normal');
-  doc.setFontSize(9);
-  doc.text(invoice.termsConditions || "Thank you for doing business with us.", 20, lineY + 21);
+  cursorY += 7;
+  doc.setFont(undefined, "normal");
+  doc.setFontSize(10.5);
+  splitLines(
+    invoice.sellerAddress || "123 Business Street, Tech Park, Bangalore - 560001",
+    120
+  ).forEach((line) => {
+    doc.text(line, centerX, cursorY, { align: "center" });
+    cursorY += 4.8;
+  });
 
-  // Right side - Financial Summary (moved further right to prevent overlapping)
-  const summaryX = 130;
-  const summaryY = tableY;
-  doc.setFontSize(10);
-  doc.setFont(undefined, 'normal');
-  doc.text("Sub Total:", summaryX, summaryY);
-  doc.text(formatCurrency(invoice.subTotal), summaryX + 60, summaryY);
-  
-  if (invoice.taxAmount > 0) {
-    // Display GST based on actual transaction type
+  doc.text(
+    `${invoice.sellerPhone || "+91 9876543210"} | ${invoice.sellerEmail || "info@robobooks.com"}`,
+    centerX,
+    cursorY,
+    { align: "center" }
+  );
+  cursorY += 4.8;
+  doc.text(
+    `GSTIN: ${invoice.sellerGstin || "29ABCDE1234F1Z5"} | Origin of Supply: ${SELLER_STATE_CODE}-Karnataka`,
+    centerX,
+    cursorY,
+    { align: "center" }
+  );
+
+  cursorY += 6.5;
+  doc.setFontSize(8.5);
+  const headerMeta = [
+    `Invoice No: ${invoice.invoiceNumber}`,
+    `Date: ${formatDate(invoice.invoiceDate)}`,
+    `Due Date: ${formatDate(invoice.dueDate)}`,
+    invoice.orderNumber ? `Order No: ${invoice.orderNumber}` : null,
+  ]
+    .filter(Boolean)
+    .join(" | ");
+
+  splitLines(headerMeta, 170).forEach((line) => {
+    doc.text(line, centerX, cursorY, { align: "center" });
+    cursorY += 4;
+  });
+
+  cursorY += 1.5;
+  doc.setDrawColor(31, 41, 55);
+  doc.setLineWidth(0.4);
+  doc.line(margin, cursorY, rightEdge, cursorY);
+
+  const sectionTop = cursorY + 10;
+  const leftColX = margin;
+  const rightColX = margin + contentWidth / 2 + 4;
+  const columnWidth = contentWidth / 2 - 6;
+  const fieldLineHeight = 4.6;
+
+  const renderBlock = (title, lines, startX, startY) => {
+    let blockY = startY;
+    doc.setFont(undefined, "bold");
+    doc.setFontSize(11);
+    doc.text(title, startX, blockY);
+    blockY += 6;
+
+    doc.setFontSize(10);
+    lines.forEach((line, index) => {
+      const wrapped = splitLines(line, columnWidth);
+      if (!wrapped.length) return;
+      doc.setFont(undefined, index === 0 ? "bold" : "normal");
+      wrapped.forEach((wrappedLine) => {
+        doc.text(wrappedLine, startX, blockY);
+        blockY += fieldLineHeight;
+      });
+      blockY += 0.6;
+    });
+
+    return blockY;
+  };
+
+  const billingLines = [
+    invoice.buyerName || invoice.customerName,
+    invoice.buyerAddress || invoice.customerAddress,
+    (invoice.buyerPhone || invoice.customerPhone)
+      ? `Phone: ${invoice.buyerPhone || invoice.customerPhone}`
+      : null,
+    (invoice.buyerEmail || invoice.customerEmail)
+      ? `Email: ${invoice.buyerEmail || invoice.customerEmail}`
+      : null,
+    invoice.buyerGstin ? `GSTIN: ${invoice.buyerGstin}` : null,
+    `State: ${getStateLabel(invoice.buyerAddress || invoice.customerAddress || "")}`,
+  ].filter(Boolean);
+
+  const shippingLines = [
+    invoice.buyerName || invoice.customerName,
+    invoice.buyerAddress || invoice.customerAddress,
+    `Place of Supply: ${
+      invoice.placeOfSupplyState
+        ? `${getStateFromAddress(invoice.placeOfSupplyState)}-${invoice.placeOfSupplyState}`
+        : `${getStateFromAddress(invoice.buyerAddress || invoice.customerAddress || "")}-Delivery Location`
+    }`,
+    invoice.terms ? `Terms: ${invoice.terms}` : null,
+    invoice.salesperson ? `Salesperson: ${invoice.salesperson}` : null,
+  ].filter(Boolean);
+
+  const billingBottom = renderBlock("Billing Address", billingLines, leftColX, sectionTop);
+  const shippingBottom = renderBlock("Shipping Address", shippingLines, rightColX, sectionTop);
+  const tableStartY = Math.max(billingBottom, shippingBottom) + 6;
+
+  const items = Array.isArray(invoice.items) ? invoice.items : [];
+  const defaultTaxRate = Number(invoice.taxRate || items[0]?.taxRate || 18);
+  const rows = items.map((item, index) => [
+    String(index + 1),
+    item.details || item.description || "-",
+    item.hsnSac || item.hsn || "8704",
+    String(Number(item.quantity || 0)),
+    formatCurrency(item.rate || 0),
+    `${Number(item.taxRate ?? defaultTaxRate)}%`,
+    formatCurrency(item.amount || 0),
+  ]);
+
+  rows.push([
+    "TOTAL",
+    "",
+    "",
+    String(items.reduce((sum, item) => sum + Number(item.quantity || 0), 0)),
+    "",
+    formatCurrency(invoice.taxAmount || 0),
+    formatCurrency(invoice.total || invoice.subTotal || 0),
+  ]);
+
+  autoTable(doc, {
+    startY: tableStartY,
+    margin: { left: margin, right: margin },
+    theme: "grid",
+    head: [["SR NO.", "ITEM NAME", "HSN/SAC", "QTY", "RATE", "TAX %", "AMOUNT"]],
+    body: rows,
+    styles: {
+      fontSize: 9,
+      cellPadding: 2.4,
+      lineColor: [156, 163, 175],
+      lineWidth: 0.2,
+      textColor: [17, 24, 39],
+      overflow: "linebreak",
+      valign: "middle",
+    },
+    headStyles: {
+      fillColor: [243, 244, 246],
+      textColor: [17, 24, 39],
+      fontStyle: "bold",
+      halign: "left",
+    },
+    columnStyles: {
+      0: { cellWidth: 16, halign: "left" },
+      1: { cellWidth: 64, halign: "left" },
+      2: { cellWidth: 22, halign: "left" },
+      3: { cellWidth: 16, halign: "right" },
+      4: { cellWidth: 27, halign: "right" },
+      5: { cellWidth: 20, halign: "right" },
+      6: { cellWidth: 25, halign: "right" },
+    },
+    didParseCell: (data) => {
+      if (data.section === "body" && data.row.index === rows.length - 1) {
+        data.cell.styles.fontStyle = "bold";
+        data.cell.styles.fillColor = [249, 250, 251];
+      }
+    },
+  });
+
+  const finalY = doc.lastAutoTable.finalY;
+  const detailsTopY = finalY + 10;
+  const summaryX = rightEdge - summaryWidth;
+  const summaryValueX = rightEdge - 2;
+  let summaryRowCount = 3;
+
+  if (Number(invoice.discountAmount || 0) > 0) {
+    summaryRowCount += 1;
+  }
+
+  if (Number(invoice.taxAmount || 0) > 0) {
+    summaryRowCount += isInterState() ? 1 : 2;
+  }
+
+  if (invoice.additionalTaxAmount !== 0 && invoice.additionalTaxType) {
+    summaryRowCount += 1;
+  }
+
+  if (Number(invoice.adjustment || 0) !== 0) {
+    summaryRowCount += 1;
+  }
+
+  const summaryBoxHeight = Math.max(42, summaryRowCount * 6 + 16);
+
+  doc.setFont(undefined, "bold");
+  doc.setFontSize(10.5);
+  doc.text("Invoice Amount In Words", leftColX, detailsTopY);
+  doc.setFont(undefined, "normal");
+  doc.setFontSize(9.2);
+  const amountWordLines = splitLines(numberToWords(Number(invoice.total || 0)), leftColumnWidth);
+  amountWordLines.forEach((line, index) => {
+    doc.text(line, leftColX, detailsTopY + 6 + index * 4.4);
+  });
+
+  const termsTopY = detailsTopY + 12 + amountWordLines.length * 4.4;
+  doc.setFont(undefined, "bold");
+  doc.setFontSize(10.5);
+  doc.text("Terms And Conditions", leftColX, termsTopY);
+  doc.setFont(undefined, "normal");
+  doc.setFontSize(9.2);
+  const termsLines = splitLines(
+    invoice.termsConditions || "Thank you for doing business with us.",
+    leftColumnWidth
+  );
+  termsLines.forEach((line, index) => {
+    doc.text(line, leftColX, termsTopY + 6 + index * 4.4);
+  });
+
+  let summaryY = detailsTopY;
+  doc.setDrawColor(156, 163, 175);
+  doc.setLineWidth(0.2);
+  doc.rect(summaryX - 4, summaryY - 5, summaryWidth + 6, summaryBoxHeight);
+
+  drawLabelValueRow("Sub Total:", formatCurrency(invoice.subTotal || 0), summaryX, summaryY, summaryValueX);
+  summaryY += 6;
+
+  if (Number(invoice.discountAmount || 0) > 0) {
+    drawLabelValueRow(
+      `Discount${invoice.discountType === "percentage" ? ` (${invoice.discount || 0}%)` : ""}:`,
+      `- ${formatCurrency(invoice.discountAmount || 0)}`,
+      summaryX,
+      summaryY,
+      summaryValueX
+    );
+    summaryY += 6;
+  }
+
+  if (Number(invoice.taxAmount || 0) > 0) {
     if (!isInterState()) {
-      // Intra-State: CGST + SGST (same state)
-      const taxRate = invoice.taxRate || 18;
-      const halfTaxRate = taxRate / 2;
-      
-      doc.text(`CGST@${halfTaxRate}%:`, summaryX, summaryY + 6);
-      doc.text(formatCurrency(invoice.taxAmount / 2), summaryX + 60, summaryY + 6);
-      
-      doc.text(`SGST@${halfTaxRate}%:`, summaryX, summaryY + 12);
-      doc.text(formatCurrency(invoice.taxAmount / 2), summaryX + 60, summaryY + 12);
+      drawLabelValueRow(
+        `CGST @ ${defaultTaxRate / 2}%:`,
+        formatCurrency((invoice.taxAmount || 0) / 2),
+        summaryX,
+        summaryY,
+        summaryValueX
+      );
+      summaryY += 6;
+      drawLabelValueRow(
+        `SGST @ ${defaultTaxRate / 2}%:`,
+        formatCurrency((invoice.taxAmount || 0) / 2),
+        summaryX,
+        summaryY,
+        summaryValueX
+      );
+      summaryY += 6;
     } else {
-      // Inter-State: IGST (different states)
-      const taxRate = invoice.taxRate || 18;
-      doc.text(`IGST@${taxRate}%:`, summaryX, summaryY + 6);
-      doc.text(formatCurrency(invoice.taxAmount), summaryX + 60, summaryY + 6);
+      drawLabelValueRow(
+        `IGST @ ${defaultTaxRate}%:`,
+        formatCurrency(invoice.taxAmount || 0),
+        summaryX,
+        summaryY,
+        summaryValueX
+      );
+      summaryY += 6;
     }
   }
-  
-  // Total line
-  doc.setLineWidth(0.1);
-  doc.line(summaryX, summaryY + 18, summaryX + 60, summaryY + 18);
-  doc.setFont(undefined, 'bold');
-  doc.setFontSize(12);
-  doc.text("Total:", summaryX, summaryY + 24);
-  doc.text(formatCurrency(invoice.total), summaryX + 60, summaryY + 24);
-  
-  // Received and Balance
-  doc.setFontSize(10);
-  doc.setFont(undefined, 'normal');
-  doc.text("Received:", summaryX, summaryY + 32);
-  doc.text(formatCurrency(invoice.amountPaid), summaryX + 60, summaryY + 32);
-  
-  doc.text("Balance:", summaryX, summaryY + 38);
-  doc.setFont(undefined, 'bold');
-  doc.text(formatCurrency(invoice.balanceDue), summaryX + 60, summaryY + 38);
 
-  // Signature Area - Match Print Output
-  tableY += 50;
-  doc.setFontSize(10);
-  doc.setFont(undefined, 'normal');
-  doc.text(`For: ${invoice.sellerName || "ROBOBOOKS SOLUTIONS"}`, 20, tableY);
-  
-  // Signature line
-  doc.setLineWidth(0.1);
-  doc.line(20, tableY + 15, 80, tableY + 15);
-  doc.text("Authorized Signatory", 20, tableY + 20);
-  
-  // Website
-  doc.text("www.robobooks.com", pageWidth - 40, tableY + 20);
+  if (invoice.additionalTaxAmount !== 0 && invoice.additionalTaxType) {
+    drawLabelValueRow(
+      `${invoice.additionalTaxType} @ ${invoice.additionalTaxRate || 0}%:`,
+      `${invoice.additionalTaxType === "TDS" ? "-" : "+"} ${formatCurrency(Math.abs(invoice.additionalTaxAmount || 0))}`,
+      summaryX,
+      summaryY,
+      summaryValueX
+    );
+    summaryY += 6;
+  }
 
-  // Save the PDF
+  if (Number(invoice.adjustment || 0) !== 0) {
+    drawLabelValueRow(
+      "Adjustment:",
+      `${invoice.adjustment > 0 ? "+" : "-"} ${formatCurrency(Math.abs(invoice.adjustment || 0))}`,
+      summaryX,
+      summaryY,
+      summaryValueX
+    );
+    summaryY += 6;
+  }
+
+  doc.line(summaryX, summaryY, summaryValueX, summaryY);
+  summaryY += 6;
+  doc.setFont(undefined, "bold");
+  doc.setFontSize(11.5);
+  doc.text("Total:", summaryX, summaryY);
+  doc.text(formatCurrency(invoice.total || 0), summaryValueX, summaryY, {
+    align: "right",
+  });
+
+  summaryY += 8;
+  doc.setFontSize(10);
+  drawLabelValueRow("Received:", formatCurrency(invoice.amountPaid || 0), summaryX, summaryY, summaryValueX);
+  summaryY += 6;
+  doc.setFont(undefined, "bold");
+  drawLabelValueRow("Balance:", formatCurrency(invoice.balanceDue || 0), summaryX, summaryY, summaryValueX);
+
+  const detailsBottomY = Math.max(termsTopY + 8 + termsLines.length * 4.4, summaryY + 10);
+  const signatureY = Math.min(detailsBottomY + 14, pageHeight - 28);
+
+  doc.setFont(undefined, "normal");
+  doc.setFontSize(10);
+  doc.text(`For: ${invoice.sellerName || "ROBOBOOKS SOLUTIONS"}`, leftColX, signatureY);
+  doc.line(leftColX, signatureY + 16, leftColX + 48, signatureY + 16);
+  doc.text("Authorized Signatory", leftColX, signatureY + 21);
+  doc.text("www.robobooks.com", rightEdge, signatureY + 21, { align: "right" });
+
   doc.save(`Invoice_${invoice.invoiceNumber}.pdf`);
-
   return doc;
 };
 
