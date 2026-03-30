@@ -7,6 +7,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
+import { usePathname } from "next/navigation";
 import { api } from "@/lib/api";
 
 interface ModulePreference {
@@ -44,12 +45,35 @@ interface ModulePreferenceProviderProps {
 export const ModulePreferenceProvider: React.FC<
   ModulePreferenceProviderProps
 > = ({ children }) => {
+  const pathname = usePathname();
   const [modulePreferences, setModulePreferences] = useState<
     ModulePreference[]
   >([]);
   const [loading, setLoading] = useState(true);
 
+  const shouldSkipPreferenceLoad =
+    !pathname ||
+    pathname === "/admin/login" ||
+    pathname === "/signin" ||
+    pathname === "/register" ||
+    pathname === "/" ||
+    pathname.startsWith("/about") ||
+    pathname.startsWith("/services") ||
+    pathname.startsWith("/features") ||
+    pathname.startsWith("/blog") ||
+    pathname.startsWith("/contact") ||
+    pathname.startsWith("/faq") ||
+    pathname.startsWith("/industries") ||
+    pathname.startsWith("/footer") ||
+    pathname.startsWith("/legal");
+
   const loadPreferences = async () => {
+    if (shouldSkipPreferenceLoad) {
+      setModulePreferences([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -84,7 +108,7 @@ export const ModulePreferenceProvider: React.FC<
 
   useEffect(() => {
     loadPreferences();
-  }, []);
+  }, [pathname]);
 
   const value: ModulePreferenceContextType = {
     modulePreferences,

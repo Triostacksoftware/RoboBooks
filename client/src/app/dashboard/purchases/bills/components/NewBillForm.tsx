@@ -221,6 +221,7 @@ export default function NewBillForm() {
     try {
       const billData = {
         vendorId: formData.vendorId,
+        vendorName: formData.vendorName,
         billDate: formData.billDate,
         dueDate: formData.dueDate,
         notes: formData.notes,

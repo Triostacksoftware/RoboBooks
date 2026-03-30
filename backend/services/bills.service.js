@@ -1,6 +1,5 @@
 import Bill from '../models/Bill.js';
 import mongoose from 'mongoose';
-import Bill from '../models/Bill.js';
 
 const PENDING_BILL_STATUSES = ['draft', 'sent', 'received'];
 

@@ -1,4 +1,5 @@
 import Bill from '../models/Bill.js';
+import Vendor from '../models/vendor.model.js';
 import mongoose from 'mongoose';
 
 // Get all bills
@@ -70,7 +71,24 @@ export const createBill = async (req, res) => {
   try {
     const organizationId = req.user.organizationId;
     const createdBy = req.user.id;
-    const billData = req.body;
+    const billData = { ...req.body };
+
+    if (!billData.vendorId) {
+      return res.status(400).json({ success: false, message: 'Vendor is required' });
+    }
+
+    if (!Array.isArray(billData.items) || billData.items.length === 0) {
+      return res.status(400).json({ success: false, message: 'At least one bill item is required' });
+    }
+
+    const vendor = await Vendor.findById(billData.vendorId);
+    if (!vendor) {
+      return res.status(400).json({ success: false, message: 'Selected vendor was not found' });
+    }
+
+    billData.vendorName = billData.vendorName || vendor.displayName || vendor.companyName || vendor.name;
+    billData.vendorEmail = billData.vendorEmail || vendor.email || '';
+    billData.vendorAddress = billData.vendorAddress || vendor.address || '';
     
     // Generate bill number
     const billCount = await Bill.countDocuments({ organizationId });
@@ -108,7 +126,7 @@ export const createBill = async (req, res) => {
     res.status(201).json({ success: true, data: populatedBill });
   } catch (error) {
     console.error('Error creating bill:', error);
-    res.status(500).json({ success: false, error: 'Failed to create bill' });
+    res.status(500).json({ success: false, message: error.message || 'Failed to create bill' });
   }
 };
 
@@ -117,7 +135,18 @@ export const updateBill = async (req, res) => {
   try {
     const { id } = req.params;
     const organizationId = req.user.organizationId;
-    const updateData = req.body;
+    const updateData = { ...req.body };
+
+    if (updateData.vendorId) {
+      const vendor = await Vendor.findById(updateData.vendorId);
+      if (!vendor) {
+        return res.status(400).json({ success: false, message: 'Selected vendor was not found' });
+      }
+
+      updateData.vendorName = updateData.vendorName || vendor.displayName || vendor.companyName || vendor.name;
+      updateData.vendorEmail = updateData.vendorEmail || vendor.email || '';
+      updateData.vendorAddress = updateData.vendorAddress || vendor.address || '';
+    }
     
     // Recalculate totals if items are updated
     if (updateData.items) {
@@ -150,7 +179,7 @@ export const updateBill = async (req, res) => {
     res.json({ success: true, data: bill });
   } catch (error) {
     console.error('Error updating bill:', error);
-    res.status(500).json({ success: false, error: 'Failed to update bill' });
+    res.status(500).json({ success: false, message: error.message || 'Failed to update bill' });
   }
 };
 

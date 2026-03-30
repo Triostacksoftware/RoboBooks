@@ -1,30 +1,59 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import Navbar from '../../homepage/components/Navbar';
-import Footer from '../../homepage/components/Footer';
-import { getServiceBySlug, services } from '../serviceData';
+"use client";
 
-type ServiceDetailPageProps = {
-  params: Promise<{
-    slug: string;
-  }>;
-};
+import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound, useParams } from "next/navigation";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import Navbar from "../../homepage/components/Navbar";
+import Footer from "../../homepage/components/Footer";
+import {
+  defaultServicesContent,
+  fetchPublicCmsSection,
+  normalizeServiceCard,
+  normalizeServicesContent,
+  resolveCmsAssetUrl,
+  type ServicesCmsContent,
+} from "@/services/cmsService";
 
-export async function generateStaticParams() {
-  return services.map((service) => ({
-    slug: service.slug,
-  }));
-}
+export default function ServiceDetailPage() {
+  const params = useParams<{ slug: string }>();
+  const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug || "";
+  const [content, setContent] = useState<ServicesCmsContent>(defaultServicesContent);
+  const [loading, setLoading] = useState(true);
 
-export default async function ServiceDetailPage({ params }: ServiceDetailPageProps) {
-  const { slug } = await params;
-  const service = getServiceBySlug(slug);
+  useEffect(() => {
+    let isMounted = true;
 
-  if (!service) {
+    fetchPublicCmsSection<ServicesCmsContent>("services", defaultServicesContent)
+      .then((response) => {
+        if (isMounted) {
+          setContent(normalizeServicesContent(response));
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const service = useMemo(() => {
+    return content.cards.find((item) => item.slug === slug);
+  }, [content.cards, slug]);
+
+  if (!loading && !service) {
     notFound();
   }
+
+  const normalizedService = normalizeServiceCard(service);
+  const heroImage = resolveCmsAssetUrl(
+    normalizedService.heroImageUrl || normalizedService.iconUrl || "/images/logo.png"
+  );
 
   return (
     <>
@@ -48,16 +77,16 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
               <div className="grid lg:grid-cols-[1fr_1.02fr]">
                 <div className="p-7 sm:p-8 lg:p-10">
                   <p className="text-sm font-semibold uppercase tracking-[0.34em] text-[#0aa6c9]">
-                    {service.eyebrow}
+                    {normalizedService.eyebrow}
                   </p>
                   <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-tight text-[#0f2344] sm:text-5xl">
-                    {service.detailTitle}
+                    {normalizedService.detailTitle}
                   </h1>
                   <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-                    {service.detail}
+                    {normalizedService.detail}
                   </p>
                   <p className="mt-4 max-w-2xl text-base leading-8 text-slate-500">
-                    {service.detailExtended}
+                    {normalizedService.detailExtended}
                   </p>
 
                   <div className="mt-8">
@@ -65,7 +94,7 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
                       Core Features
                     </h2>
                     <ul className="mt-4 space-y-3 text-base leading-7 text-[#163150]">
-                      {service.points.map((point) => (
+                      {normalizedService.points.map((point) => (
                         <li key={point} className="flex gap-3">
                           <span className="mt-2 h-2 w-2 rounded-full bg-[#0aa6c9]" />
                           <span>{point}</span>
@@ -79,7 +108,7 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
                       href="/register"
                       className="inline-flex items-center justify-center rounded-full bg-[#0aa6c9] px-7 py-3 text-base font-semibold text-white transition hover:bg-[#0890ae]"
                     >
-                      Start with {service.title}
+                      Start with {normalizedService.title}
                     </Link>
                     <Link
                       href="/contact"
@@ -96,7 +125,7 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
                         Key Benefits
                       </h2>
                       <ul className="mt-4 space-y-3 text-[15px] leading-7 text-[#163150]">
-                        {service.highlights.map((item) => (
+                        {normalizedService.highlights.map((item) => (
                           <li key={item} className="flex gap-3">
                             <span className="mt-2 h-2 w-2 rounded-full bg-[#0aa6c9]" />
                             <span>{item}</span>
@@ -110,7 +139,7 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
                         Best For
                       </h2>
                       <ul className="mt-4 space-y-3 text-[15px] leading-7 text-[#163150]">
-                        {service.useCases.map((item) => (
+                        {normalizedService.useCases.map((item) => (
                           <li key={item} className="flex gap-3">
                             <span className="mt-2 h-2 w-2 rounded-full bg-[#0aa6c9]" />
                             <span>{item}</span>
@@ -123,7 +152,7 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
 
                 <div className="relative min-h-[300px] overflow-hidden bg-[radial-gradient(circle_at_top,#85ddf1_0%,#dff6fb_40%,#183553_145%)] p-5 sm:p-6 lg:p-8">
                   <div className="absolute left-6 top-6 rounded-full border border-white/70 bg-white/80 px-5 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-[#163150] backdrop-blur">
-                    {service.title}
+                    {normalizedService.title}
                   </div>
                   <div className="absolute right-[-3rem] top-[-2rem] h-40 w-40 rounded-full bg-white/25 blur-3xl" />
                   <div className="absolute bottom-[-4rem] left-[-2rem] h-52 w-52 rounded-full bg-[#0aa6c9]/20 blur-3xl" />
@@ -132,8 +161,8 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
                     <div className="w-full max-w-[560px] rounded-[26px] border border-white/70 bg-white/82 p-3 shadow-[0_20px_50px_rgba(15,35,68,0.18)] backdrop-blur">
                       <div className="overflow-hidden rounded-[20px] bg-[#e8f8fd]">
                         <Image
-                          src={service.image}
-                          alt={service.title}
+                          src={heroImage}
+                          alt={normalizedService.title}
                           width={1400}
                           height={1000}
                           className="h-auto w-full object-cover"
