@@ -225,22 +225,22 @@ export default function AdminCmsPage() {
         </Link>
 
         <Link
+          href="/admin/cms/testimonial-cards"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Our Testimonial</h2>
+          <p className="mt-3 text-gray-600">
+            Edit the white card-based `Our Testimonial` section on the homepage, including image/video media, company details, quotes, and CTA.
+          </p>
+        </Link>
+
+        <Link
           href="/admin/cms/testimonials"
           className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
         >
           <h2 className="text-xl font-semibold text-gray-900">Testimonial Carousel</h2>
           <p className="mt-3 text-gray-600">
             Edit the dark-blue testimonial carousel section on the homepage, including heading, description, image, and video media.
-          </p>
-        </Link>
-
-        <Link
-          href="/admin/cms/testimonial-cards"
-          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:shadow-md"
-        >
-          <h2 className="text-xl font-semibold text-gray-900">Testimonial Cards</h2>
-          <p className="mt-3 text-gray-600">
-            Edit the white card-based `Our Testimonials` section on the homepage (`ss1`), including media, company details, quotes, and CTA.
           </p>
         </Link>
 

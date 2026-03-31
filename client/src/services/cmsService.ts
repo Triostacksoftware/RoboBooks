@@ -296,9 +296,25 @@ export type UsabilityCmsContent = {
   title: string;
   description: string;
   cards: Array<{
+    slug: string;
     title: string;
     description: string;
     iconUrl: string;
+    detailEyebrow: string;
+    detailTitle: string;
+    detailDescription: string;
+    detailHeroNote: string;
+    detailCtaLabel: string;
+    detailCtaUrl: string;
+    detailHighlights: string[];
+    detailStats: Array<{
+      value: string;
+      label: string;
+    }>;
+    detailSections: Array<{
+      title: string;
+      description: string;
+    }>;
   }>;
 };
 
@@ -1559,6 +1575,96 @@ export const defaultFeaturesContent: FeaturesCmsContent = {
   cards: defaultFeatureCards,
 };
 
+type UsabilityCardContent = UsabilityCmsContent["cards"][number];
+
+function slugifyUsabilityTitle(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function createUsabilityCard(
+  card: Partial<UsabilityCardContent> | undefined,
+  fallback?: Partial<UsabilityCardContent>
+): UsabilityCardContent {
+  const baseTitle = card?.title?.trim() || fallback?.title?.trim() || "Usability card";
+
+  return {
+    slug:
+      card?.slug?.trim() ||
+      fallback?.slug?.trim() ||
+      slugifyUsabilityTitle(baseTitle),
+    title: baseTitle,
+    description:
+      card?.description?.trim() ||
+      fallback?.description?.trim() ||
+      "Explain how this product experience benefit helps finance teams work with less friction.",
+    iconUrl: card?.iconUrl?.trim() || fallback?.iconUrl?.trim() || "",
+    detailEyebrow:
+      card?.detailEyebrow?.trim() || fallback?.detailEyebrow?.trim() || "Product Experience",
+    detailTitle: card?.detailTitle?.trim() || fallback?.detailTitle?.trim() || baseTitle,
+    detailDescription:
+      card?.detailDescription?.trim() ||
+      fallback?.detailDescription?.trim() ||
+      `${baseTitle} keeps accounting workflows clearer, easier to adopt, and faster to execute.`,
+    detailHeroNote:
+      card?.detailHeroNote?.trim() ||
+      fallback?.detailHeroNote?.trim() ||
+      "Built to remove friction from daily accounting work without making the product feel heavy.",
+    detailCtaLabel:
+      card?.detailCtaLabel?.trim() || fallback?.detailCtaLabel?.trim() || "Request a demo",
+    detailCtaUrl: card?.detailCtaUrl?.trim() || fallback?.detailCtaUrl?.trim() || "/contact",
+    detailHighlights:
+      Array.isArray(card?.detailHighlights) && card.detailHighlights.length > 0
+        ? card.detailHighlights
+        : Array.isArray(fallback?.detailHighlights) && fallback.detailHighlights.length > 0
+          ? fallback.detailHighlights
+          : [
+              `Use ${baseTitle.toLowerCase()} to keep finance actions easier to follow.`,
+              "Reduce confusion across recurring accounting steps.",
+              "Help teams move faster with clearer product guidance.",
+            ],
+    detailStats:
+      Array.isArray(card?.detailStats) && card.detailStats.length > 0
+        ? card.detailStats
+        : Array.isArray(fallback?.detailStats) && fallback.detailStats.length > 0
+          ? fallback.detailStats
+          : [
+              { value: "Faster", label: "Adoption" },
+              { value: "Lower", label: "Confusion" },
+              { value: "Better", label: "Daily flow" },
+            ],
+    detailSections:
+      Array.isArray(card?.detailSections) && card.detailSections.length > 0
+        ? card.detailSections
+        : Array.isArray(fallback?.detailSections) && fallback.detailSections.length > 0
+          ? fallback.detailSections
+          : [
+              {
+                title: "Why it matters",
+                description:
+                  "The experience stays practical, guided, and easier for teams to understand during daily work.",
+              },
+              {
+                title: "What improves",
+                description:
+                  "Routine finance actions become easier to complete without extra explanation or retraining.",
+              },
+              {
+                title: "Where it helps",
+                description:
+                  "It supports accounting-heavy teams that want speed without losing clarity.",
+              },
+            ],
+  };
+}
+
+function isRenderableUsabilityCard(card: UsabilityCardContent) {
+  return Boolean(card.slug && card.title && card.description);
+}
+
 export const defaultUsabilityContent: UsabilityCmsContent = {
   eyebrow: "Product Experience",
   title: "Made to feel simple even when accounting gets complex",
@@ -1566,43 +1672,283 @@ export const defaultUsabilityContent: UsabilityCmsContent = {
     "RoboBooks follows the same design tone as the hero and about sections: focused, professional, and easy to act on. The interface is built to reduce confusion and speed up daily finance work.",
   cards: [
     {
+      slug: "clean-navigation",
       title: "Clean navigation",
       description:
         "Important accounting actions stay visible so your team can move without hunting through menus.",
       iconUrl: "",
+      detailEyebrow: "Navigation Clarity",
+      detailTitle: "Clean navigation that keeps finance actions easy to find",
+      detailDescription:
+        "The product keeps common accounting actions visible and grouped logically so teams can work faster without menu hunting.",
+      detailHeroNote:
+        "Useful for businesses that want onboarding to feel lighter and daily execution to feel more direct.",
+      detailCtaLabel: "Talk to our team",
+      detailCtaUrl: "/contact",
+      detailHighlights: [
+        "Important actions stay close to where accounting work happens.",
+        "Teams spend less time searching and more time completing tasks.",
+        "Navigation reduces friction for both new and experienced users.",
+      ],
+      detailStats: [
+        { value: "Faster", label: "Task discovery" },
+        { value: "Lower", label: "Training friction" },
+        { value: "Clearer", label: "User flow" },
+      ],
+      detailSections: [
+        {
+          title: "Designed for frequent actions",
+          description:
+            "The layout surfaces the actions finance teams use most often so repetitive work does not get buried inside deep menus.",
+        },
+        {
+          title: "Better onboarding for new users",
+          description:
+            "New team members can understand where to go next without memorizing a complex product structure first.",
+        },
+        {
+          title: "More confidence during daily work",
+          description:
+            "A clearer navigation system helps users move through invoicing, books, and reports with less hesitation.",
+        },
+      ],
     },
     {
+      slug: "faster-setup",
       title: "Faster setup",
       description:
         "Onboard your company, taxes, books, and billing structure quickly with guided workflows.",
       iconUrl: "",
+      detailEyebrow: "Setup Experience",
+      detailTitle: "Faster setup so teams can reach live workflows sooner",
+      detailDescription:
+        "RoboBooks helps businesses configure company details, taxes, billing, and books through a more guided setup experience.",
+      detailHeroNote:
+        "A strong fit for teams that want less implementation drag and a quicker path to productive use.",
+      detailCtaLabel: "Book onboarding help",
+      detailCtaUrl: "/contact",
+      detailHighlights: [
+        "Guided setup reduces the chance of missing critical configuration.",
+        "Teams can move from account creation to daily use faster.",
+        "The onboarding flow is easier to follow across finance basics.",
+      ],
+      detailStats: [
+        { value: "Quicker", label: "Go-live" },
+        { value: "Cleaner", label: "Configuration" },
+        { value: "Less", label: "Setup confusion" },
+      ],
+      detailSections: [
+        {
+          title: "Structured first steps",
+          description:
+            "The setup process introduces the right business basics in a practical order so the product feels easier to adopt.",
+        },
+        {
+          title: "Reduces avoidable delays",
+          description:
+            "Teams spend less time figuring out initial configuration and more time moving into billing and bookkeeping workflows.",
+        },
+        {
+          title: "Helpful for growing businesses",
+          description:
+            "When setup is simpler, teams can standardize their finance process earlier and with more confidence.",
+        },
+      ],
     },
     {
+      slug: "work-from-anywhere",
       title: "Work from anywhere",
       description:
         "Use RoboBooks across devices to review approvals, collections, and reports on the move.",
       iconUrl: "",
+      detailEyebrow: "Anywhere Access",
+      detailTitle: "Work from anywhere without losing finance visibility",
+      detailDescription:
+        "RoboBooks keeps approvals, collections, and reporting accessible across devices so teams can stay responsive even when away from the desk.",
+      detailHeroNote:
+        "Especially useful for owners, managers, and distributed teams who need live visibility while moving between locations.",
+      detailCtaLabel: "See it in action",
+      detailCtaUrl: "/contact",
+      detailHighlights: [
+        "Approvals and reviews stay accessible outside the office.",
+        "Leaders can check collections and reports from multiple devices.",
+        "The product supports more flexible operating setups.",
+      ],
+      detailStats: [
+        { value: "Live", label: "Remote visibility" },
+        { value: "Flexible", label: "Access model" },
+        { value: "Faster", label: "Decision response" },
+      ],
+      detailSections: [
+        {
+          title: "Useful beyond the office",
+          description:
+            "Finance work no longer depends on being seated at one machine when decisions, approvals, or follow-ups need attention.",
+        },
+        {
+          title: "Keeps leadership closer to operations",
+          description:
+            "Owners and managers can stay aware of collections, reports, and bottlenecks without waiting for manual updates.",
+        },
+        {
+          title: "Supports distributed execution",
+          description:
+            "Teams working across branches, warehouses, or remote environments can stay aligned inside the same system.",
+        },
+      ],
     },
     {
+      slug: "less-repetitive-work",
       title: "Less repetitive work",
       description:
         "Automate common accounting steps like reminders, categorization, and recurring invoice creation.",
       iconUrl: "",
+      detailEyebrow: "Workflow Efficiency",
+      detailTitle: "Less repetitive work for finance teams handling daily volume",
+      detailDescription:
+        "The product reduces repeat manual tasks by supporting reminders, recurring actions, and cleaner recurring workflow patterns.",
+      detailHeroNote:
+        "Ideal for teams that want to spend less time on repeat admin and more time on review, control, and follow-up.",
+      detailCtaLabel: "Explore workflows",
+      detailCtaUrl: "/contact",
+      detailHighlights: [
+        "Recurring tasks no longer need to be rebuilt from scratch each time.",
+        "Automation reduces follow-up fatigue across daily finance activity.",
+        "Teams can focus more on review and exceptions than repetition.",
+      ],
+      detailStats: [
+        { value: "Lower", label: "Manual repetition" },
+        { value: "Better", label: "Team focus" },
+        { value: "Steadier", label: "Execution" },
+      ],
+      detailSections: [
+        {
+          title: "Removes common admin drag",
+          description:
+            "Repeated finance steps can be handled more consistently without asking the team to manually trigger every action.",
+        },
+        {
+          title: "Creates better operational rhythm",
+          description:
+            "When repetitive work is reduced, teams can handle exceptions and customer-facing issues with more attention.",
+        },
+        {
+          title: "Useful as transaction volume grows",
+          description:
+            "The savings become more noticeable as invoices, reminders, and routine finance actions increase over time.",
+        },
+      ],
     },
     {
+      slug: "connected-modules",
       title: "Connected modules",
       description:
         "Sales, inventory, expenses, and bookkeeping stay linked so nothing has to be entered twice.",
       iconUrl: "",
+      detailEyebrow: "Connected Product Design",
+      detailTitle: "Connected modules that keep work from splitting across tools",
+      detailDescription:
+        "RoboBooks links key accounting modules so sales, inventory, expenses, and books stay aligned inside one connected system.",
+      detailHeroNote:
+        "Helpful for businesses that want less duplicate entry and fewer blind spots between teams.",
+      detailCtaLabel: "View connected workflows",
+      detailCtaUrl: "/contact",
+      detailHighlights: [
+        "Modules share context so data stays connected across workflows.",
+        "Teams avoid repeating entries between separate operational areas.",
+        "Finance visibility improves when systems stay linked.",
+      ],
+      detailStats: [
+        { value: "One", label: "Connected flow" },
+        { value: "Less", label: "Duplicate entry" },
+        { value: "Better", label: "Cross-team clarity" },
+      ],
+      detailSections: [
+        {
+          title: "Breaks fewer workflows",
+          description:
+            "Linked modules reduce the operational gaps that appear when teams manage related work in separate places.",
+        },
+        {
+          title: "Improves shared visibility",
+          description:
+            "Finance, sales, and operations can work from more connected information instead of reconciling disconnected updates.",
+        },
+        {
+          title: "Supports cleaner scaling",
+          description:
+            "As the business grows, connected modules help preserve control and reduce unnecessary admin duplication.",
+        },
+      ],
     },
     {
+      slug: "simple-for-teams",
       title: "Simple for teams",
       description:
         "Owners, accountants, and operations teams can use the same interface without extra complexity.",
       iconUrl: "",
+      detailEyebrow: "Team Adoption",
+      detailTitle: "Simple for teams with different roles and responsibilities",
+      detailDescription:
+        "The interface is designed so owners, accountants, and operations teams can work in the same system without overwhelming complexity.",
+      detailHeroNote:
+        "This matters most when a product needs to support collaboration without becoming noisy or intimidating.",
+      detailCtaLabel: "Request a walkthrough",
+      detailCtaUrl: "/contact",
+      detailHighlights: [
+        "Different users can work in the same product more comfortably.",
+        "The interface stays approachable without losing capability.",
+        "Collaboration improves when the system feels easier for everyone.",
+      ],
+      detailStats: [
+        { value: "Broader", label: "Adoption" },
+        { value: "Lower", label: "Complexity" },
+        { value: "Smoother", label: "Collaboration" },
+      ],
+      detailSections: [
+        {
+          title: "Made for mixed teams",
+          description:
+            "The product supports role diversity without making every screen feel overloaded for the average user.",
+        },
+        {
+          title: "Reduces dependency on specialists",
+          description:
+            "More people can understand and act inside the platform without needing constant translation from finance power users.",
+        },
+        {
+          title: "Helps teams stay aligned",
+          description:
+            "A shared but approachable interface improves collaboration across founders, operations, and finance roles.",
+        },
+      ],
     },
   ],
 };
+
+export function normalizeUsabilityContent(content: UsabilityCmsContent): UsabilityCmsContent {
+  const fallbackCards = defaultUsabilityContent.cards
+    .map((card) => createUsabilityCard(card))
+    .filter((card) => isRenderableUsabilityCard(card));
+
+  const normalizedCards = Array.isArray(content.cards)
+    ? content.cards
+        .map((card, index) => createUsabilityCard(card, defaultUsabilityContent.cards[index]))
+        .filter((card) => isRenderableUsabilityCard(card))
+    : [];
+
+  return {
+    ...content,
+    eyebrow: content.eyebrow?.trim() || defaultUsabilityContent.eyebrow,
+    title: content.title?.trim() || defaultUsabilityContent.title,
+    description: content.description?.trim() || defaultUsabilityContent.description,
+    cards: normalizedCards.length > 0 ? normalizedCards : fallbackCards,
+  };
+}
+
+export function getUsabilityCardBySlug(content: UsabilityCmsContent, slug: string) {
+  return normalizeUsabilityContent(content).cards.find((card) => card.slug === slug) || null;
+}
 
 export const defaultBusinessImpactContent: BusinessImpactCmsContent = {
   eyebrow: "Business Impact",

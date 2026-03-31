@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import {
   defaultTestimonialCardsContent,
   fetchAdminCmsSection,
-  resolveCmsAssetUrl,
+  uploadAdminCmsImage,
   uploadAdminCmsMedia,
+  resolveCmsAssetUrl,
   updateAdminCmsSection,
   type TestimonialCardsCmsContent,
 } from "@/services/cmsService";
@@ -57,6 +58,20 @@ export default function AdminCmsTestimonialCardsPage() {
     }));
   };
 
+  const uploadImage = async (key: string, file: File, onSuccess: (uploadedUrl: string) => void) => {
+    try {
+      setUploadingKey(key);
+      setMessage("");
+      const response = await uploadAdminCmsImage(file);
+      onSuccess(response.url);
+      setMessage("Image uploaded successfully.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Failed to upload image.");
+    } finally {
+      setUploadingKey(null);
+    }
+  };
+
   const uploadMedia = async (
     key: string,
     file: File,
@@ -69,12 +84,20 @@ export default function AdminCmsTestimonialCardsPage() {
       const response = await uploadAdminCmsMedia(file);
 
       if (response.kind !== expectedType) {
-        setMessage(expectedType === "image" ? "Please upload an image file." : "Please upload a video file.");
+        setMessage(
+          expectedType === "image"
+            ? "Please upload an image file."
+            : "Please upload a video file."
+        );
         return;
       }
 
       onSuccess(response.url);
-      setMessage(expectedType === "image" ? "Image uploaded successfully." : "Video uploaded successfully.");
+      setMessage(
+        expectedType === "image"
+          ? "Image uploaded successfully."
+          : "Video uploaded successfully."
+      );
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Failed to upload media.");
     } finally {
@@ -101,9 +124,9 @@ export default function AdminCmsTestimonialCardsPage() {
         <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[#0aa6c9]">
           CMS
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-[#0f2344]">Testimonial Cards</h1>
+        <h1 className="mt-2 text-3xl font-bold text-[#0f2344]">Our Testimonial</h1>
         <p className="mt-2 text-[#4d5f7c]">
-          Update `ss1` on the homepage: the white testimonial cards section with image/video media and quote cards.
+          Update `ss1` on the homepage: the white `Our Testimonial` section with image/video media, company details, quotes, and CTA.
         </p>
       </div>
 
@@ -152,7 +175,7 @@ export default function AdminCmsTestimonialCardsPage() {
                       previewUrl={item.image}
                       uploading={uploadingKey === `testimonial-card-image-${index}`}
                       onUpload={(file) =>
-                        uploadMedia(`testimonial-card-image-${index}`, file, "image", (uploadedUrl) =>
+                        uploadImage(`testimonial-card-image-${index}`, file, (uploadedUrl) =>
                           updateStory(index, "image", uploadedUrl)
                         )
                       }
@@ -163,6 +186,11 @@ export default function AdminCmsTestimonialCardsPage() {
                       previewUrl={item.video || ""}
                       previewType="video"
                       uploading={uploadingKey === `testimonial-card-video-${index}`}
+                      onRemove={
+                        item.video
+                          ? () => updateStory(index, "video", "")
+                          : undefined
+                      }
                       onUpload={(file) =>
                         uploadMedia(`testimonial-card-video-${index}`, file, "video", (uploadedUrl) =>
                           updateStory(index, "video", uploadedUrl)
@@ -170,7 +198,11 @@ export default function AdminCmsTestimonialCardsPage() {
                       }
                     />
                   </div>
-                  <Field label="Video URL" value={item.video || ""} onChange={(value) => updateStory(index, "video", value)} />
+                  <Field
+                    label="Video URL"
+                    value={item.video || ""}
+                    onChange={(value) => updateStory(index, "video", value)}
+                  />
                   <TextArea label="Quote" value={item.quote} onChange={(value) => updateStory(index, "quote", value)} rows={4} />
                 </div>
               ))}
@@ -248,6 +280,7 @@ function MediaUploadField({
   previewUrl,
   previewType = "image",
   uploading,
+  onRemove,
   onUpload,
 }: {
   label: string;
@@ -255,11 +288,23 @@ function MediaUploadField({
   previewUrl: string;
   previewType?: "image" | "video";
   uploading: boolean;
+  onRemove?: () => void;
   onUpload: (file: File) => void;
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-medium text-[#4d5f7c]">{label}</span>
+      <span className="mb-2 flex items-center justify-between gap-3 text-sm font-medium text-[#4d5f7c]">
+        <span>{label}</span>
+        {previewUrl && onRemove ? (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="text-xs font-semibold text-red-600 transition hover:text-red-700"
+          >
+            Remove {previewType}
+          </button>
+        ) : null}
+      </span>
       <div className="rounded-[20px] border border-[#d8e7f1] bg-[#fbfdff] p-4">
         {previewUrl ? (
           previewType === "video" ? (

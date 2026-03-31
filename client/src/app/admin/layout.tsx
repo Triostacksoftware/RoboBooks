@@ -181,7 +181,8 @@ export default function AdminLayout({
             { name: "Contact Section", href: "/admin/cms/contact-section" },
             { name: "Footer Section", href: "/admin/cms/footer" },
             { name: "Pricing Plans", href: "/admin/cms/pricing-plans" },
-            { name: "Testimonials", href: "/admin/cms/testimonials" },
+            { name: "Our Testimonial", href: "/admin/cms/testimonial-cards" },
+            { name: "Testimonial Carousel", href: "/admin/cms/testimonials" },
           ],
         },
         {

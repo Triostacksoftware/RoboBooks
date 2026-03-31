@@ -204,6 +204,11 @@ export default function AdminCmsTestimonialsPage() {
                       previewUrl={item.video || ""}
                       previewType="video"
                       uploading={uploadingKey === `testimonial-video-${index}`}
+                      onRemove={
+                        item.video
+                          ? () => updateTestimonial(index, "video", "")
+                          : undefined
+                      }
                       onUpload={(file) =>
                         uploadMedia(`testimonial-video-${index}`, file, "video", (uploadedUrl) =>
                           updateTestimonial(index, "video", uploadedUrl)
@@ -253,6 +258,7 @@ function MediaUploadField({
   previewUrl,
   previewType = "image",
   uploading,
+  onRemove,
   onUpload,
 }: {
   label: string;
@@ -260,11 +266,23 @@ function MediaUploadField({
   previewUrl: string;
   previewType?: "image" | "video";
   uploading: boolean;
+  onRemove?: () => void;
   onUpload: (file: File) => void;
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-medium text-[#4d5f7c]">{label}</span>
+      <span className="mb-2 flex items-center justify-between gap-3 text-sm font-medium text-[#4d5f7c]">
+        <span>{label}</span>
+        {previewUrl && onRemove ? (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="text-xs font-semibold text-red-600 transition hover:text-red-700"
+          >
+            Remove {previewType}
+          </button>
+        ) : null}
+      </span>
       <div className="rounded-[20px] border border-[#d8e7f1] bg-[#fbfdff] p-4">
         {previewUrl ? (
           previewType === "video" ? (

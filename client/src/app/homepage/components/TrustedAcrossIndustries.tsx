@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { ArrowRight, Play, Star } from 'lucide-react';
+import { ArrowRight, Play, Star, X } from 'lucide-react';
 import {
   defaultTestimonialCardsContent,
   fetchPublicCmsSection,
@@ -15,6 +15,11 @@ export default function TrustedAcrossIndustries() {
   const [content, setContent] = useState<TestimonialCardsCmsContent>(
     defaultTestimonialCardsContent
   );
+  const [activeVideo, setActiveVideo] = useState<{
+    title: string;
+    video: string;
+    poster: string;
+  } | null>(null);
 
   useEffect(() => {
     fetchPublicCmsSection<TestimonialCardsCmsContent>(
@@ -65,6 +70,18 @@ export default function TrustedAcrossIndustries() {
                 <button
                   type="button"
                   aria-label={`Play ${story.name} story`}
+                  onClick={() => {
+                    if (!story.video) {
+                      return;
+                    }
+
+                    setActiveVideo({
+                      title: story.title,
+                      video: resolveCmsAssetUrl(story.video),
+                      poster: story.image ? resolveCmsAssetUrl(story.image) : '',
+                    });
+                  }}
+                  disabled={!story.video}
                   className="absolute left-1/2 top-1/2 flex h-[72px] w-[72px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-[#111827] shadow-2xl transition group-hover:scale-105"
                 >
                   <Play size={30} className="ml-1 fill-current" />
@@ -119,6 +136,39 @@ export default function TrustedAcrossIndustries() {
           </Link>
         </div>
       </div>
+
+      {activeVideo ? (
+        <div
+          className="fixed inset-0 z-[120] flex items-center justify-center bg-[#0f172a]/80 p-4 backdrop-blur-sm"
+          onClick={() => setActiveVideo(null)}
+        >
+          <div
+            className="relative w-full max-w-5xl rounded-[28px] bg-[#020817] p-4 shadow-[0_30px_80px_rgba(2,8,23,0.45)]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setActiveVideo(null)}
+              aria-label="Close video"
+              className="absolute right-3 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+            >
+              <X size={20} />
+            </button>
+            <video
+              key={activeVideo.video}
+              src={activeVideo.video}
+              poster={activeVideo.poster || undefined}
+              controls
+              autoPlay
+              playsInline
+              className="aspect-video w-full rounded-[20px] bg-black"
+            />
+            <p className="px-2 pb-2 pt-4 text-sm font-semibold uppercase tracking-[0.2em] text-white/70">
+              {activeVideo.title}
+            </p>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

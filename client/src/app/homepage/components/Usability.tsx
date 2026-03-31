@@ -1,7 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
+  ArrowRight,
   Bot,
   Clock3,
   LayoutDashboard,
@@ -12,6 +14,7 @@ import {
 import {
   defaultUsabilityContent,
   fetchPublicCmsSection,
+  normalizeUsabilityContent,
   resolveCmsAssetUrl,
 } from '@/services/cmsService';
 
@@ -29,12 +32,15 @@ export default function Usability() {
 
   useEffect(() => {
     fetchPublicCmsSection('usability', defaultUsabilityContent).then((response) => {
-      setContent(response);
+      setContent(normalizeUsabilityContent(response));
     });
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-[#f8fbff] pb-16 pt-10 lg:pb-20 lg:pt-12">
+    <section
+      id="product-experience"
+      className="relative overflow-hidden bg-[#f8fbff] pb-16 pt-10 lg:pb-20 lg:pt-12"
+    >
       <div className="absolute left-[-8rem] top-20 h-72 w-72 rounded-full bg-[#0aa6c9]/10 blur-3xl" />
       <div className="absolute right-[-6rem] bottom-0 h-72 w-72 rounded-full bg-[#0f2344]/8 blur-3xl" />
 
@@ -55,9 +61,10 @@ export default function Usability() {
           {content.cards.map((card, index) => {
             const Icon = fallbackIcons[index] || LayoutDashboard;
             return (
-              <div
+              <Link
                 key={`${card.title}-${index}`}
-                className="rounded-[30px] border border-[#d8e7f1] bg-white p-8 shadow-[0_18px_42px_rgba(15,35,68,0.06)] transition duration-300 hover:-translate-y-2 hover:border-[#0aa6c9]/35"
+                href={`/product-experience/${card.slug}`}
+                className="group rounded-[30px] border border-[#d8e7f1] bg-white p-8 shadow-[0_18px_42px_rgba(15,35,68,0.06)] transition duration-300 hover:-translate-y-2 hover:border-[#0aa6c9]/35"
               >
                 <div className="flex h-16 w-16 items-center justify-center rounded-[20px] bg-[#edfaff] text-[#0aa6c9]">
                   {card.iconUrl?.trim() ? (
@@ -72,7 +79,14 @@ export default function Usability() {
                 </div>
                 <h3 className="mt-6 text-2xl font-semibold text-[#0f2344]">{card.title}</h3>
                 <p className="mt-4 text-base leading-7 text-slate-600">{card.description}</p>
-              </div>
+                <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#0aa6c9]">
+                  Explore experience
+                  <ArrowRight
+                    size={16}
+                    className="transition duration-300 group-hover:translate-x-1"
+                  />
+                </div>
+              </Link>
             );
           })}
         </div>
