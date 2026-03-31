@@ -507,52 +507,340 @@ const CMS_DEFAULTS = {
     ctaUrl: "/register",
     cards: [
       {
+        slug: "customer-accounts",
         title: "Customer Accounts",
         description:
           "Maintain customer ledgers, credits, dues, and GST details with complete visibility.",
         iconUrl: "",
+        detailEyebrow: "Receivables Control",
+        detailTitle: "Customer accounts that keep every ledger conversation clear",
+        detailDescription:
+          "Track balances, pending dues, credits, GST details, and customer-wise history from one place so collections stay proactive instead of reactive.",
+        detailHeroNote:
+          "Ideal for businesses that want stronger follow-ups without losing ledger accuracy.",
+        detailCtaLabel: "Request a demo",
+        detailCtaUrl: "/contact",
+        detailHighlights: [
+          "View due balances, credits, and ledger movement account by account.",
+          "Keep GST-linked billing context visible during customer reviews.",
+          "Support faster collections with cleaner account-wise visibility.",
+        ],
+        detailStats: [
+          { value: "360", label: "Customer ledger view" },
+          { value: "Live", label: "Outstanding tracking" },
+          { value: "GST", label: "Context ready" },
+        ],
+        detailSections: [
+          {
+            title: "Daily follow-up becomes easier",
+            description:
+              "Instead of checking multiple screens, teams can review customer position, invoices, credits, and open balances in one place before calling or sharing statements.",
+          },
+          {
+            title: "Cleaner control over dues",
+            description:
+              "A structured account view helps you identify aging balances early, reduce follow-up delays, and handle disputes with better transaction context.",
+          },
+          {
+            title: "Built for growing customer bases",
+            description:
+              "As the number of active accounts grows, centralized ledgers help sales and finance stay aligned without spreadsheet dependency.",
+          },
+        ],
       },
       {
+        slug: "bank-reconciliation",
         title: "Bank Reconciliation",
         description:
           "Match bank activity against books faster and reduce month-end closing effort.",
         iconUrl: "",
+        detailEyebrow: "Banking Accuracy",
+        detailTitle: "Bank reconciliation without month-end chaos",
+        detailDescription:
+          "Compare bank activity with book entries in a more structured way so unmatched transactions are easier to identify, review, and close on time.",
+        detailHeroNote:
+          "Useful for teams that want cleaner monthly close and fewer surprise mismatches.",
+        detailCtaLabel: "Request a demo",
+        detailCtaUrl: "/contact",
+        detailHighlights: [
+          "Review bank entries against recorded transactions with better control.",
+          "Spot missing, duplicate, or delayed postings before closing week.",
+          "Reduce manual reconciliation pressure during month-end reviews.",
+        ],
+        detailStats: [
+          { value: "Fewer", label: "Mismatch surprises" },
+          { value: "Faster", label: "Monthly close" },
+          { value: "Better", label: "Audit confidence" },
+        ],
+        detailSections: [
+          {
+            title: "See exceptions sooner",
+            description:
+              "When bank activity and books are reviewed together, teams can catch missing entries and unexplained differences before they turn into reporting delays.",
+          },
+          {
+            title: "Improve close discipline",
+            description:
+              "A consistent reconciliation process keeps finance work predictable and reduces last-minute effort during month-end and audit preparation.",
+          },
+          {
+            title: "Better confidence in numbers",
+            description:
+              "Matched records make cash visibility stronger and help leaders trust the accuracy of reported balances.",
+          },
+        ],
       },
       {
+        slug: "purchase-workflows",
         title: "Purchase Workflows",
         description:
           "Handle purchase orders, bills, and vendor liabilities from one connected process.",
         iconUrl: "",
+        detailEyebrow: "Procurement Flow",
+        detailTitle: "Purchase workflows that stay connected from order to payable",
+        detailDescription:
+          "Manage purchasing steps with better continuity so vendor commitments, bills, and liabilities remain easier to monitor and approve.",
+        detailHeroNote:
+          "Designed for teams that want tighter purchasing discipline and cleaner payable visibility.",
+        detailCtaLabel: "Request a demo",
+        detailCtaUrl: "/contact",
+        detailHighlights: [
+          "Connect purchase activity from request to bill recording.",
+          "Track vendor commitments and liabilities with less manual chasing.",
+          "Support approval-oriented workflows without breaking accounting context.",
+        ],
+        detailStats: [
+          { value: "End-to-end", label: "Purchase visibility" },
+          { value: "Clearer", label: "Vendor tracking" },
+          { value: "Lower", label: "Approval friction" },
+        ],
+        detailSections: [
+          {
+            title: "Less fragmentation across teams",
+            description:
+              "Operations, procurement, and accounts can work from a more connected flow instead of relying on scattered notes and delayed handoffs.",
+          },
+          {
+            title: "Payables stay easier to manage",
+            description:
+              "When bills are tied back to purchase activity, finance teams gain better clarity over obligations and upcoming cash commitments.",
+          },
+          {
+            title: "A stronger control layer",
+            description:
+              "Structured workflows help businesses reduce duplicate entries, missed bills, and loosely tracked vendor approvals.",
+          },
+        ],
       },
       {
+        slug: "recurring-billing",
         title: "Recurring Billing",
         description:
           "Automate subscription invoices, due date alerts, and consistent payment collection.",
         iconUrl: "",
+        detailEyebrow: "Revenue Continuity",
+        detailTitle: "Recurring billing that keeps repeat revenue disciplined",
+        detailDescription:
+          "Handle repeat invoicing cycles with more consistency so billing dates, reminders, and collections feel controlled instead of manual.",
+        detailHeroNote:
+          "A strong fit for service businesses, retainers, subscriptions, and periodic contracts.",
+        detailCtaLabel: "Request a demo",
+        detailCtaUrl: "/contact",
+        detailHighlights: [
+          "Create more predictable repeat invoicing cycles.",
+          "Reduce missed billing dates and delayed reminder follow-ups.",
+          "Support steadier collections across recurring customer accounts.",
+        ],
+        detailStats: [
+          { value: "Consistent", label: "Billing cycles" },
+          { value: "Lower", label: "Missed reminders" },
+          { value: "Steadier", label: "Cash collection" },
+        ],
+        detailSections: [
+          {
+            title: "Less manual billing work",
+            description:
+              "Finance teams no longer need to rebuild the same invoice schedules repeatedly, which saves time and lowers the risk of missed cycles.",
+          },
+          {
+            title: "Customers get a smoother experience",
+            description:
+              "Regular billing and timely reminders create more predictable communication and reduce avoidable confusion around due dates.",
+          },
+          {
+            title: "Repeat revenue stays visible",
+            description:
+              "Teams can monitor recurring receivables more clearly and act faster on delayed payments before they compound.",
+          },
+        ],
       },
       {
+        slug: "tax-ready-reports",
         title: "Tax-Ready Reports",
         description:
           "Export clean summaries for GST, audits, and internal reviews without manual cleanup.",
         iconUrl: "",
+        detailEyebrow: "Compliance Readiness",
+        detailTitle: "Tax-ready reports that reduce last-minute cleanup",
+        detailDescription:
+          "Generate cleaner financial and tax-related summaries so GST filing, audits, and management reviews can move with better confidence and less manual rework.",
+        detailHeroNote:
+          "Especially valuable for teams handling regular compliance deadlines and audit requests.",
+        detailCtaLabel: "Request a demo",
+        detailCtaUrl: "/contact",
+        detailHighlights: [
+          "Prepare cleaner GST and audit-facing summaries faster.",
+          "Reduce spreadsheet cleanup before review or filing cycles.",
+          "Support internal reviews with more reliable reporting structure.",
+        ],
+        detailStats: [
+          { value: "Audit", label: "Ready summaries" },
+          { value: "Faster", label: "Review cycles" },
+          { value: "Less", label: "Manual cleanup" },
+        ],
+        detailSections: [
+          {
+            title: "Compliance gets easier to prepare",
+            description:
+              "When reports are already structured, finance teams can focus on validation and submission instead of scrambling to clean raw numbers.",
+          },
+          {
+            title: "Internal stakeholders get better visibility",
+            description:
+              "Leaders and reviewers receive clearer summaries that are easier to interpret, compare, and act on during business reviews.",
+          },
+          {
+            title: "Useful beyond filing season",
+            description:
+              "Tax-ready reporting also helps monthly control, exception review, and audit readiness throughout the year.",
+          },
+        ],
       },
       {
+        slug: "inventory-linking",
         title: "Inventory Linking",
         description:
           "Connect stock movement directly to sales and purchase entries to avoid blind spots.",
         iconUrl: "",
+        detailEyebrow: "Stock Connected Finance",
+        detailTitle: "Inventory linking that keeps stock and books aligned",
+        detailDescription:
+          "Bring inventory movement closer to accounting activity so purchases, sales, and stock visibility stay more synchronized across the business.",
+        detailHeroNote:
+          "Helpful for businesses where stock accuracy directly affects margins and cash planning.",
+        detailCtaLabel: "Request a demo",
+        detailCtaUrl: "/contact",
+        detailHighlights: [
+          "Connect stock movement with sales and purchase records.",
+          "Reduce blind spots between operations and finance teams.",
+          "Support clearer margin understanding with better stock context.",
+        ],
+        detailStats: [
+          { value: "Connected", label: "Stock visibility" },
+          { value: "Better", label: "Margin clarity" },
+          { value: "Fewer", label: "Operational blind spots" },
+        ],
+        detailSections: [
+          {
+            title: "Stock impact becomes clearer",
+            description:
+              "When inventory movement is reflected alongside accounting entries, businesses get a more reliable view of what is moving, what is pending, and what needs attention.",
+          },
+          {
+            title: "Finance and operations stay aligned",
+            description:
+              "Shared visibility reduces friction between teams and helps prevent misunderstandings around stock, purchases, and sales timing.",
+          },
+          {
+            title: "Supports stronger planning",
+            description:
+              "Cleaner stock-linked records make replenishment, pricing review, and margin tracking easier for growing businesses.",
+          },
+        ],
       },
       {
+        slug: "growth-analytics",
         title: "Growth Analytics",
         description:
           "Understand margins, revenue trends, and business health with executive-friendly dashboards.",
         iconUrl: "",
+        detailEyebrow: "Decision Insight",
+        detailTitle: "Growth analytics that turns finance data into action",
+        detailDescription:
+          "See revenue movement, margin patterns, and business performance signals in a format leaders can understand quickly and use with confidence.",
+        detailHeroNote:
+          "Built for owners and finance teams who want faster decisions from cleaner reporting.",
+        detailCtaLabel: "Request a demo",
+        detailCtaUrl: "/contact",
+        detailHighlights: [
+          "Track business health with clearer trend visibility.",
+          "Review margins and revenue movement in a leadership-friendly way.",
+          "Support faster decisions with connected finance insight.",
+        ],
+        detailStats: [
+          { value: "Sharper", label: "Trend visibility" },
+          { value: "Better", label: "Margin insight" },
+          { value: "Faster", label: "Decision support" },
+        ],
+        detailSections: [
+          {
+            title: "From data to direction",
+            description:
+              "Instead of manually stitching numbers together, teams can review patterns and discuss actions from a more decision-ready view of the business.",
+          },
+          {
+            title: "Leadership conversations improve",
+            description:
+              "Executive-friendly summaries help owners and managers understand current performance without needing to decode raw accounting detail first.",
+          },
+          {
+            title: "Useful for regular planning",
+            description:
+              "Growth analytics supports monthly reviews, revenue planning, and early identification of pressure points before they become larger issues.",
+          },
+        ],
       },
       {
+        slug: "bookkeeping-history",
         title: "Bookkeeping History",
         description:
           "Track every adjustment, approval, and transaction with structured accounting records.",
         iconUrl: "",
+        detailEyebrow: "Accounting Trail",
+        detailTitle: "Bookkeeping history that protects clarity and control",
+        detailDescription:
+          "Maintain a more dependable transaction trail so adjustments, approvals, and edits can be reviewed with context when questions arise.",
+        detailHeroNote:
+          "Important for teams that care about review discipline, accountability, and audit confidence.",
+        detailCtaLabel: "Request a demo",
+        detailCtaUrl: "/contact",
+        detailHighlights: [
+          "Keep a clearer history of changes and transaction movement.",
+          "Improve accountability across accounting reviews and approvals.",
+          "Support audits and internal checks with stronger record traceability.",
+        ],
+        detailStats: [
+          { value: "Stronger", label: "Traceability" },
+          { value: "Higher", label: "Review confidence" },
+          { value: "Cleaner", label: "Audit trail" },
+        ],
+        detailSections: [
+          {
+            title: "Questions are easier to answer",
+            description:
+              "A clearer history helps teams quickly understand what changed, why it changed, and who needs to review the impact.",
+          },
+          {
+            title: "Supports internal control",
+            description:
+              "Structured records make approval checks, adjustment review, and exception handling more consistent across the finance team.",
+          },
+          {
+            title: "Audit readiness improves",
+            description:
+              "When transaction history is traceable, auditors and internal reviewers can work faster with stronger confidence in the bookkeeping process.",
+          },
+        ],
       },
     ],
   },
@@ -867,6 +1155,7 @@ const CMS_DEFAULTS = {
         content:
           "RoboBooks helped us move away from scattered spreadsheets. Billing, dues, and reporting finally feel connected.",
         image: "/images/testimonial1.jpg",
+        video: "",
       },
       {
         name: "Neha Kapoor",
@@ -874,6 +1163,7 @@ const CMS_DEFAULTS = {
         content:
           "The interface is clean, the workflows are practical, and our month-end reviews take much less effort than before.",
         image: "/images/testimonial2.jpg",
+        video: "",
       },
       {
         name: "Arjun Mehta",
@@ -881,6 +1171,43 @@ const CMS_DEFAULTS = {
         content:
           "For a growing company, having invoicing, accounting visibility, and team access in one place is a major advantage.",
         image: "/images/testimonial3.jpg",
+        video: "",
+      },
+    ],
+  },
+  "testimonial-cards": {
+    title: "Our Testimonials",
+    description:
+      "Real stories from Indian business owners who streamlined billing, collections, and operations with RoboBooks",
+    ctaLabel: "View All Testimonials",
+    ctaUrl: "/contact",
+    stories: [
+      {
+        title: "Increased Turnover by 40%",
+        name: "Mohit Jain",
+        company: "Arihant Enterprises",
+        image: "/images/testimonial-indian-1.jpg",
+        quote:
+          "Friends in the electronics trade told us to compare myBillBook with Vyapar and Tally before deciding. RoboBooks stood out because it handles large SKU billing smoothly.",
+        video: "",
+      },
+      {
+        title: "Reduced Overdues by 80%",
+        name: "Akhil",
+        company: "Shuban Clothing",
+        image: "/images/testimonial-indian-2.jpg",
+        quote:
+          "Many business owners asked me to evaluate multiple billing apps before choosing. After trying them, RoboBooks felt easier for staff adoption and payment follow-ups.",
+        video: "",
+      },
+      {
+        title: "50K to 35 Lacs Growth",
+        name: "Vishwaradhya",
+        company: "Sri Siddalingeshwara Enterprises",
+        image: "/images/testimonial-indian-3.jpg",
+        quote:
+          "Before choosing a billing app, I compared RoboBooks with other options like Vyapar and Tally. After using it, the workflow felt the most seamless for our daily business.",
+        video: "",
       },
     ],
   },

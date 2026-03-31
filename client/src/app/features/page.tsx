@@ -8,13 +8,15 @@ import Usability from '../homepage/components/Usability'
 import TeamManagement from '../homepage/components/TeamManagement'
 import FaqSection from '../homepage/components/FaqSection'
 import InnerPageHero from '../components/InnerPageHero'
-import { defaultFeaturesContent, fetchPublicCmsSection, type FeaturesCmsContent } from '@/services/cmsService'
+import { defaultFeaturesContent, fetchPublicCmsSection, normalizeFeaturesContent, type FeaturesCmsContent } from '@/services/cmsService'
 
 const FeaturesPage = () => {
   const [content, setContent] = useState<FeaturesCmsContent>(defaultFeaturesContent)
 
   useEffect(() => {
-    fetchPublicCmsSection<FeaturesCmsContent>('features', defaultFeaturesContent).then(setContent)
+    fetchPublicCmsSection<FeaturesCmsContent>('features', defaultFeaturesContent).then((response) =>
+      setContent(normalizeFeaturesContent(response))
+    )
   }, [])
 
   return (

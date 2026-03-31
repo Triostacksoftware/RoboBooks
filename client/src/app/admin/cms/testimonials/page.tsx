@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import {
   defaultTestimonialsContent,
   fetchAdminCmsSection,
+  resolveCmsAssetUrl,
+  uploadAdminCmsMedia,
   updateAdminCmsSection,
   type TestimonialsCmsContent,
 } from "@/services/cmsService";
@@ -14,6 +16,7 @@ export default function AdminCmsTestimonialsPage() {
   );
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingKey, setUploadingKey] = useState<string | null>(null);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -27,7 +30,7 @@ export default function AdminCmsTestimonialsPage() {
 
   const updateTestimonial = (
     index: number,
-    field: "name" | "role" | "content" | "image",
+    field: "name" | "role" | "content" | "image" | "video",
     value: string
   ) => {
     setContent((current) => {
@@ -42,7 +45,7 @@ export default function AdminCmsTestimonialsPage() {
       ...current,
       testimonials: [
         ...current.testimonials,
-        { name: "", role: "", content: "", image: "" },
+        { name: "", role: "", content: "", image: "", video: "" },
       ],
     }));
   };
@@ -52,6 +55,39 @@ export default function AdminCmsTestimonialsPage() {
       ...current,
       testimonials: current.testimonials.filter((_, testimonialIndex) => testimonialIndex !== index),
     }));
+  };
+
+  const uploadMedia = async (
+    key: string,
+    file: File,
+    expectedType: "image" | "video",
+    onSuccess: (uploadedUrl: string) => void
+  ) => {
+    try {
+      setUploadingKey(key);
+      setMessage("");
+      const response = await uploadAdminCmsMedia(file);
+
+      if (response.kind !== expectedType) {
+        setMessage(
+          expectedType === "image"
+            ? "Please upload an image file."
+            : "Please upload a video file."
+        );
+        return;
+      }
+
+      onSuccess(response.url);
+      setMessage(
+        expectedType === "image"
+          ? "Image uploaded successfully."
+          : "Video uploaded successfully."
+      );
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Failed to upload media.");
+    } finally {
+      setUploadingKey(null);
+    }
   };
 
   const handleSave = async () => {
@@ -75,9 +111,13 @@ export default function AdminCmsTestimonialsPage() {
         <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[#0aa6c9]">
           CMS
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-[#0f2344]">Testimonials Section</h1>
+        <h1 className="mt-2 text-3xl font-bold text-[#0f2344]">Testimonial Carousel</h1>
         <p className="mt-2 text-[#4d5f7c]">
-          Update the testimonial heading, description, and carousel cards.
+          Update `ss2` on the homepage: the dark-blue testimonial carousel section with image/video media and testimonial content.
+        </p>
+        <p className="mt-2 text-sm text-[#7b8ca6]">
+          Note: `ss1` is the separate `Our Testimonials` card section and is currently handled in
+          `TrustedAcrossIndustries.tsx`.
         </p>
       </div>
 
@@ -146,6 +186,36 @@ export default function AdminCmsTestimonialsPage() {
                     value={item.image}
                     onChange={(value) => updateTestimonial(index, "image", value)}
                   />
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <MediaUploadField
+                      label={`Card ${index + 1} Image Upload`}
+                      accept="image/*"
+                      previewUrl={item.image}
+                      uploading={uploadingKey === `testimonial-image-${index}`}
+                      onUpload={(file) =>
+                        uploadMedia(`testimonial-image-${index}`, file, "image", (uploadedUrl) =>
+                          updateTestimonial(index, "image", uploadedUrl)
+                        )
+                      }
+                    />
+                    <MediaUploadField
+                      label={`Card ${index + 1} Video Upload`}
+                      accept="video/*"
+                      previewUrl={item.video || ""}
+                      previewType="video"
+                      uploading={uploadingKey === `testimonial-video-${index}`}
+                      onUpload={(file) =>
+                        uploadMedia(`testimonial-video-${index}`, file, "video", (uploadedUrl) =>
+                          updateTestimonial(index, "video", uploadedUrl)
+                        )
+                      }
+                    />
+                  </div>
+                  <Field
+                    label={`Card ${index + 1} Video URL`}
+                    value={item.video || ""}
+                    onChange={(value) => updateTestimonial(index, "video", value)}
+                  />
                   <TextArea
                     label={`Card ${index + 1} Quote`}
                     value={item.content}
@@ -174,6 +244,63 @@ export default function AdminCmsTestimonialsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+function MediaUploadField({
+  label,
+  accept,
+  previewUrl,
+  previewType = "image",
+  uploading,
+  onUpload,
+}: {
+  label: string;
+  accept: string;
+  previewUrl: string;
+  previewType?: "image" | "video";
+  uploading: boolean;
+  onUpload: (file: File) => void;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-medium text-[#4d5f7c]">{label}</span>
+      <div className="rounded-[20px] border border-[#d8e7f1] bg-[#fbfdff] p-4">
+        {previewUrl ? (
+          previewType === "video" ? (
+            <video
+              src={resolveCmsAssetUrl(previewUrl)}
+              controls
+              className="mb-3 h-40 w-full rounded-[16px] bg-[#0f2344] object-cover"
+            />
+          ) : (
+            <img
+              src={resolveCmsAssetUrl(previewUrl)}
+              alt="Uploaded testimonial media"
+              className="mb-3 h-40 w-full rounded-[16px] object-cover"
+            />
+          )
+        ) : (
+          <div className="mb-3 flex h-40 w-full items-center justify-center rounded-[16px] border border-dashed border-[#d8e7f1] text-sm text-[#7b8ca6]">
+            No {previewType} selected
+          </div>
+        )}
+        <input
+          type="file"
+          accept={accept}
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            onUpload(file);
+            event.currentTarget.value = "";
+          }}
+          className="block w-full text-sm text-[#0f2344] file:mr-4 file:rounded-full file:border-0 file:bg-[#eff8ff] file:px-4 file:py-2 file:font-semibold file:text-[#0088c5] hover:file:bg-[#dff4ff]"
+        />
+        {uploading ? (
+          <p className="mt-2 text-xs font-medium text-[#0088c5]">Uploading...</p>
+        ) : null}
+      </div>
+    </label>
   );
 }
 

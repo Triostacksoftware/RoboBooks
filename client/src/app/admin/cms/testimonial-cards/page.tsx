@@ -1,0 +1,298 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  defaultTestimonialCardsContent,
+  fetchAdminCmsSection,
+  resolveCmsAssetUrl,
+  uploadAdminCmsMedia,
+  updateAdminCmsSection,
+  type TestimonialCardsCmsContent,
+} from "@/services/cmsService";
+
+export default function AdminCmsTestimonialCardsPage() {
+  const [content, setContent] = useState<TestimonialCardsCmsContent>(
+    defaultTestimonialCardsContent
+  );
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [uploadingKey, setUploadingKey] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    fetchAdminCmsSection<TestimonialCardsCmsContent>("testimonial-cards")
+      .then((response) => setContent(response.content))
+      .catch(() => {
+        setMessage("Using default testimonial cards content because CMS data could not be loaded.");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const updateStory = (
+    index: number,
+    field: "title" | "name" | "company" | "image" | "quote" | "video",
+    value: string
+  ) => {
+    setContent((current) => {
+      const nextStories = [...current.stories];
+      nextStories[index] = { ...nextStories[index], [field]: value };
+      return { ...current, stories: nextStories };
+    });
+  };
+
+  const addStory = () => {
+    setContent((current) => ({
+      ...current,
+      stories: [
+        ...current.stories,
+        { title: "", name: "", company: "", image: "", quote: "", video: "" },
+      ],
+    }));
+  };
+
+  const removeStory = (index: number) => {
+    setContent((current) => ({
+      ...current,
+      stories: current.stories.filter((_, storyIndex) => storyIndex !== index),
+    }));
+  };
+
+  const uploadMedia = async (
+    key: string,
+    file: File,
+    expectedType: "image" | "video",
+    onSuccess: (uploadedUrl: string) => void
+  ) => {
+    try {
+      setUploadingKey(key);
+      setMessage("");
+      const response = await uploadAdminCmsMedia(file);
+
+      if (response.kind !== expectedType) {
+        setMessage(expectedType === "image" ? "Please upload an image file." : "Please upload a video file.");
+        return;
+      }
+
+      onSuccess(response.url);
+      setMessage(expectedType === "image" ? "Image uploaded successfully." : "Video uploaded successfully.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Failed to upload media.");
+    } finally {
+      setUploadingKey(null);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      setMessage("");
+      await updateAdminCmsSection("testimonial-cards", content);
+      setMessage("Testimonial cards updated successfully.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Failed to save testimonial cards content.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[#0aa6c9]">
+          CMS
+        </p>
+        <h1 className="mt-2 text-3xl font-bold text-[#0f2344]">Testimonial Cards</h1>
+        <p className="mt-2 text-[#4d5f7c]">
+          Update `ss1` on the homepage: the white testimonial cards section with image/video media and quote cards.
+        </p>
+      </div>
+
+      <div className="rounded-[28px] border border-[#d8e7f1] bg-white p-6 shadow-[0_16px_40px_rgba(15,35,68,0.06)]">
+        {loading ? (
+          <p className="text-[#4d5f7c]">Loading testimonial cards content...</p>
+        ) : (
+          <div className="space-y-5">
+            <Field label="Section Title" value={content.title} onChange={(value) => setContent((current) => ({ ...current, title: value }))} />
+            <TextArea label="Section Description" value={content.description} onChange={(value) => setContent((current) => ({ ...current, description: value }))} rows={3} />
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="CTA Label" value={content.ctaLabel} onChange={(value) => setContent((current) => ({ ...current, ctaLabel: value }))} />
+              <Field label="CTA URL" value={content.ctaUrl} onChange={(value) => setContent((current) => ({ ...current, ctaUrl: value }))} />
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-[#0f2344]">Cards</h2>
+                <button
+                  type="button"
+                  onClick={addStory}
+                  className="rounded-full border border-[#0aa6c9]/25 bg-[#eff8ff] px-4 py-2 text-sm font-semibold text-[#0088c5] transition hover:bg-[#dff4ff]"
+                >
+                  Add Card
+                </button>
+              </div>
+
+              {content.stories.map((item, index) => (
+                <div key={index} className="space-y-4 rounded-[24px] border border-[#d8e7f1] bg-[#fbfdff] p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-[#0f2344]">Card {index + 1}</p>
+                    <button type="button" onClick={() => removeStory(index)} className="text-sm font-semibold text-red-600 transition hover:text-red-700">
+                      Delete Card
+                    </button>
+                  </div>
+                  <Field label="Headline" value={item.title} onChange={(value) => updateStory(index, "title", value)} />
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Field label="Name" value={item.name} onChange={(value) => updateStory(index, "name", value)} />
+                    <Field label="Company" value={item.company} onChange={(value) => updateStory(index, "company", value)} />
+                  </div>
+                  <Field label="Image URL" value={item.image} onChange={(value) => updateStory(index, "image", value)} />
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <MediaUploadField
+                      label="Image Upload"
+                      accept="image/*"
+                      previewUrl={item.image}
+                      uploading={uploadingKey === `testimonial-card-image-${index}`}
+                      onUpload={(file) =>
+                        uploadMedia(`testimonial-card-image-${index}`, file, "image", (uploadedUrl) =>
+                          updateStory(index, "image", uploadedUrl)
+                        )
+                      }
+                    />
+                    <MediaUploadField
+                      label="Video Upload"
+                      accept="video/*"
+                      previewUrl={item.video || ""}
+                      previewType="video"
+                      uploading={uploadingKey === `testimonial-card-video-${index}`}
+                      onUpload={(file) =>
+                        uploadMedia(`testimonial-card-video-${index}`, file, "video", (uploadedUrl) =>
+                          updateStory(index, "video", uploadedUrl)
+                        )
+                      }
+                    />
+                  </div>
+                  <Field label="Video URL" value={item.video || ""} onChange={(value) => updateStory(index, "video", value)} />
+                  <TextArea label="Quote" value={item.quote} onChange={(value) => updateStory(index, "quote", value)} rows={4} />
+                </div>
+              ))}
+            </div>
+
+            {message ? (
+              <div className="rounded-[20px] border border-[#d8e7f1] bg-[linear-gradient(135deg,#eff8ff_0%,#f8fbff_100%)] px-4 py-3 text-sm text-[#0f2344]">
+                {message}
+              </div>
+            ) : null}
+
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#0aa6c9_0%,#0088c5_100%)] px-6 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(10,166,201,0.24)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {saving ? "Saving..." : "Save Testimonial Cards"}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-medium text-[#4d5f7c]">{label}</span>
+      <input
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="w-full rounded-[20px] border border-[#d8e7f1] bg-[#fbfdff] px-4 py-3 text-[#0f2344] outline-none transition focus:border-[#0aa6c9] focus:ring-2 focus:ring-[#0aa6c9]/15"
+      />
+    </label>
+  );
+}
+
+function TextArea({
+  label,
+  value,
+  onChange,
+  rows,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  rows: number;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-medium text-[#4d5f7c]">{label}</span>
+      <textarea
+        rows={rows}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="w-full rounded-[20px] border border-[#d8e7f1] bg-[#fbfdff] px-4 py-3 text-[#0f2344] outline-none transition focus:border-[#0aa6c9] focus:ring-2 focus:ring-[#0aa6c9]/15"
+      />
+    </label>
+  );
+}
+
+function MediaUploadField({
+  label,
+  accept,
+  previewUrl,
+  previewType = "image",
+  uploading,
+  onUpload,
+}: {
+  label: string;
+  accept: string;
+  previewUrl: string;
+  previewType?: "image" | "video";
+  uploading: boolean;
+  onUpload: (file: File) => void;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-medium text-[#4d5f7c]">{label}</span>
+      <div className="rounded-[20px] border border-[#d8e7f1] bg-[#fbfdff] p-4">
+        {previewUrl ? (
+          previewType === "video" ? (
+            <video
+              src={resolveCmsAssetUrl(previewUrl)}
+              controls
+              className="mb-3 h-40 w-full rounded-[16px] bg-[#0f2344] object-cover"
+            />
+          ) : (
+            <img
+              src={resolveCmsAssetUrl(previewUrl)}
+              alt="Uploaded testimonial media"
+              className="mb-3 h-40 w-full rounded-[16px] object-cover"
+            />
+          )
+        ) : (
+          <div className="mb-3 flex h-40 w-full items-center justify-center rounded-[16px] border border-dashed border-[#d8e7f1] text-sm text-[#7b8ca6]">
+            No {previewType} selected
+          </div>
+        )}
+        <input
+          type="file"
+          accept={accept}
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            onUpload(file);
+            event.currentTarget.value = "";
+          }}
+          className="block w-full text-sm text-[#0f2344] file:mr-4 file:rounded-full file:border-0 file:bg-[#eff8ff] file:px-4 file:py-2 file:font-semibold file:text-[#0088c5] hover:file:bg-[#dff4ff]"
+        />
+        {uploading ? <p className="mt-2 text-xs font-medium text-[#0088c5]">Uploading...</p> : null}
+      </div>
+    </label>
+  );
+}
