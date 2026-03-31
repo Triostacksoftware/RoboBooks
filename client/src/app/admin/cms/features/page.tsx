@@ -4,11 +4,30 @@ import { useEffect, useState } from "react";
 import {
   defaultFeaturesContent,
   fetchAdminCmsSection,
+  normalizeFeaturesContent,
   resolveCmsAssetUrl,
   uploadAdminCmsImage,
   updateAdminCmsSection,
   type FeaturesCmsContent,
 } from "@/services/cmsService";
+
+type FeatureCard = FeaturesCmsContent["cards"][number];
+
+const emptyFeatureCard = (): FeatureCard => ({
+  slug: "",
+  title: "",
+  description: "",
+  iconUrl: "",
+  detailEyebrow: "",
+  detailTitle: "",
+  detailDescription: "",
+  detailHeroNote: "",
+  detailCtaLabel: "",
+  detailCtaUrl: "",
+  detailHighlights: [""],
+  detailStats: [{ value: "", label: "" }],
+  detailSections: [{ title: "", description: "" }],
+});
 
 export default function AdminCmsFeaturesPage() {
   const [content, setContent] = useState<FeaturesCmsContent>(defaultFeaturesContent);
@@ -19,18 +38,15 @@ export default function AdminCmsFeaturesPage() {
 
   useEffect(() => {
     fetchAdminCmsSection<FeaturesCmsContent>("features")
-      .then((response) => setContent(response.content))
+      .then((response) => setContent(normalizeFeaturesContent(response.content)))
       .catch(() => {
         setMessage("Using default features content because CMS data could not be loaded.");
+        setContent(defaultFeaturesContent);
       })
       .finally(() => setLoading(false));
   }, []);
 
-  const updateCard = (
-    index: number,
-    key: "title" | "description" | "iconUrl",
-    value: string
-  ) => {
+  const updateCard = <K extends keyof FeatureCard>(index: number, key: K, value: FeatureCard[K]) => {
     setContent((current) => {
       const nextCards = [...current.cards];
       nextCards[index] = {
@@ -41,11 +57,7 @@ export default function AdminCmsFeaturesPage() {
     });
   };
 
-  const updatePageStat = (
-    index: number,
-    key: "value" | "label",
-    value: string
-  ) => {
+  const updatePageStat = (index: number, key: "value" | "label", value: string) => {
     setContent((current) => {
       const nextStats = [...current.pageStats];
       nextStats[index] = {
@@ -73,14 +85,7 @@ export default function AdminCmsFeaturesPage() {
   const addCard = () => {
     setContent((current) => ({
       ...current,
-      cards: [
-        ...current.cards,
-        {
-          title: "",
-          description: "",
-          iconUrl: "",
-        },
-      ],
+      cards: [...current.cards, emptyFeatureCard()],
     }));
   };
 
@@ -89,6 +94,82 @@ export default function AdminCmsFeaturesPage() {
       ...current,
       cards: current.cards.filter((_, cardIndex) => cardIndex !== index),
     }));
+  };
+
+  const updateCardHighlight = (cardIndex: number, highlightIndex: number, value: string) => {
+    const nextHighlights = [...content.cards[cardIndex].detailHighlights];
+    nextHighlights[highlightIndex] = value;
+    updateCard(cardIndex, "detailHighlights", nextHighlights);
+  };
+
+  const addCardHighlight = (cardIndex: number) => {
+    updateCard(cardIndex, "detailHighlights", [...content.cards[cardIndex].detailHighlights, ""]);
+  };
+
+  const removeCardHighlight = (cardIndex: number, highlightIndex: number) => {
+    updateCard(
+      cardIndex,
+      "detailHighlights",
+      content.cards[cardIndex].detailHighlights.filter((_, index) => index !== highlightIndex)
+    );
+  };
+
+  const updateCardStat = (
+    cardIndex: number,
+    statIndex: number,
+    key: "value" | "label",
+    value: string
+  ) => {
+    const nextStats = [...content.cards[cardIndex].detailStats];
+    nextStats[statIndex] = {
+      ...nextStats[statIndex],
+      [key]: value,
+    };
+    updateCard(cardIndex, "detailStats", nextStats);
+  };
+
+  const addCardStat = (cardIndex: number) => {
+    updateCard(cardIndex, "detailStats", [
+      ...content.cards[cardIndex].detailStats,
+      { value: "", label: "" },
+    ]);
+  };
+
+  const removeCardStat = (cardIndex: number, statIndex: number) => {
+    updateCard(
+      cardIndex,
+      "detailStats",
+      content.cards[cardIndex].detailStats.filter((_, index) => index !== statIndex)
+    );
+  };
+
+  const updateCardSection = (
+    cardIndex: number,
+    sectionIndex: number,
+    key: "title" | "description",
+    value: string
+  ) => {
+    const nextSections = [...content.cards[cardIndex].detailSections];
+    nextSections[sectionIndex] = {
+      ...nextSections[sectionIndex],
+      [key]: value,
+    };
+    updateCard(cardIndex, "detailSections", nextSections);
+  };
+
+  const addCardSection = (cardIndex: number) => {
+    updateCard(cardIndex, "detailSections", [
+      ...content.cards[cardIndex].detailSections,
+      { title: "", description: "" },
+    ]);
+  };
+
+  const removeCardSection = (cardIndex: number, sectionIndex: number) => {
+    updateCard(
+      cardIndex,
+      "detailSections",
+      content.cards[cardIndex].detailSections.filter((_, index) => index !== sectionIndex)
+    );
   };
 
   const uploadImage = async (
@@ -125,12 +206,10 @@ export default function AdminCmsFeaturesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.28em] text-purple-600">
-          CMS
-        </p>
+        <p className="text-sm font-semibold uppercase tracking-[0.28em] text-purple-600">CMS</p>
         <h1 className="mt-2 text-3xl font-bold text-gray-900">Features Section</h1>
         <p className="mt-2 text-gray-600">
-          Update the features section heading, feature cards, icons, and CTA.
+          Update the features listing and each feature detail page from one CMS panel.
         </p>
       </div>
 
@@ -202,7 +281,10 @@ export default function AdminCmsFeaturesPage() {
                   </button>
                 </div>
                 {content.pageStats.map((stat, index) => (
-                  <div key={index} className="grid gap-4 rounded-2xl border border-gray-200 p-4 md:grid-cols-[1fr_1fr_auto]">
+                  <div
+                    key={index}
+                    className="grid gap-4 rounded-2xl border border-gray-200 p-4 md:grid-cols-[1fr_1fr_auto]"
+                  >
                     <Field
                       label={`Stat ${index + 1} Value`}
                       value={stat.value}
@@ -228,17 +310,17 @@ export default function AdminCmsFeaturesPage() {
             </div>
 
             <Field
-              label="Eyebrow"
+              label="Section Eyebrow"
               value={content.eyebrow}
               onChange={(value) => setContent((current) => ({ ...current, eyebrow: value }))}
             />
             <Field
-              label="Title"
+              label="Section Title"
               value={content.title}
               onChange={(value) => setContent((current) => ({ ...current, title: value }))}
             />
             <TextArea
-              label="Description"
+              label="Section Description"
               value={content.description}
               onChange={(value) => setContent((current) => ({ ...current, description: value }))}
               rows={3}
@@ -267,12 +349,18 @@ export default function AdminCmsFeaturesPage() {
                   Add Feature Card
                 </button>
               </div>
+
               {content.cards.map((card, index) => (
-                <div key={index} className="space-y-4 rounded-2xl border border-gray-200 p-4">
+                <div key={index} className="space-y-5 rounded-2xl border border-gray-200 p-4">
                   <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-base font-semibold text-gray-900">
-                      Feature Card {index + 1}
-                    </h3>
+                    <div>
+                      <h3 className="text-base font-semibold text-gray-900">
+                        Feature Card {index + 1}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        Public detail page: /features/{card.slug || "your-slug"}
+                      </p>
+                    </div>
                     <button
                       type="button"
                       onClick={() => removeCard(index)}
@@ -281,6 +369,7 @@ export default function AdminCmsFeaturesPage() {
                       Delete Card
                     </button>
                   </div>
+
                   <ImageUploader
                     label={`Card ${index + 1} Icon`}
                     imageUrl={card.iconUrl}
@@ -292,17 +381,181 @@ export default function AdminCmsFeaturesPage() {
                     }
                     onRemove={() => updateCard(index, "iconUrl", "")}
                   />
-                  <Field
-                    label={`Card ${index + 1} Title`}
-                    value={card.title}
-                    onChange={(value) => updateCard(index, "title", value)}
-                  />
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Field
+                      label="Slug"
+                      value={card.slug}
+                      onChange={(value) => updateCard(index, "slug", value)}
+                    />
+                    <Field
+                      label="Card Title"
+                      value={card.title}
+                      onChange={(value) => updateCard(index, "title", value)}
+                    />
+                  </div>
+
                   <TextArea
-                    label={`Card ${index + 1} Description`}
+                    label="Card Description"
                     value={card.description}
                     onChange={(value) => updateCard(index, "description", value)}
                     rows={3}
                   />
+
+                  <div className="space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4">
+                    <h4 className="text-base font-semibold text-gray-900">Detail Page Content</h4>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Field
+                        label="Detail Eyebrow"
+                        value={card.detailEyebrow}
+                        onChange={(value) => updateCard(index, "detailEyebrow", value)}
+                      />
+                      <Field
+                        label="Detail Title"
+                        value={card.detailTitle}
+                        onChange={(value) => updateCard(index, "detailTitle", value)}
+                      />
+                    </div>
+                    <TextArea
+                      label="Detail Description"
+                      value={card.detailDescription}
+                      onChange={(value) => updateCard(index, "detailDescription", value)}
+                      rows={4}
+                    />
+                    <TextArea
+                      label="Hero Note"
+                      value={card.detailHeroNote}
+                      onChange={(value) => updateCard(index, "detailHeroNote", value)}
+                      rows={3}
+                    />
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Field
+                        label="Detail CTA Label"
+                        value={card.detailCtaLabel}
+                        onChange={(value) => updateCard(index, "detailCtaLabel", value)}
+                      />
+                      <Field
+                        label="Detail CTA URL"
+                        value={card.detailCtaUrl}
+                        onChange={(value) => updateCard(index, "detailCtaUrl", value)}
+                      />
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <h5 className="text-sm font-semibold text-gray-900">Highlights</h5>
+                        <button
+                          type="button"
+                          onClick={() => addCardHighlight(index)}
+                          className="text-sm font-semibold text-purple-700"
+                        >
+                          Add Highlight
+                        </button>
+                      </div>
+                      {card.detailHighlights.map((highlight, highlightIndex) => (
+                        <div
+                          key={highlightIndex}
+                          className="grid gap-3 rounded-xl border border-gray-200 bg-white p-3 md:grid-cols-[1fr_auto]"
+                        >
+                          <Field
+                            label={`Highlight ${highlightIndex + 1}`}
+                            value={highlight}
+                            onChange={(value) => updateCardHighlight(index, highlightIndex, value)}
+                          />
+                          <div className="flex items-end">
+                            <button
+                              type="button"
+                              onClick={() => removeCardHighlight(index, highlightIndex)}
+                              className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <h5 className="text-sm font-semibold text-gray-900">Detail Stats</h5>
+                        <button
+                          type="button"
+                          onClick={() => addCardStat(index)}
+                          className="text-sm font-semibold text-purple-700"
+                        >
+                          Add Stat
+                        </button>
+                      </div>
+                      {card.detailStats.map((stat, statIndex) => (
+                        <div
+                          key={statIndex}
+                          className="grid gap-4 rounded-xl border border-gray-200 bg-white p-3 md:grid-cols-[1fr_1fr_auto]"
+                        >
+                          <Field
+                            label="Value"
+                            value={stat.value}
+                            onChange={(value) => updateCardStat(index, statIndex, "value", value)}
+                          />
+                          <Field
+                            label="Label"
+                            value={stat.label}
+                            onChange={(value) => updateCardStat(index, statIndex, "label", value)}
+                          />
+                          <div className="flex items-end">
+                            <button
+                              type="button"
+                              onClick={() => removeCardStat(index, statIndex)}
+                              className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <h5 className="text-sm font-semibold text-gray-900">Detail Sections</h5>
+                        <button
+                          type="button"
+                          onClick={() => addCardSection(index)}
+                          className="text-sm font-semibold text-purple-700"
+                        >
+                          Add Section
+                        </button>
+                      </div>
+                      {card.detailSections.map((section, sectionIndex) => (
+                        <div key={sectionIndex} className="space-y-3 rounded-xl border border-gray-200 bg-white p-3">
+                          <div className="flex items-center justify-between gap-3">
+                            <h6 className="text-sm font-semibold text-gray-900">
+                              Section {sectionIndex + 1}
+                            </h6>
+                            <button
+                              type="button"
+                              onClick={() => removeCardSection(index, sectionIndex)}
+                              className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                          <Field
+                            label="Section Title"
+                            value={section.title}
+                            onChange={(value) => updateCardSection(index, sectionIndex, "title", value)}
+                          />
+                          <TextArea
+                            label="Section Description"
+                            value={section.description}
+                            onChange={(value) =>
+                              updateCardSection(index, sectionIndex, "description", value)
+                            }
+                            rows={3}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

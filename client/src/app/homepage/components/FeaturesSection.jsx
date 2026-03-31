@@ -17,6 +17,7 @@ import {
 import {
   defaultFeaturesContent,
   fetchPublicCmsSection,
+  normalizeFeaturesContent,
   resolveCmsAssetUrl,
 } from '@/services/cmsService';
 
@@ -36,7 +37,7 @@ export default function FeaturesSection() {
 
   useEffect(() => {
     fetchPublicCmsSection('features', defaultFeaturesContent).then((response) => {
-      setContent(response);
+      setContent(normalizeFeaturesContent(response));
     });
   }, []);
 
@@ -65,9 +66,10 @@ export default function FeaturesSection() {
           {content.cards.map((card, index) => {
             const Icon = fallbackIcons[index] || UsersRound;
             return (
-            <div
+            <Link
               key={`${card.title}-${index}`}
-              className="rounded-[28px] border border-slate-200 bg-[#fbfdff] p-7 shadow-[0_16px_40px_rgba(15,35,68,0.06)] transition duration-300 hover:-translate-y-2 hover:border-[#0aa6c9]/35 hover:bg-white"
+              href={`/features/${card.slug}`}
+              className="group rounded-[28px] border border-slate-200 bg-[#fbfdff] p-7 shadow-[0_16px_40px_rgba(15,35,68,0.06)] transition duration-300 hover:-translate-y-2 hover:border-[#0aa6c9]/35 hover:bg-white"
             >
               <div className="flex h-14 w-14 items-center justify-center rounded-[18px] bg-[#0f2344] text-white">
                 {card.iconUrl?.trim() ? (
@@ -82,7 +84,14 @@ export default function FeaturesSection() {
               </div>
               <h3 className="mt-5 text-xl font-semibold text-[#0f2344]">{card.title}</h3>
               <p className="mt-3 text-sm leading-7 text-slate-600">{card.description}</p>
-            </div>
+              <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#0aa6c9]">
+                Explore feature
+                <ArrowRight
+                  size={16}
+                  className="transition duration-300 group-hover:translate-x-1"
+                />
+              </div>
+            </Link>
           )})}
         </div>
 

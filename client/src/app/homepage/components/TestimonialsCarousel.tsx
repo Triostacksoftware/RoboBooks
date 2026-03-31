@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Quote } from 'lucide-react';
 import {
   defaultTestimonialsContent,
   fetchPublicCmsSection,
+  resolveCmsAssetUrl,
   type TestimonialsCmsContent,
 } from '@/services/cmsService';
 
@@ -59,13 +60,22 @@ export default function TestimonialsCarousel() {
           <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
             <div className="rounded-[28px] bg-[#10294f] p-6">
               <div className="relative mx-auto h-56 w-56 overflow-hidden rounded-[28px] border border-white/10">
-                <Image
-                  src={current.image}
-                  alt={current.name}
-                  fill
-                  className="object-cover"
-                  sizes="224px"
-                />
+                {current.video ? (
+                  <video
+                    src={resolveCmsAssetUrl(current.video)}
+                    poster={current.image ? resolveCmsAssetUrl(current.image) : undefined}
+                    controls
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <Image
+                    src={resolveCmsAssetUrl(current.image)}
+                    alt={current.name}
+                    fill
+                    className="object-cover"
+                    sizes="224px"
+                  />
+                )}
               </div>
               <div className="mt-6 text-center">
                 <p className="text-xl font-semibold">{current.name}</p>
