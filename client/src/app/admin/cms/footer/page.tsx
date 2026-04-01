@@ -6,6 +6,7 @@ import {
   defaultFooterContent,
   fetchAdminCmsSection,
   getFooterGroups,
+  normalizeFooterCmsContent,
   updateAdminCmsSection,
   type FooterCmsContent,
   type FooterPageCmsContent,
@@ -30,7 +31,7 @@ export default function AdminCmsFooterPage() {
 
   useEffect(() => {
     fetchAdminCmsSection<FooterCmsContent>("footer")
-      .then((response) => setContent(response.content))
+      .then((response) => setContent(normalizeFooterCmsContent(response.content)))
       .catch(() => {
         setMessage("Using default footer content because CMS data could not be loaded.");
       })
@@ -83,6 +84,32 @@ export default function AdminCmsFooterPage() {
       key,
       content[key].filter((_, currentIndex) => currentIndex !== index)
     );
+  };
+
+  const removeDefaultGroup = (key: "product" | "company" | "legal") => {
+    setContent((current) => {
+      if (key === "product") {
+        return {
+          ...current,
+          productTitle: "",
+          productLinks: [],
+        };
+      }
+
+      if (key === "company") {
+        return {
+          ...current,
+          companyTitle: "",
+          companyLinks: [],
+        };
+      }
+
+      return {
+        ...current,
+        legalTitle: "",
+        legalLinks: [],
+      };
+    });
   };
 
   const updateExtraGroup = (index: number, nextGroup: FooterGroup) => {
@@ -207,35 +234,47 @@ export default function AdminCmsFooterPage() {
               />
             </div>
 
-            <LinkGroupEditor
-              title={content.productTitle}
-              links={content.productLinks}
-              onAdd={() => addLink("productLinks")}
-              onChange={(index, field, value) =>
-                updateLink("productLinks", index, field, value)
-              }
-              onRemove={(index) => removeLink("productLinks", index)}
-            />
+            {content.productTitle || content.productLinks.length ? (
+              <LinkGroupEditor
+                title={content.productTitle}
+                links={content.productLinks}
+                canDeleteGroup
+                onAdd={() => addLink("productLinks")}
+                onChange={(index, field, value) =>
+                  updateLink("productLinks", index, field, value)
+                }
+                onRemove={(index) => removeLink("productLinks", index)}
+                onDeleteGroup={() => removeDefaultGroup("product")}
+              />
+            ) : null}
 
-            <LinkGroupEditor
-              title={content.companyTitle}
-              links={content.companyLinks}
-              onAdd={() => addLink("companyLinks")}
-              onChange={(index, field, value) =>
-                updateLink("companyLinks", index, field, value)
-              }
-              onRemove={(index) => removeLink("companyLinks", index)}
-            />
+            {content.companyTitle || content.companyLinks.length ? (
+              <LinkGroupEditor
+                title={content.companyTitle}
+                links={content.companyLinks}
+                canDeleteGroup
+                onAdd={() => addLink("companyLinks")}
+                onChange={(index, field, value) =>
+                  updateLink("companyLinks", index, field, value)
+                }
+                onRemove={(index) => removeLink("companyLinks", index)}
+                onDeleteGroup={() => removeDefaultGroup("company")}
+              />
+            ) : null}
 
-            <LinkGroupEditor
-              title={content.legalTitle}
-              links={content.legalLinks}
-              onAdd={() => addLink("legalLinks")}
-              onChange={(index, field, value) =>
-                updateLink("legalLinks", index, field, value)
-              }
-              onRemove={(index) => removeLink("legalLinks", index)}
-            />
+            {content.legalTitle || content.legalLinks.length ? (
+              <LinkGroupEditor
+                title={content.legalTitle}
+                links={content.legalLinks}
+                canDeleteGroup
+                onAdd={() => addLink("legalLinks")}
+                onChange={(index, field, value) =>
+                  updateLink("legalLinks", index, field, value)
+                }
+                onRemove={(index) => removeLink("legalLinks", index)}
+                onDeleteGroup={() => removeDefaultGroup("legal")}
+              />
+            ) : null}
 
             <div className="space-y-4 rounded-[24px] border border-[#d8e7f1] bg-[#fbfdff] p-4">
               <div className="flex items-center justify-between gap-4">
@@ -439,15 +478,19 @@ function DynamicLinkGroupEditor({
 function LinkGroupEditor({
   title,
   links,
+  canDeleteGroup = false,
   onAdd,
   onChange,
   onRemove,
+  onDeleteGroup,
 }: {
   title: string;
   links: FooterLink[];
+  canDeleteGroup?: boolean;
   onAdd: () => void;
   onChange: (index: number, field: keyof FooterLink, value: string) => void;
   onRemove: (index: number) => void;
+  onDeleteGroup?: () => void;
 }) {
   return (
     <div className="space-y-4 rounded-[24px] border border-[#d8e7f1] bg-[#fbfdff] p-4">
@@ -456,13 +499,24 @@ function LinkGroupEditor({
           <h2 className="text-lg font-semibold text-[#0f2344]">{title} Links</h2>
           <p className="text-sm text-[#5d708f]">Link label aur target URL edit kar sakte ho.</p>
         </div>
-        <button
-          type="button"
-          onClick={onAdd}
-          className="rounded-full border border-[#d8e7f1] bg-white px-4 py-2 text-sm font-semibold text-[#0f2344] transition hover:border-[#0aa6c9]/35 hover:text-[#0088c5]"
-        >
-          Add Page Link
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onAdd}
+            className="rounded-full border border-[#d8e7f1] bg-white px-4 py-2 text-sm font-semibold text-[#0f2344] transition hover:border-[#0aa6c9]/35 hover:text-[#0088c5]"
+          >
+            Add Page Link
+          </button>
+          {canDeleteGroup && onDeleteGroup ? (
+            <button
+              type="button"
+              onClick={onDeleteGroup}
+              className="rounded-full border border-[#ffd0d0] bg-white px-4 py-2 text-sm font-semibold text-[#ff4d4f] transition hover:bg-[#fff5f5]"
+            >
+              Delete Title
+            </button>
+          ) : null}
+        </div>
       </div>
 
       {links.map((link, index) => {

@@ -4,14 +4,14 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   createGenericFooterPageCmsContent,
-  defaultFooterContent,
   fetchAdminCmsSection,
   type FooterCmsContent,
   getDefaultFooterPageCmsContent,
+  normalizeFooterCmsContent,
   updateAdminCmsSection,
   type FooterPageCmsContent,
 } from "@/services/cmsService";
-import { getFooterSlugFromHref, normalizeFooterLinkGroups } from "@/app/footer/footerData";
+import { getFooterSlugFromHref } from "@/app/footer/footerData";
 
 type AdminFooterPageProps = {
   params: {
@@ -41,9 +41,7 @@ function AdminFooterCmsPage({ params }: AdminFooterPageProps) {
       fetchAdminCmsSection<FooterPageCmsContent>(`footer-page-${resolvedSlug}`),
     ])
       .then(([footerResponse, pageResponse]) => {
-        const footerContent = normalizeFooterLinkGroups(
-          footerResponse.content || defaultFooterContent
-        );
+        const footerContent = normalizeFooterCmsContent(footerResponse.content);
         const matchedLink =
           footerContent.productLinks
             .map((link) => ({ ...link, category: "product" as const }))

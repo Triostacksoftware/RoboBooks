@@ -4,12 +4,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
-import { normalizeFooterLinkGroups } from '@/app/footer/footerData';
 import {
   defaultFooterContent,
   defaultLogoContent,
   fetchPublicCmsSection,
   getFooterGroups,
+  normalizeFooterCmsContent,
   resolveCmsAssetUrl,
   type FooterCmsContent,
   type LogoCmsContent,
@@ -26,7 +26,7 @@ export default function Footer() {
       setLogo
     );
     fetchPublicCmsSection<FooterCmsContent>('footer', defaultFooterContent).then(
-      (content) => setFooterContent(normalizeFooterLinkGroups(content))
+      (content) => setFooterContent(normalizeFooterCmsContent(content))
     );
   }, []);
 

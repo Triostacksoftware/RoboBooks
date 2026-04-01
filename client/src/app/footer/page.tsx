@@ -4,22 +4,20 @@ import {
   defaultFooterContent,
   fetchPublicCmsSection,
   getFooterGroups,
+  normalizeFooterCmsContent,
   type FooterCmsContent,
 } from "@/services/cmsService";
 import Navbar from "../homepage/components/Navbar";
 import Footer from "../homepage/components/Footer";
 import InnerPageHero from "../components/InnerPageHero";
-import { footerCategories, normalizeFooterLinkGroups } from "./footerData";
+import { footerCategories } from "./footerData";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function FooterHubPage() {
-  const footerContent = normalizeFooterLinkGroups(
-    await fetchPublicCmsSection<FooterCmsContent>(
-      "footer",
-      defaultFooterContent
-    )
+  const footerContent = normalizeFooterCmsContent(
+    await fetchPublicCmsSection<FooterCmsContent>("footer", defaultFooterContent)
   );
   const footerGroups = getFooterGroups(footerContent);
   const totalLinks = footerGroups.reduce((sum, group) => sum + group.links.length, 0);

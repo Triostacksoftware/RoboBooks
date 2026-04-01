@@ -11,13 +11,11 @@ import {
   defaultFooterContent,
   fetchPublicCmsSection,
   getDefaultFooterPageCmsContent,
+  normalizeFooterCmsContent,
   type FooterCmsContent,
   type FooterPageCmsContent,
 } from "@/services/cmsService";
-import {
-  getFooterSlugFromHref,
-  normalizeFooterLinkGroups,
-} from "../footerData";
+import { getFooterSlugFromHref } from "../footerData";
 
 function findFooterLinkBySlug(content: FooterCmsContent, slug: string) {
   const groups: Array<{
@@ -69,7 +67,7 @@ export default function FooterDetailPage() {
     ])
       .then(([footerResponse, pageResponse]) => {
         if (!isMounted) return;
-        setFooterContent(normalizeFooterLinkGroups(footerResponse));
+        setFooterContent(normalizeFooterCmsContent(footerResponse));
         setPageOverride(pageResponse);
       })
       .finally(() => {

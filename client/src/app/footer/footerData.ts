@@ -24,6 +24,10 @@ type FooterLinkGroups = {
   productLinks: FooterNavLink[];
   companyLinks: FooterNavLink[];
   legalLinks: FooterNavLink[];
+  extraGroups?: Array<{
+    title: string;
+    links: FooterNavLink[];
+  }>;
 };
 
 export const footerLinks: FooterLinkItem[] = [
@@ -446,6 +450,13 @@ export function normalizeFooterLinkGroups<T extends FooterLinkGroups>(content: T
     legalLinks: content.legalLinks.map((link) => ({
       ...link,
       href: normalizeFooterHref(link.href),
+    })),
+    extraGroups: (content.extraGroups || []).map((group) => ({
+      ...group,
+      links: (group.links || []).map((link) => ({
+        ...link,
+        href: normalizeFooterHref(link.href),
+      })),
     })),
   } as T;
 }
