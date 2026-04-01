@@ -371,6 +371,29 @@ export function getDefaultFooterPageContent(slug: string) {
   return getFooterLinkBySlug(slug) || null;
 }
 
+const footerSlugRouteMap: Record<string, string> = {
+  "about-robobooks": "/about",
+  "book-a-demo": "/contact",
+  "start-free-trial": "/register",
+  "gstr-filing": "/gst-tools/gstr-filing",
+  "e-invoicing": "/gst-tools/e-invoicing",
+  "delivery-challan": "/gst-tools/delivery-challan",
+  "data-export-to-sale": "/gst-tools/data-export-to-sale",
+  "bank-reconciliation": "/gst-tools/bank-reconciliation",
+  "import-export-of-data": "/gst-tools/import-export-of-data",
+  "multiple-financial-reporting": "/gst-tools/multiple-financial-reporting",
+  company: "/company",
+  contact: "/contact",
+  faq: "/faq",
+  terms: "/legal/terms",
+  privacy: "/legal/privacy",
+  cookies: "/legal/cookies",
+};
+
+export function getCanonicalRouteForFooterSlug(slug: string) {
+  return footerSlugRouteMap[slug] || null;
+}
+
 export function getPublicFooterHrefBySlug(slug: string) {
   const normalizedSlug = slug.replace(/^\/+|\/+$/g, "");
 
@@ -378,12 +401,9 @@ export function getPublicFooterHrefBySlug(slug: string) {
     return "/footer";
   }
 
-  if (normalizedSlug === "contact") {
-    return "/contact";
-  }
-
-  if (normalizedSlug === "faq") {
-    return "/faq";
+  const canonicalRoute = getCanonicalRouteForFooterSlug(normalizedSlug);
+  if (canonicalRoute) {
+    return canonicalRoute;
   }
 
   return `/${normalizedSlug}`;
