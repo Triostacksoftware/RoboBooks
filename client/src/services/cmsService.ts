@@ -4,6 +4,7 @@ import { posts } from "../app/blog/posts";
 import {
   getDefaultFooterPageContent,
   getPublicFooterHrefBySlug,
+  normalizeFooterLinkGroups,
 } from "../app/footer/footerData";
 import { gstTools } from "../app/gst-tools/toolData";
 
@@ -743,6 +744,21 @@ export const defaultFooterContent: FooterCmsContent = {
   copyrightText: "RoboBooks. All rights reserved.",
   bottomText: "Built for modern accounting workflows and growing businesses.",
 };
+
+export function normalizeFooterCmsContent(
+  content?: Partial<FooterCmsContent> | null
+): FooterCmsContent {
+  const merged = {
+    ...defaultFooterContent,
+    ...(content || {}),
+    productLinks: content?.productLinks || defaultFooterContent.productLinks,
+    companyLinks: content?.companyLinks || defaultFooterContent.companyLinks,
+    legalLinks: content?.legalLinks || defaultFooterContent.legalLinks,
+    extraGroups: content?.extraGroups || defaultFooterContent.extraGroups,
+  };
+
+  return normalizeFooterLinkGroups(merged);
+}
 
 export function getFooterGroups(content: FooterCmsContent) {
   return [
