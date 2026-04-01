@@ -62,7 +62,7 @@ export default function AdminCmsFooterPage() {
   };
 
   const addLink = (key: "productLinks" | "companyLinks" | "legalLinks") => {
-    updateLinks(key, [...content[key], { label: "New Page", href: "/footer/new-page" }]);
+    updateLinks(key, [...content[key], { label: "New Page", href: "/new-page" }]);
   };
 
   const updateLink = (
@@ -128,7 +128,7 @@ export default function AdminCmsFooterPage() {
         ...(current.extraGroups || []),
         {
           title: "New Group",
-          links: [{ label: "New Page", href: "/footer/new-page" }],
+          links: [{ label: "New Page", href: "/new-page" }],
         },
       ],
     }));
@@ -304,7 +304,7 @@ export default function AdminCmsFooterPage() {
                   onAdd={() =>
                     updateExtraGroup(groupIndex, {
                       ...group,
-                      links: [...group.links, { label: "New Page", href: "/footer/new-page" }],
+                      links: [...group.links, { label: "New Page", href: "/new-page" }],
                     })
                   }
                   onChange={(index, field, value) =>

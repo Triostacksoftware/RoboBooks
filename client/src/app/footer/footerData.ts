@@ -372,7 +372,21 @@ export function getDefaultFooterPageContent(slug: string) {
 }
 
 export function getPublicFooterHrefBySlug(slug: string) {
-  return `/footer/${slug}`;
+  const normalizedSlug = slug.replace(/^\/+|\/+$/g, "");
+
+  if (!normalizedSlug) {
+    return "/footer";
+  }
+
+  if (normalizedSlug === "contact") {
+    return "/contact";
+  }
+
+  if (normalizedSlug === "faq") {
+    return "/faq";
+  }
+
+  return `/${normalizedSlug}`;
 }
 
 export function getFooterSlugFromHref(href: string) {
