@@ -45,7 +45,6 @@ export default function AdminLayout({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const authCheckRef = useRef(false);
   const redirectAttemptsRef = useRef(0);
 
   useEffect(() => {
@@ -72,16 +71,14 @@ export default function AdminLayout({
   }, [isSidebarCollapsed]);
 
   useEffect(() => {
-    // Prevent multiple auth checks
-    if (authCheckRef.current) return;
-    authCheckRef.current = true;
-
     if (pathname === "/admin/login") {
       setIsAuthenticated(false);
       setAdmin(null);
       setLoading(false);
       return;
     }
+
+    redirectAttemptsRef.current = 0;
     checkAuth();
   }, [pathname]); // Re-check auth when pathname changes
 

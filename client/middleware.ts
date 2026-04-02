@@ -3,6 +3,10 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  if (pathname === '/admin/login' || pathname === '/signin') {
+    return NextResponse.next()
+  }
   
   // Skip middleware for static files and API routes
   if (
@@ -14,17 +18,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Check for authentication cookies
-  const hasAuthCookie = request.cookies.has('rb_session')
-  
-  // If user is on dashboard/admin pages and has no auth cookie, redirect to login
-  if ((pathname.startsWith('/dashboard') || pathname.startsWith('/admin')) && !hasAuthCookie) {
-    console.log('🔐 User has no auth cookie on protected page, redirecting to login')
-    if (pathname.startsWith('/admin')) {
-      return NextResponse.redirect(new URL('/admin/login', request.url))
-    } else {
-      return NextResponse.redirect(new URL('/signin', request.url))
-    }
+  const hasUserAuthCookie = request.cookies.has('rb_session')
+  const hasAdminAuthCookie = request.cookies.has('admin_session')
+
+  if (pathname.startsWith('/admin') && !hasAdminAuthCookie) {
+    console.log('🔐 Admin has no admin_session cookie, redirecting to login')
+    return NextResponse.redirect(new URL('/admin/login', request.url))
+  }
+
+  if (pathname.startsWith('/dashboard') && !hasUserAuthCookie) {
+    console.log('🔐 User has no rb_session cookie, redirecting to login')
+    return NextResponse.redirect(new URL('/signin', request.url))
   }
 
   return NextResponse.next()

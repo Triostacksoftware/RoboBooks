@@ -381,7 +381,6 @@ const Hero: React.FC = () => {
               type="button"
               onClick={() => {
                 setIsRegisterModalOpen(false);
-                setHasTriggeredModal(false);
                 resetRegisterModal();
               }}
               className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
