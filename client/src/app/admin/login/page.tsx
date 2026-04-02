@@ -50,7 +50,9 @@ export default function AdminLogin() {
             "success"
           );
         }
-        router.replace("/admin/dashboard");
+        if (typeof window !== "undefined") {
+          window.location.assign("/admin/dashboard");
+        }
       } else {
         setErr("Login failed. Please check your credentials.");
       }

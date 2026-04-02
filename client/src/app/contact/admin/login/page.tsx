@@ -38,7 +38,9 @@ export default function AdminLogin() {
         if (typeof window !== "undefined" && response.accessToken) {
           localStorage.setItem("admin_token", response.accessToken);
         }
-        router.push("/admin/dashboard");
+        if (typeof window !== "undefined") {
+          window.location.assign("/admin/dashboard");
+        }
       } else {
         setErr("Login failed. Please try again.");
       }
