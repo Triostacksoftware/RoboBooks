@@ -100,6 +100,7 @@ export const adminLogin = async (req, res, next) => {
     // Return admin data (without sensitive info)
     res.json({
       success: true,
+      accessToken: token,
       admin: {
         id: admin._id,
         firstName: admin.firstName,
@@ -446,5 +447,4 @@ export const getChartOfAccountsStats = async (req, res) => {
     });
   }
 };
-
 

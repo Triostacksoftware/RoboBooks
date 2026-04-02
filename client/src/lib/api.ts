@@ -5,6 +5,20 @@ import { ExcelAccountData } from "../services/excelParserService";
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
 
+function isAdminPath(path: string): boolean {
+  return path.startsWith("/api/admin");
+}
+
+function isAuthLikePath(path: string): boolean {
+  return (
+    path.includes("/auth/login") ||
+    path.includes("/auth/register") ||
+    path.includes("/auth/refresh-token") ||
+    path.includes("/admin/login") ||
+    path.includes("/admin/logout")
+  );
+}
+
 async function refreshAccessToken(): Promise<string | null> {
   if (isRefreshing && refreshPromise) {
     return refreshPromise;
@@ -88,7 +102,9 @@ export async function api<T = unknown>(
   // Get JWT token from localStorage as fallback (for backward compatibility)
   let token = null;
   if (typeof window !== "undefined") {
-    token = localStorage.getItem("token");
+    token = isAdminPath(path)
+      ? localStorage.getItem("admin_token")
+      : localStorage.getItem("token");
   }
 
   // Add Authorization header if token exists (fallback for non-cookie auth)
@@ -135,15 +151,15 @@ export async function api<T = unknown>(
     console.log("🔐 Authentication error (401) - attempting token refresh");
 
     // Don't try to refresh for auth endpoints to prevent infinite loops
-    if (
-      path.includes("/auth/login") ||
-      path.includes("/auth/register") ||
-      path.includes("/auth/refresh-token")
-    ) {
+    if (isAuthLikePath(path) || isAdminPath(path)) {
       console.log("🔐 Auth endpoint - not attempting refresh");
       // Clear invalid tokens
       if (typeof window !== "undefined") {
-        localStorage.removeItem("token");
+        if (isAdminPath(path)) {
+          localStorage.removeItem("admin_token");
+        } else {
+          localStorage.removeItem("token");
+        }
       }
 
       const errorData = await res
@@ -273,6 +289,7 @@ export async function logout(): Promise<void> {
     // Always clear the token from localStorage
     if (typeof window !== "undefined") {
       localStorage.removeItem("token");
+      localStorage.removeItem("admin_token");
       console.log("🗑️ Token cleared from localStorage");
     }
   }

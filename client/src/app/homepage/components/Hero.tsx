@@ -70,15 +70,22 @@ const Hero: React.FC = () => {
     }));
   }, [normalizedPhone]);
 
+  useEffect(() => {
+    if (normalizedPhone.length === 10 && !hasTriggeredModal) {
+      resetRegisterModal();
+      setIsRegisterModalOpen(true);
+      setHasTriggeredModal(true);
+      return;
+    }
+
+    if (normalizedPhone.length < 10 && hasTriggeredModal) {
+      setHasTriggeredModal(false);
+    }
+  }, [hasTriggeredModal, normalizedPhone]);
+
   const handlePhoneChange = (value: string) => {
     const cleaned = value.replace(/[^\d+\s-]/g, "");
     setPhoneValue(cleaned);
-
-    const digits = value.replace(/\D/g, "");
-    if (digits.length >= 10 && !hasTriggeredModal) {
-      setIsRegisterModalOpen(true);
-      setHasTriggeredModal(true);
-    }
   };
 
   const updateRegisterField =
@@ -172,6 +179,7 @@ const Hero: React.FC = () => {
           response.message ||
             "Registration submitted successfully. Please wait for admin approval."
         );
+        setIsRegisterModalOpen(true);
         setHasTriggeredModal(false);
         setPhoneValue("");
         setTimeout(() => {
@@ -373,6 +381,7 @@ const Hero: React.FC = () => {
               type="button"
               onClick={() => {
                 setIsRegisterModalOpen(false);
+                setHasTriggeredModal(false);
                 resetRegisterModal();
               }}
               className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10"

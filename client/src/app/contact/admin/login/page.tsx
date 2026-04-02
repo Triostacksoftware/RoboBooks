@@ -26,18 +26,18 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const response = await api("/api/admin/login", {
+      const response = await api<{
+        success?: boolean;
+        accessToken?: string;
+      }>("/api/admin/login", {
         method: "POST",
         json: { email, password },
       });
 
-      // Fix: response is of type 'unknown', so we need to safely check its shape
-      if (
-        response &&
-        typeof response === "object" &&
-        "success" in response &&
-        (response as any).success
-      ) {
+      if (response?.success) {
+        if (typeof window !== "undefined" && response.accessToken) {
+          localStorage.setItem("admin_token", response.accessToken);
+        }
         router.push("/admin/dashboard");
       } else {
         setErr("Login failed. Please try again.");

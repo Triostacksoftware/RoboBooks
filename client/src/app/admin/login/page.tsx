@@ -27,7 +27,11 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const response = await api<{ success: boolean; admin?: any }>(
+      const response = await api<{
+        success: boolean;
+        accessToken?: string;
+        admin?: any;
+      }>(
         "/api/admin/login",
         {
           method: "POST",
@@ -36,6 +40,9 @@ export default function AdminLogin() {
       );
 
       if (response.success) {
+        if (typeof window !== "undefined" && response.accessToken) {
+          localStorage.setItem("admin_token", response.accessToken);
+        }
         // Show success toast
         if (typeof window !== "undefined" && (window as any).showToast) {
           (window as any).showToast(
@@ -43,10 +50,7 @@ export default function AdminLogin() {
             "success"
           );
         }
-        // Login successful, redirect to dashboard
-        setTimeout(() => {
-          window.location.href = "/admin/dashboard";
-        }, 500);
+        router.replace("/admin/dashboard");
       } else {
         setErr("Login failed. Please check your credentials.");
       }
