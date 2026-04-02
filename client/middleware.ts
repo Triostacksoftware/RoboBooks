@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  if (pathname === '/admin/login' || pathname === '/signin') {
+  if (pathname.startsWith('/admin') || pathname === '/signin') {
     return NextResponse.next()
   }
   
@@ -19,12 +19,6 @@ export function middleware(request: NextRequest) {
   }
 
   const hasUserAuthCookie = request.cookies.has('rb_session')
-  const hasAdminAuthCookie = request.cookies.has('admin_session')
-
-  if (pathname.startsWith('/admin') && !hasAdminAuthCookie) {
-    console.log('🔐 Admin has no admin_session cookie, redirecting to login')
-    return NextResponse.redirect(new URL('/admin/login', request.url))
-  }
 
   if (pathname.startsWith('/dashboard') && !hasUserAuthCookie) {
     console.log('🔐 User has no rb_session cookie, redirecting to login')
