@@ -67,6 +67,9 @@ export default function AdminShell({
   const handleLogout = async () => {
     try {
       await api<unknown>("/api/admin/logout", { method: "POST" });
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("admin_token");
+      }
       setIsAuthenticated(false);
       setAdmin(null);
       router.push("/admin/login");

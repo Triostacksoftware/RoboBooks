@@ -56,6 +56,9 @@ export default function AdminLayout({
   const handleLogout = async () => {
     try {
       await api("/api/admin/logout", { method: "POST" });
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("admin_token");
+      }
       router.push("/admin/login");
     } catch (error) {
       console.error("Logout error:", error);
