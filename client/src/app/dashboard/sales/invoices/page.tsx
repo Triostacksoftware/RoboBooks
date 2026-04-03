@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useToast } from "../../../../contexts/ToastContext";
+import { maskInvoiceNumber, maskName, maskEmail } from "@/utils/mask";
 import ModuleAccessGuard from "@/components/ModuleAccessGuard";
 import {
   ChevronDownIcon,
@@ -442,20 +443,28 @@ const AllInvoicesPage = () => {
                                   )
                                 }
                               >
-                                {invoice.invoiceNumber}
+                                  {maskInvoiceNumber(invoice.invoiceNumber)}
                               </div>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div>
                               <div className="text-sm font-medium text-gray-900">
-                                {invoice.customerName ||
-                                  invoice.customerId?.firstName +
-                                    " " +
-                                    invoice.customerId?.lastName}
+                                {maskName(
+                                  invoice.customerName ||
+                                    [
+                                      invoice.customerId?.firstName,
+                                      invoice.customerId?.lastName,
+                                    ]
+                                      .filter(Boolean)
+                                      .join(" ") ||
+                                    ""
+                                )}
                               </div>
                               <div className="text-sm text-gray-500">
-                                {invoice.customerId?.email}
+                                {maskEmail(
+                                  invoice.customerId?.email || invoice.customerName || ""
+                                )}
                               </div>
                             </div>
                           </td>

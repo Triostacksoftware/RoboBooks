@@ -2,6 +2,14 @@
 
 import React from "react";
 import { formatCurrency } from "@/utils/currency";
+import {
+  maskEmail,
+  maskPhone,
+  maskGstin,
+  maskInvoiceNumber,
+  maskName,
+  maskString,
+} from "@/utils/mask";
 
 interface InvoiceItem {
   id: number;
@@ -218,17 +226,17 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({
               "123 Business Street, Tech Park, Bangalore - 560001"}
           </p>
           <p>
-            {invoice.sellerPhone || "+91 98765 43210"} |{" "}
-            {invoice.sellerEmail || "info@robobooks.com"}
+            {maskPhone(invoice.sellerPhone || "+91 98765 43210")} |{" "}
+            {maskEmail(invoice.sellerEmail || "info@robobooks.com")}
           </p>
           <p>
-            GSTIN: {invoice.sellerGstin || "29ABCDE1234F1Z5"} | Origin of
-            Supply: 29-Karnataka
+            GSTIN: {maskGstin(invoice.sellerGstin || "29ABCDE1234F1Z5")} |
+            Origin of Supply: 29-Karnataka
           </p>
 
           {/* Invoice Details as bullet points */}
           <div className="flex justify-center items-center mt-3 text-xs text-gray-700">
-            <span>• Invoice No: {invoice.invoiceNumber}</span>
+            <span>• Invoice No: {maskInvoiceNumber(invoice.invoiceNumber)}</span>
             <span className="mx-2">
               • Date: {formatDate(invoice.invoiceDate)}
             </span>
@@ -256,26 +264,26 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({
           </h3>
           <div className="space-y-1">
             <p className="font-semibold text-gray-900">
-              {invoice.buyerName || invoice.customerName}
+              {maskName(invoice.buyerName || invoice.customerName)}
             </p>
             {(invoice.buyerAddress || invoice.customerAddress) && (
               <p className="text-sm text-gray-800">
-                {invoice.buyerAddress || invoice.customerAddress}
+                {maskString(invoice.buyerAddress || invoice.customerAddress, 4, 4)}
               </p>
             )}
             {(invoice.buyerPhone || invoice.customerPhone) && (
               <p className="text-sm text-gray-800">
-                Phone: {invoice.buyerPhone || invoice.customerPhone}
+                Phone: {maskPhone(invoice.buyerPhone || invoice.customerPhone)}
               </p>
             )}
             {(invoice.buyerEmail || invoice.customerEmail) && (
               <p className="text-sm text-gray-800">
-                Email: {invoice.buyerEmail || invoice.customerEmail}
+                Email: {maskEmail(invoice.buyerEmail || invoice.customerEmail)}
               </p>
             )}
             {invoice.buyerGstin && (
               <p className="text-sm text-gray-800">
-                GSTIN: {invoice.buyerGstin}
+                GSTIN: {maskGstin(invoice.buyerGstin)}
               </p>
             )}
             <p className="text-sm text-gray-800 font-medium">
@@ -310,11 +318,11 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({
           </h3>
           <div className="space-y-1">
             <p className="font-semibold text-gray-900">
-              {invoice.buyerName || invoice.customerName}
+              {maskName(invoice.buyerName || invoice.customerName)}
             </p>
             {(invoice.buyerAddress || invoice.customerAddress) && (
               <p className="text-sm text-gray-800">
-                {invoice.buyerAddress || invoice.customerAddress}
+                {maskString(invoice.buyerAddress || invoice.customerAddress, 4, 4)}
               </p>
             )}
               <p className="text-sm text-gray-800">
