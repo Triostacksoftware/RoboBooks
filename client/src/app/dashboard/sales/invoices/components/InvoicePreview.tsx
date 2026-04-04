@@ -214,7 +214,8 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({
   };
 
   return (
-    <div className={`invoice-container bg-white ${isPrintMode ? 'print:bg-white' : ''}`}>
+    <div className={`invoice-container relative bg-white ${isPrintMode ? 'print:bg-white' : ''}`}>
+      {!isPrintMode && <div className="invoice-mask" />}
       {/* Company Letterhead */}
       <div className={`text-center py-6 mb-8 ${isPrintMode ? 'print:py-4 print:mb-6' : ''}`}>
         <h1 className={`text-3xl font-bold text-gray-900 mb-3 ${isPrintMode ? 'print:text-2xl' : ''}`}>

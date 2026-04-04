@@ -108,6 +108,32 @@ body,
   .search-shell:focus-within {
     width: calc(var(--search-w, 28rem) * 1.1);
   }
+
+  .invoice-mask {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.18);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .invoice-mask::before {
+    content: "CONFIDENTIAL";
+    font-size: 4rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.75);
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    opacity: 0.35;
+    transform: rotate(-16deg);
+    white-space: nowrap;
+  }
 }
 
 /* Blob animation for hero section */

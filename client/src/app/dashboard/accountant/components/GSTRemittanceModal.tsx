@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { X, DollarSign, Calendar, Building2 } from "lucide-react";
 import { useToast } from "../../../../contexts/ToastContext";
+import { formatCurrencyInput, parseCurrencyInput } from "../../../../lib/masks";
 
 interface GSTRemittanceModalProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ const GSTRemittanceModal: React.FC<GSTRemittanceModalProps> = ({
   onRemittanceRecorded
 }) => {
   const [remittedAmount, setRemittedAmount] = useState(0);
+  const [displayAmount, setDisplayAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("bank");
   const [remittanceDate, setRemittanceDate] = useState(new Date().toISOString().split('T')[0]);
   const [reference, setReference] = useState("");
@@ -88,12 +90,23 @@ const GSTRemittanceModal: React.FC<GSTRemittanceModalProps> = ({
               GST Amount Remitted *
             </label>
             <input
-              type="number"
-              step="0.01"
-              value={remittedAmount}
-              onChange={(e) => setRemittedAmount(parseFloat(e.target.value) || 0)}
+              type="text"
+              inputMode="decimal"
+              value={displayAmount}
+              onChange={(e) => {
+                const formatted = formatCurrencyInput(e.target.value);
+                setDisplayAmount(formatted);
+                setRemittedAmount(parseCurrencyInput(formatted));
+              }}
+              onBlur={(e) => {
+                if (displayAmount && !displayAmount.startsWith('₹')) {
+                  const formatted = formatCurrencyInput(displayAmount);
+                  setDisplayAmount(formatted);
+                }
+              }}
+              placeholder="₹0.00"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 font-mono"
             />
           </div>
 

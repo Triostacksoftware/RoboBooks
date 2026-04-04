@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { formatIndianCurrency } from "../../../../../lib/masks";
 
 type TaxMode = "GST" | "IGST" | "NON_TAXABLE" | "NO_GST" | "EXPORT";
 
@@ -329,13 +330,13 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500">CGST {halfRate}%</span>
                   <span className="text-gray-700">
-                    ₹{(formData.cgstTotal || 0).toFixed(2)}
+                    {formatIndianCurrency(formData.cgstTotal || 0)}
                   </span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500">SGST {halfRate}%</span>
                   <span className="text-gray-700">
-                    ₹{(formData.sgstTotal || 0).toFixed(2)}
+                    {formatIndianCurrency(formData.sgstTotal || 0)}
                   </span>
                 </div>
               </div>
@@ -343,7 +344,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
               <div className="flex justify-between text-xs">
                 <span className="text-gray-500">IGST {effectiveTaxRate}%</span>
                 <span className="text-gray-700">
-                  ₹{(formData.igstTotal || 0).toFixed(2)}
+                  {formatIndianCurrency(formData.igstTotal || 0)}
                 </span>
               </div>
             );

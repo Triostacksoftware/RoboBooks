@@ -6,6 +6,7 @@ import {
   fetchAdminCmsSection,
   resolveCmsAssetUrl,
   uploadAdminCmsImage,
+  uploadAdminCmsMedia,
   updateAdminCmsSection,
   type HeroCmsContent,
 } from "@/services/cmsService";
@@ -92,6 +93,24 @@ export default function AdminCmsHeroPage() {
       setMessage("Image uploaded successfully.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Failed to upload image.");
+    } finally {
+      setUploadingKey(null);
+    }
+  };
+
+  const uploadVideo = async (file: File) => {
+    try {
+      setUploadingKey("hero-video");
+      setMessage("");
+      const response = await uploadAdminCmsMedia(file);
+      if (response.kind !== "video") {
+        setMessage("Please upload a video file.");
+        return;
+      }
+      setContent((current) => ({ ...current, heroVideoUrl: response.url }));
+      setMessage("Video uploaded successfully.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Failed to upload video.");
     } finally {
       setUploadingKey(null);
     }
@@ -188,6 +207,56 @@ export default function AdminCmsHeroPage() {
                   }))
                 }
               />
+            </div>
+
+            <div className="space-y-5 rounded-2xl border border-gray-200 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold text-gray-900">Hero Video</p>
+                <button
+                  type="button"
+                  onClick={() => setContent((current) => ({ ...current, heroVideoUrl: "" }))}
+                  className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100"
+                >
+                  Remove Video
+                </button>
+              </div>
+
+              <Field
+                label="Hero Video URL"
+                value={content.heroVideoUrl || ""}
+                onChange={(value) =>
+                  setContent((current) => ({ ...current, heroVideoUrl: value }))
+                }
+              />
+
+              <div className="flex flex-wrap items-center gap-3">
+                <label className="flex cursor-pointer items-center justify-center rounded-xl border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-purple-400 hover:text-purple-700">
+                  {uploadingKey === "hero-video" ? "Uploading..." : "Upload Video"}
+                  <input
+                    type="file"
+                    accept="video/*"
+                    className="hidden"
+                    disabled={uploadingKey === "hero-video"}
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) {
+                        uploadVideo(file);
+                      }
+                      event.currentTarget.value = "";
+                    }}
+                  />
+                </label>
+                {content.heroVideoUrl ? (
+                  <a
+                    href={resolveCmsAssetUrl(content.heroVideoUrl)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sm font-semibold text-cyan-700 underline"
+                  >
+                    Preview video URL
+                  </a>
+                ) : null}
+              </div>
             </div>
 
             <div className="space-y-4">

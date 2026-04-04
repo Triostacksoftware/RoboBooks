@@ -107,6 +107,24 @@ const Hero: React.FC = () => {
     });
   };
 
+  const getHeroVideoEmbedUrl = (url: string) => {
+    if (!url) return "";
+    if (url.includes("youtube.com/embed")) {
+      return url;
+    }
+    const watchMatch = url.match(/[?&]v=([A-Za-z0-9_-]+)/);
+    const shortMatch = url.match(/youtu\.be\/([A-Za-z0-9_-]+)/);
+    const videoId = watchMatch?.[1] || shortMatch?.[1];
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&rel=0&playsinline=1`;
+    }
+    return url;
+  };
+
+  const isHeroVideoYouTube = (url: string) => {
+    return /youtube\.com\/embed|youtube\.com\/watch|youtu\.be\//.test(url);
+  };
+
   const handleRegisterSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setRegisterError("");
@@ -357,18 +375,33 @@ const Hero: React.FC = () => {
                 </span>
               </div>
 
-              <div className="overflow-hidden rounded-2xl border border-white/15 bg-black/20 shadow-inner shadow-black/20">
-                <div className="aspect-video w-full">
-                  <iframe
-                    src="https://www.youtube.com/embed/YaiT6rz5YRA?autoplay=1&mute=1&loop=1&playlist=YaiT6rz5YRA&rel=0&playsinline=1"
-                    title="RoboBooks Demo Video"
-                    className="h-full w-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    allowFullScreen
-                  />
+              {content.heroVideoUrl ? (
+                <div className="overflow-hidden rounded-2xl border border-white/15 bg-black/20 shadow-inner shadow-black/20">
+                  <div className="aspect-video w-full">
+                    {isHeroVideoYouTube(content.heroVideoUrl) ? (
+                      <iframe
+                        src={getHeroVideoEmbedUrl(content.heroVideoUrl)}
+                        title="RoboBooks Demo Video"
+                        className="h-full w-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <video
+                        src={resolveCmsAssetUrl(content.heroVideoUrl)}
+                        className="h-full w-full object-cover"
+                        controls
+                        muted
+                        loop
+                        playsInline
+                      />
+                    )}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <p className="text-sm text-slate-200">Video is disabled in the hero section.</p>
+              )}
             </div>
           </div>
         </div>

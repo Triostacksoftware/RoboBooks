@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
-import { defaultAboutContent, fetchPublicCmsSection, type AboutCmsContent } from '@/services/cmsService';
+import { defaultAboutContent, fetchPublicCmsSection, resolveCmsAssetUrl, type AboutCmsContent } from '@/services/cmsService';
 
 export default function AboutSection() {
   const [content, setContent] = useState<AboutCmsContent>(defaultAboutContent);
@@ -29,7 +29,7 @@ export default function AboutSection() {
 
             <div className="relative h-[390px] w-[78%] overflow-hidden rounded-[30px] shadow-[0_24px_60px_rgba(15,35,68,0.14)]">
               <Image
-                src="/images/homehero.png"
+                src={resolveCmsAssetUrl(content.heroImageUrl)}
                 alt="RoboBooks accounting dashboard overview"
                 fill
                 className="object-cover"
@@ -48,7 +48,7 @@ export default function AboutSection() {
 
             <div className="absolute bottom-0 right-6 h-[240px] w-[66%] overflow-hidden rounded-[28px] border-[10px] border-white bg-white shadow-[0_22px_45px_rgba(15,35,68,0.14)]">
               <Image
-                src="/images/dashboard.png"
+                src={resolveCmsAssetUrl(content.dashboardImageUrl)}
                 alt="RoboBooks workflow for bookkeeping teams"
                 fill
                 className="object-contain object-center"

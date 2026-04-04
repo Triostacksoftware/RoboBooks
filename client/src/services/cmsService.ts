@@ -45,12 +45,15 @@ export type HeroCmsContent = {
     imageUrl: string;
     alt: string;
   }>;
+  heroVideoUrl?: string;
 };
 
 export type AboutCmsContent = {
   eyebrow: string;
   title: string;
   description: string;
+  heroImageUrl: string;
+  dashboardImageUrl: string;
   highlights: string[];
   primaryButtonLabel: string;
   primaryButtonUrl: string;
@@ -556,6 +559,8 @@ export const defaultHeroContent: HeroCmsContent = {
     { imageUrl: "/images/your-illustration.png", alt: "RoboBooks platform illustration" },
     { imageUrl: "/images/businessbenifits.png", alt: "RoboBooks business benefits" },
   ],
+  heroVideoUrl:
+    "https://www.youtube.com/embed/YaiT6rz5YRA?autoplay=1&mute=1&loop=1&playlist=YaiT6rz5YRA&rel=0&playsinline=1",
 };
 
 export const defaultAboutContent: AboutCmsContent = {
@@ -563,6 +568,8 @@ export const defaultAboutContent: AboutCmsContent = {
   title: "Accounting Software That Keeps Every Number in Sync",
   description:
     "RoboBooks is an accounting SaaS platform built for businesses that want faster bookkeeping, cleaner compliance, and complete control over cash flow. From invoices to tax-ready reports, every workflow stays connected in one simple dashboard.",
+  heroImageUrl: "/images/homehero.png",
+  dashboardImageUrl: "/images/dashboard.png",
   highlights: [
     "Automated invoicing, recurring billing, and payment reminders",
     "GST-ready reports, expense tracking, and bank reconciliation",

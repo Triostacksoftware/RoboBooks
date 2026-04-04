@@ -4,6 +4,8 @@ import { useEffect, useState, type ReactNode } from "react";
 import {
   defaultAboutContent,
   fetchAdminCmsSection,
+  resolveCmsAssetUrl,
+  uploadAdminCmsImage,
   updateAdminCmsSection,
   type AboutCmsContent,
 } from "@/services/cmsService";
@@ -12,6 +14,7 @@ export default function AdminCmsAboutPage() {
   const [content, setContent] = useState<AboutCmsContent>(defaultAboutContent);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingKey, setUploadingKey] = useState<string | null>(null);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -45,6 +48,24 @@ export default function AdminCmsAboutPage() {
       ...current,
       highlights: current.highlights.filter((_, itemIndex) => itemIndex !== index),
     }));
+  };
+
+  const uploadImage = async (
+    key: string,
+    file: File,
+    onSuccess: (uploadedUrl: string) => void
+  ) => {
+    try {
+      setUploadingKey(key);
+      setMessage("");
+      const response = await uploadAdminCmsImage(file);
+      onSuccess(response.url);
+      setMessage("Image uploaded successfully.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Failed to upload image.");
+    } finally {
+      setUploadingKey(null);
+    }
   };
 
   const updateMissionHighlight = (index: number, value: string) => {
@@ -285,6 +306,35 @@ export default function AdminCmsAboutPage() {
                   value={content.trustedText}
                   onChange={(value) =>
                     setContent((current) => ({ ...current, trustedText: value }))
+                  }
+                />
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <ImageUploader
+                  label="Hero Image"
+                  imageUrl={content.heroImageUrl}
+                  uploading={uploadingKey === 'about-hero-image'}
+                  onUpload={(file) =>
+                    uploadImage('about-hero-image', file, (uploadedUrl) =>
+                      setContent((current) => ({ ...current, heroImageUrl: uploadedUrl }))
+                    )
+                  }
+                  onRemove={() =>
+                    setContent((current) => ({ ...current, heroImageUrl: '' }))
+                  }
+                />
+                <ImageUploader
+                  label="Dashboard Image"
+                  imageUrl={content.dashboardImageUrl}
+                  uploading={uploadingKey === 'about-dashboard-image'}
+                  onUpload={(file) =>
+                    uploadImage('about-dashboard-image', file, (uploadedUrl) =>
+                      setContent((current) => ({ ...current, dashboardImageUrl: uploadedUrl }))
+                    )
+                  }
+                  onRemove={() =>
+                    setContent((current) => ({ ...current, dashboardImageUrl: '' }))
                   }
                 />
               </div>
@@ -688,6 +738,68 @@ function Field({
         className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
       />
     </label>
+  );
+}
+
+function ImageUploader({
+  label,
+  imageUrl,
+  uploading,
+  onUpload,
+  onRemove,
+}: {
+  label: string;
+  imageUrl: string;
+  uploading: boolean;
+  onUpload: (file: File) => void;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-sm font-medium text-gray-700">{label}</p>
+        {imageUrl ? (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+          >
+            Remove
+          </button>
+        ) : null}
+      </div>
+
+      {imageUrl ? (
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-3">
+          <img
+            src={resolveCmsAssetUrl(imageUrl)}
+            alt={label}
+            className="max-h-40 w-full rounded-lg object-cover"
+          />
+        </div>
+      ) : (
+        <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-8 text-sm text-gray-500">
+          No image uploaded yet.
+        </div>
+      )}
+
+      <label className="flex w-full cursor-pointer items-center justify-center rounded-xl border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-purple-400 hover:text-purple-700">
+        {uploading ? "Uploading..." : "Choose Image"}
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          disabled={uploading}
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) {
+              onUpload(file);
+            }
+            event.currentTarget.value = "";
+          }}
+        />
+      </label>
+    </div>
   );
 }
 
